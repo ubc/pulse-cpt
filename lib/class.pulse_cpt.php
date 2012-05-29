@@ -2,20 +2,24 @@
 
 
 class Class_Module_CPT {
+  static $add_form_script;
   public static function init() {
   
 	  Class_Module_CPT::register_pulse();
+	  Class_Module_CPT::register_script_and_style();
+	  
   }
   
-  public static function install(){
+  public static function install() {
+  
 	  Class_Module_CPT::register_pulse();
 	  
 	  flush_rewrite_rules();
+	  
   }
   
   public static function register_pulse(){
   
- 
 		$labels = array(
 			'name' => _x('Pulse', 'pule-ct'),
 			'singular_name' => _x('Pulse', 'pulse-ct'),
@@ -30,7 +34,6 @@ class Class_Module_CPT {
 			'not_found_in_trash' => __('No pulses found in Trash'), 
 			'parent_item_colon' => '',
 			'menu_name' => 'Pulse'
-		
 		);
 		
 		$args = array(
@@ -50,6 +53,23 @@ class Class_Module_CPT {
 		); 
   		register_post_type( 'pulse-cpt', $args );
     }
-
+    
+    public static function register_script_and_style(){
+    	
+    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/pulse-cpt-form.js' , array('jquery'), '1.0', true );
+    
+    }
+    public static function print_form_script(){
+    	var_dump( "hey",self::$add_form_script );
+    	if ( ! self::$add_form_script )
+			return;
+ 
+		wp_print_scripts( 'pulse-cpt-form' );
+    }
+    
+    public static function widgets_init() {
   
+  		register_widget( 'Pulse_CPT_Form_Widget' );
+  
+  	}
 }
