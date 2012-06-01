@@ -21,7 +21,10 @@
 .pulse-form-progress.hide{
 	display: none;
 }
-
+.pulse-form-counter{
+	font:bold 16px sans-serif;
+	color:#AAA;
+}
 .pulse-form-submit-wrap {
 	float: right;
     margin-right: 5px;

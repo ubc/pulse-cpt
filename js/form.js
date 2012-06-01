@@ -6,7 +6,7 @@ var Pulse_CPT_Form = {
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
 		
 		// tabs
-		jQuery('.pulse-tabs').tabs({selected: -1, fx: { opacity: 'toggle' }, collapsible: true});	
+		jQuery('.pulse-tabs').tabs({selected: -1, collapsible: true});	
 	},
 	
 	textareaFocus : function (){
