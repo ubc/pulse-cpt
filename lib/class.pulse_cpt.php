@@ -1,18 +1,23 @@
 <?php 
 
 
-class Class_Module_CPT {
+class Pulse_CPT {
   static $add_form_script;
   public static function init() {
   
-	  Class_Module_CPT::register_pulse();
-	  Class_Module_CPT::register_script_and_style();
+	  Pulse_CPT::register_pulse();
+	  Pulse_CPT::register_script_and_style();
 	  
+  }
+  
+  public static function template_redirect() {
+  		
+  		Pulse_CPT::print_form_style();
   }
   
   public static function install() {
   
-	  Class_Module_CPT::register_pulse();
+	  Pulse_CPT::register_pulse();
 	  
 	  flush_rewrite_rules();
 	  
@@ -56,15 +61,39 @@ class Class_Module_CPT {
     
     public static function register_script_and_style(){
     	
-    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/pulse-cpt-form.js' , array('jquery'), '1.0', true );
-    
+    	wp_register_script( 'tagbox', PULSE_CPT_DIR_URL.'/js/tagbox.js' , array('jquery','jquery-ui-autocomplete', 'autoGrowInput'), '1.0', true );
+    	wp_register_script( 'autoGrowInput', PULSE_CPT_DIR_URL.'/js/jquery.autoGrowInput.js' , array('jquery'), '1.0', true );
+    	
+    	wp_register_script( 'jquery-ui-position', PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js' , array('jquery'), '1.0', true );
+    	wp_register_script( 'jquery-ui-autocomplete', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js' , array( 'jquery','jquery-ui-position','jquery-ui-widget','jquery-ui-core'), '1.0', true );
+    	
+    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array('jquery','autoGrowInput','tagbox', 'jquery-ui-tabs',), '1.0', true );
+    	
+    	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
+    	
+    	wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', 
+	    	array(
+		  		'ajaxUrl' => admin_url( 'admin-ajax.php' ) ,
+			)
+		);
     }
+    
+    public static function print_form_style(){
+    	
+    	wp_enqueue_style( 'pulse-cpt-form' );
+    }
+    
     public static function print_form_script(){
-    	var_dump( "hey",self::$add_form_script );
+    	
     	if ( ! self::$add_form_script )
 			return;
- 
+ 		
+ 		
+ 		
+		
 		wp_print_scripts( 'pulse-cpt-form' );
+		
+		
     }
     
     public static function widgets_init() {
@@ -72,4 +101,6 @@ class Class_Module_CPT {
   		register_widget( 'Pulse_CPT_Form_Widget' );
   
   	}
+  	
+  	
 }

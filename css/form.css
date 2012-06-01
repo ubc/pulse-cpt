@@ -1,0 +1,125 @@
+.postbox{
+	border:1px solid #CCC;
+}
+.postbox textarea{
+	border:none;
+}
+.pulse-form-textarea{
+	height: 20px;
+	margin:0 0 5px;
+}
+
+.pulse-form-textarea.full{
+	height: 60px;
+}
+
+.pulse-form-progress{
+	float: left;
+	margin:3px 5px 0 0;
+}
+
+.pulse-form-progress.hide{
+	display: none;
+}
+
+.pulse-form-submit-wrap {
+	float: right;
+    margin-right: 5px;
+    margin-top: -25px;
+    position: relative;
+    z-index: 10;
+}
+
+.clear{
+	clear: both;
+}
+
+
+
+
+/* Tag box */
+.tagbox {
+  background: #fff;
+  cursor: text;
+  border: 1px solid #ccc;
+  overflow: hidden;
+  padding: 0 0 1px 3px;
+  min-height:48px;
+  margin: 0;
+  padding:0
+}
+.tagbox li {
+    margin:0;
+    padding:0;
+}
+.tagbox li.tag {
+  float: left;
+  line-height: 1;
+  padding: 3px 6px;
+  list-style-type: none;
+  margin-top: 3px;
+  margin-right: 3px;
+}
+.tagbox li.tag {
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  display:block;
+  border: 1px solid #cad8f3;
+  background: #dee7f8;
+  padding: 2px;
+  margin-bottom: 1px;
+  padding-right: 15px;
+  position: relative;
+}
+.tagbox li.input {display:block; float:left;}
+.tagbox input:focus {
+    border-color: #fff;
+}
+.tagbox .input input {
+  width: 50px;
+  margin: 2px 0;
+  border: 0;
+  outline: 0;
+  line-height:1.2;
+  padding: 3px 0;
+  font-size:12px;
+} 
+.tagbox a.close {
+  position: absolute;
+  right: 4px; top: 5px;
+  display: block;
+  text-indent:-9999px;
+  cursor:pointer;
+  width: 7px; height: 7px;
+  font-size: 1px;
+  background: url('close.gif'); }
+  
+.tagbox a.close:hover {
+  background-position: 7px;
+}
+
+.ui-autocomplete {border:1px solid #ddd; 
+    background:#fff; list-style:none; position: absolute; cursor: default;
+    padding:0;
+}
+.ui-autocomplete li {margin:0; list-style:none; padding:0}
+.ui-autocomplete li a {display:block; padding:4px;}
+.ui-autocomplete li a.ui-state-hover,
+.ui-autocomplete li a:hover {background:#eee;}
+* html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
+
+/* from jquery ui tabs */
+.pulse-tabs{
+	border-top:1px dotted #CCC;
+}
+.ui-tabs { position: relative; padding:0; zoom: 1; } /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
+.ui-tabs .ui-tabs-nav { margin: 0; padding:0; background: #DDD; height: 27px; }
+.ui-tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; top: 0px; margin: 0 .2em 1px 0; border-bottom: 0 !important; padding: 0; white-space: nowrap; }
+.ui-tabs .ui-tabs-nav li a { float: left; padding: 3px 10px; text-decoration: none; color:#999; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li a:hover{ background: #EEE; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 1px; }
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
+.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding:0; background: none; }
+.ui-tabs .ui-tabs-hide { display: none !important; }
