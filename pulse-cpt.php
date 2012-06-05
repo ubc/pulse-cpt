@@ -16,6 +16,7 @@ define( 'PULSE_CPT_BASENAME', plugin_basename(__FILE__) );
 define( 'PULSE_CPT_DIR_URL',  plugins_url( ''  , PULSE_CPT_BASENAME ) );
 
 require_once( 'lib/class.pulse_cpt.php' );
+require_once( 'lib/class.pulse_cpt_form.php' );
 require_once( 'lib/class.pulse_cpt_form_widget.php' );
 
 add_action( 'init',        			array( 'Pulse_CPT', 'init' ) );

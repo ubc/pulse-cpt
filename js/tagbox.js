@@ -1,12 +1,13 @@
 /*
+*   Based on the work by Daniel Stocks
+*
 *   jQuery tagbox
 *   -------------
 *   Released under the MIT, BSD, and GPL Licenses.
 *   Copyright 2011 Daniel Stocks
+*   http://webcloud.se/code/jQuery-TaggingTools/
 *
-*   Dependencies:
-*   ------------
-*   jquery.autoGrowInput.js
+*   
 *  
 */
 
@@ -28,15 +29,24 @@
         var val = input.val();
         var tags = []
         if(val) { 
-            tags = input.val().split(self.delimit_expr);
+            tags = input.val().split( self.delimit_expr );
         }
         self.input = input
         self.tagInput = $('<input>', {
             'type' : 'text',
             'keydown' : function(e) {
-                if(e.keyCode == 13 || e.keyCode == self.delimit_key ) {
+                if(e.keyCode == self.delimit_key ) {
                     $(this).trigger("selectTag");
+                    
                     e.preventDefault();
+                }
+                if(self.tagInput.val() == '' && e.keyCode == 8){
+                	var last_tag_index =  self.tagbox.find("li").length - 2; // -2 because we ignore the input 
+                	if(last_tag_index >= 0){
+                		self.removeTag(last_tag_index);
+                	}
+                	
+                	e.preventDefault();
                 }
             },
             'blur' : function(e) {
@@ -61,11 +71,14 @@
 
         self.tags = []
         
+        
         input.after(self.tagbox).hide();
+        
 
         self.inputHolder = $('<li class="input">');
         self.tagbox.append(self.inputHolder);
         self.inputHolder.append(self.tagInput);
+        
         self.tagInput.autoGrowInput();
         
         for(tag in tags) {
@@ -96,7 +109,7 @@
             self.updateInput();
         },
         removeTag : function(index) {
-            
+           
             this.tagbox.find("li").eq(index).remove();
             this.tags.splice(index, 1);
             this.updateInput();
@@ -109,11 +122,12 @@
             } else {
                 tags = this.tags.join(",");
             }
-            this.input.val(tags);
+            
+            this.input.text(tags);
         }
     }
     
-    $.fn.tagBox = function(options) {
+    $.fn.tagbox = function(options) {
 
         var defaults = {
             delimit_by_space : false 

@@ -3,27 +3,42 @@
 }
 .postbox textarea{
 	border:none;
+	height: 25px;
+	resize:none;
 }
 .pulse-form-textarea{
-	height: 20px;
 	margin:0 0 5px;
 }
-
-.pulse-form-textarea.full{
-	height: 60px;
+.pulse-shorten-url {
+	text-align: right;
+	margin-right: 5px;
 }
-
+.pulse-shorten-url a,
+.pulse-shorten-url a:visited{
+	color: #AAA;
+	font-size: 11px;
+	text-decoration: none;
+}
+.pulse-shorten-url a:hover{
+	color:#666;
+}
 .pulse-form-progress{
 	float: left;
 	margin:3px 5px 0 0;
 }
-
 .pulse-form-progress.hide{
 	display: none;
 }
+
 .pulse-form-counter{
 	font:bold 16px sans-serif;
 	color:#AAA;
+}
+.pulse-form-counter.warning{
+	color:#666;
+}
+.pulse-form-counter.exceeded{
+	color:red;
 }
 .pulse-form-submit-wrap {
 	float: right;
@@ -32,7 +47,12 @@
     position: relative;
     z-index: 10;
 }
-
+.postbox ::-webkit-input-placeholder {
+   color: #AAA;
+}
+.postbox :-moz-placeholder {
+   color: #AAA;
+}
 .clear{
 	clear: both;
 }
@@ -44,12 +64,11 @@
 .tagbox {
   background: #fff;
   cursor: text;
-  border: 1px solid #ccc;
   overflow: hidden;
   padding: 0 0 1px 3px;
-  min-height:48px;
+  min-height:28px;
   margin: 0;
-  padding:0
+  padding:0 2px;
 }
 .tagbox li {
     margin:0;
@@ -96,7 +115,7 @@
   cursor:pointer;
   width: 7px; height: 7px;
   font-size: 1px;
-  background: url('close.gif'); }
+  background: url('../img/close.gif'); }
   
 .tagbox a.close:hover {
   background-position: 7px;
