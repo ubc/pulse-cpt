@@ -63,9 +63,7 @@ class Pulse_CPT {
     public static function register_script_and_style(){
     	
     	wp_register_script( 'autoGrowInput', PULSE_CPT_DIR_URL.'/js/jquery.autoGrowInput.js' , array('jquery'), '1.0', true );
-    	wp_register_script( 'tagbox', PULSE_CPT_DIR_URL.'/js/tagbox.js' , array('jquery','jquery-ui-autocomplete', 'autoGrowInput'), '1.0', true );
-    	
-    	// wp_register_script( 'tag-it', PULSE_CPT_DIR_URL.'/js/tag-it.js' , array('jquery','jquery-ui-autocomplete'), '1.0', true );
+    	wp_register_script( 'tagbox', PULSE_CPT_DIR_URL.'/js/tagbox.js' , array('jquery','jquery-ui-autocomplete', 'autoGrowInput' ), '1.0', true );
     	
     	wp_register_script( 'autoGrowInput', PULSE_CPT_DIR_URL.'/js/jquery.autoGrowInput.js' , array('jquery'), '1.0', true );
     	wp_register_script( 'autogrow', PULSE_CPT_DIR_URL.'/js/autogrow.js' , array('jquery'), '1.0', true );
@@ -93,16 +91,20 @@ class Pulse_CPT {
     	
     	if ( ! self::$add_form_script )
 			return;
+		global $pulse_cpt_widget_ids;
  		
  		
- 		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', 
+ 		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', 
 	    	array(
 		  		'ajaxUrl' => admin_url( 'admin-ajax.php' ) ,
 		  		'tags' => Pulse_CPT_Form::get_tags(),
 		  		'authors' => Pulse_CPT_Form::get_authors()
 			)
 		);
-		var_dump(Pulse_CPT_Form::get_tags());
+		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', 
+	    	$pulse_cpt_widget_ids
+		);
+		
 		
 		wp_print_scripts( 'pulse-cpt-form' );
 		
