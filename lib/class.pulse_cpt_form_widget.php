@@ -47,9 +47,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<div class="pulse-shorten-url"><a href="#">shorten url</a></div>
 				<?php } ?>
 				
-				
-				
-				
 				<?php if($enable_tagging || $enable_co_authoring || $enable_file_uploads ): ?>
 				
 				<div class="pulse-tags-shell"></div>
@@ -59,12 +56,12 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<div class="pulse-tabs">
 					<?php if( $enable_tagging ){?>
 					<div id="tabs-1">
-						<textarea placeholder="Seperate tags by commas" class="pulse-textarea-tags" name="pulse-textarea-tags"></textarea>
+						<textarea placeholder="Seperate tags by commas" class="pulse-textarea-tags" name="tags"></textarea>
 					</div>
 					<?php } ?>
 					<?php if( $enable_co_authoring ){?>
 					<div id="tabs-2">
-						<textarea placeholder="People you are posting with" class="pulse-textarea-author" name="pulse-textarea-author"></textarea>
+						<textarea placeholder="People you are posting with" class="pulse-textarea-author" name="author"></textarea>
 					</div>
 					<?php } ?>
 					<?php if( $enable_file_uploads ){?>
@@ -98,10 +95,25 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" id="submit">
 				</div>
 				
-				<input type="hidden" value="post" name="action">
+				<input type="hidden" value="pulse_cpt_insert" name="action">
 				<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); ?> 
 			</form>
 			<div class="clear"></div>
+		</div>
+		<div class="pulse-list">
+		<?php 
+		
+		$args = array('post_type' => 'pulse-cpt');
+		// The Query
+		$the_query = new WP_Query( $args );
+		
+		// The Loop
+		while ( $the_query->have_posts() ) : $the_query->the_post();
+			Pulse_CPT::the_pulse();
+		endwhile;
+		
+		// Reset Post Data
+		wp_reset_postdata(); ?>
 		</div>
 		
 		<?php	

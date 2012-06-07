@@ -71,12 +71,13 @@ class Pulse_CPT {
     	wp_register_script( 'charCount', PULSE_CPT_DIR_URL.'/js/charCount.js' , array('jquery'), '1.0', true );
     	
     	wp_register_script( 'jquery-ui-position', PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js' , array('jquery'), '1.0', true );
-    	wp_register_script( 'jquery-ui-autocomplete', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js' , array( 'jquery','jquery-ui-position','jquery-ui-widget','jquery-ui-core'), '1.0', true );
+    	wp_register_script( 'jquery-ui-autocomplete', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js' , 
+    	array( 'jquery','jquery-ui-position','jquery-ui-widget','jquery-ui-core'), '1.0', true );
     	
     	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'jquery-ui-tabs', 'charCount' ), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
-    	
+    	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
 		
     	
 		
@@ -85,6 +86,7 @@ class Pulse_CPT {
     public static function print_form_style(){
     	
     	wp_enqueue_style( 'pulse-cpt-form' );
+    	wp_enqueue_style( 'pulse-cpt-list' );
     }
     
     public static function print_form_script(){
@@ -107,14 +109,59 @@ class Pulse_CPT {
 		
 		
 		wp_print_scripts( 'pulse-cpt-form' );
-		
-		
     }
     
     public static function widgets_init() {
   
   		register_widget( 'Pulse_CPT_Form_Widget' );
   
+  	}
+  	
+  	public static function the_pulse(){
+  		global $post;
+  		
+  		$author = get_the_author();
+			?>
+			<div class="pulse">
+				<?php echo get_avatar( get_the_author_meta('ID') , '30'); ?>
+				<div class="pulse-author-meta"><a href="<?php echo get_author_posts_url( get_the_author_meta('ID') ); ?>"><?php echo get_the_author_meta('display_name'); ?> <small>@<?php echo get_the_author_meta('user_login'); ?></small></a></div>
+				<div class="pulse-meta"><a href="<?php the_permalink(); ?>"><?php Pulse_CPT::the_date(); ?></a></div>
+				<div class="pulse-content"><?php the_content(); ?></div>
+				<ul class="pulse-tags"></ul>
+				<ul class="pulse-co-authors"></ul>
+				<div class="pulse-footer"><div class="pulse-footer-action"><a href="">Expand</a> · <a href="">Reply</a> · </div><div class="pulse-comments-intro"><?php echo get_avatar($current_user->ID, '14'); ?> Tom is dicussing</div></div>
+			</div>
+			<?php
+  	}
+  	
+  	public static function the_pulse_json(){
+  		
+  		return json_encode( array(  
+  			"ID"	=> get_the_ID(),
+  			"date" 	=> Pulse_CPT::get_the_date(),
+  			"content" => get_the_content(),
+  			"author"  => array( 
+  				"ID" => get_the_author_meta('ID'),
+  				"avatar_30" => get_avatar( get_the_author_meta('ID') , '30'),
+  				"user_login"=> get_the_author_meta('user_login'),
+  				"display_name"=>get_the_author_meta('display_name')
+  				)
+  			) );
+  	}
+  	
+  	public static function get_the_date() {
+  		$date  = get_the_date('Ymd');
+  		
+  		if( $date = date('Ymd') ):
+  			return get_the_date('g:iA');
+  		else:
+  			return get_the_date('j M');
+  		endif;
+  		
+  	}
+  	public static function the_date() {
+  		echo Pulse_CPT::get_the_date();
+  		
   	}
   	
   	

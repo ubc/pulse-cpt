@@ -7,16 +7,12 @@ var Pulse_CPT_Form = {
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
 		
 		jQuery.each( Pulse_CPT_Form_local, function( i, v ) { Pulse_CPT_Form.init( i, v ) }); 
-		
-		
-		jQuery('.pulse-shorten-url').click( function(){ Pulse_CPT_Form.focusInput( '.pulse-form-textarea' ); } );
 	
 	},
 	/**
-	 * takes the 
+	 * takes the rains and run with them
 	 */
 	init : function( index, meta ) {
-		
 		
 		var parent = jQuery( "#"+meta.id );
 		
@@ -37,22 +33,27 @@ var Pulse_CPT_Form = {
 				Pulse_CPT_Form.tag_it( parent, 'author', Pulse_CPT_Form_global.authors );
 			}
 		}
-		
-		
 	},
 	
 	submitForm : function () {
 		
 		var form_data = jQuery(this).serialize();
 		
-		console.log(form_data, 'submit' );
+		console.log( jQuery(this), form_data  );
+		// todo: once the form is succesfuly submited clear the data entered from the form.
+		jQuery.post( Pulse_CPT_Form_global.ajaxUrl , form_data ,  function(response) {
+			
+			console.log( response );
+			
+			
+		}, "json" );
 		return false;
 	},
 	tag_it : function ( parent, el_class, source_autocomplete ) {
 	
 		var el = jQuery( parent ).find( ".pulse-textarea-"+el_class );
 		
-		el.tagbox();
+		el.tagbox({single_input:el_class});
 
 		var tags_input = el.parent().find('.input input');
 		

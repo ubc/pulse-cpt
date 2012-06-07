@@ -21,13 +21,14 @@ require_once( 'lib/class.pulse_cpt_form_widget.php' );
 
 add_action( 'init',        			array( 'Pulse_CPT', 'init' ) );
 add_action( 'widgets_init',        	array( 'Pulse_CPT', 'widgets_init' ) );
-add_action( 'wp_footer', 			array( 'Pulse_CPT', 'print_form_script' ) );
-add_action( 'template_redirect', 	array( 'Pulse_CPT', 'template_redirect' ) );
 
 add_action( 'wp_footer', 			array( 'Pulse_CPT', 'print_form_script' ) );
 add_action( 'template_redirect', 	array( 'Pulse_CPT', 'template_redirect' ) );
 
+add_action( 'wp_ajax_pulse_cpt_insert', 			array( 'Pulse_CPT_Form', 'insert' ) );
+add_action( 'template_redirect', 	array( 'Pulse_CPT', 'template_redirect' ) );
 
+add_action('wp_ajax_my_action', 'my_action_callback');
 // install and uninstall
 register_activation_hook( __FILE__, array( 'Pulse_CPT', 'install' ) );
 

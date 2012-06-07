@@ -1,0 +1,39 @@
+.pulse{
+	padding: 5px 0;
+	border-bottom: 1px solid #ECECEC;
+}
+.pulse .avatar{
+	float: left;
+	margin: 5px 5px 0 0;
+}
+.pulse-meta{
+	position: absolute;
+	top:5px;
+	right: 5px;
+	font-size: 11px;
+}
+.pulse-meta a{
+	
+}
+.pulse-author-meta{
+	filter: left;
+	margin:1px 5px;
+}
+.pulse-meta a,
+.pulse-author-meta a{
+	text-decoration: none;
+}
+.pulse-content{
+	margin-left:35px;
+}
+.pulse,
+.pulse-footer,
+.pulse-footer-action,
+.pulse-comments-intro{
+	position: relative;
+	overflow: hidden;
+}
+.pulse-footer-action,
+.pulse-comments-intro{
+	float: left;
+}

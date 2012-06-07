@@ -13,7 +13,7 @@
 
 (function($) {
     
-    function TagBox(input, options) {
+    function TagBox( input, options) {
 
         var self = this;
         
@@ -34,6 +34,8 @@
         self.input = input
         self.tagInput = $('<input>', {
             'type' : 'text',
+            'title' : 'separate '+options.single_input+' by comma',
+            'name': 'single_'+options.single_input,
             'keydown' : function(e) {
                 if(e.keyCode == self.delimit_key ) {
                     $(this).trigger("selectTag");
@@ -48,9 +50,6 @@
                 	
                 	e.preventDefault();
                 }
-            },
-            'blur' : function(e) {
-                $(this).val("");
             }
         });
         
@@ -122,7 +121,7 @@
             } else {
                 tags = this.tags.join(",");
             }
-            
+            console.log(this.input);
             this.input.text(tags);
         }
     }
