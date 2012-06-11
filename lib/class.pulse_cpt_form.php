@@ -45,8 +45,14 @@ class Pulse_CPT_Form {
 		$post_content	= $_POST['posttext'];
 		$tags			= trim( $_POST['tags'] );
 		$single_tags    = trim( $_POST['single_tags']);
+		
+		if( isset($_POST['location']) )
+			$location =  $_POST['location'];
+		else
+			$location = false;
 		if( !empty( $single_tags ) )
 			$tags .= ",".$single_tags;
+		
 		
 		$post_title = Pulse_CPT_Form::title_from_content( $post_content );
 		
@@ -60,6 +66,16 @@ class Pulse_CPT_Form {
 		  'post_type' => 'pulse-cpt', 
 		  'tags_input' => $tags
 		);  
+		
+		if( $location ):
+			if( $location['type'] == 'singular' )
+				$post['post_parent'] = $location['ID'];
+				
+			if($location['type'] == 'category')
+				$post['post_category'] = array( $location['ID']);
+		
+		endif;
+		
 		
 
 		$id = wp_insert_post( $post );

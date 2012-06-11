@@ -96,14 +96,30 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<input type="hidden" value="<?php echo $enable_location_sensitive; ?>" name="location_sensitive" />
 				<input type="hidden" value="<?php echo $enable_comments; ?>" name="enable_comments" />
 				<input type="hidden" value="pulse_cpt_insert" name="action" />
-				<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); ?> 
+				<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); 
+				
+				$location = Pulse_CPT_Form_Widget::get_location( $enable_location_sensitive );
+				if( $location ):
+				?> 
+				<input type="hidden" value="<?php echo $location['type']; ?>" name="location[type]" />
+				<input type="hidden" value="<?php echo $location['ID']; ?>" name="location[ID]" />
+				<?php 
+				endif; ?>
 			</form>
 			<div class="clear"></div>
 		</div>
 		<div class="pulse-list">
 		<?php 
+		$args = array( 'post_type' => 'pulse-cpt' );
+		if( $location ):
+			
+			if( $location['type'] == 'singular' )
+				$args['post_parent'] = $location['ID'];
+				
+			if($location['type'] == 'category')
+				$args['cat'] = $location['ID'];
+		endif;
 		
-		$args = array('post_type' => 'pulse-cpt');
 		// The Query
 		$the_query = new WP_Query( $args );
 		
@@ -209,5 +225,24 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		</p>
 		
 		<?php 
+	}
+	
+	
+	public static function get_location( $enable_location_sensitive ){
+		if( !$enable_location_sensitive )
+			return false;
+		
+		if( is_singular() ):
+			return array( 'type' => 'singular', 'ID' => get_the_ID() );
+			
+		endif;
+		if( is_category()):
+			$term = get_queried_object();
+			return array( 'type' => 'category', 'ID' => $term->term_id );
+		endif;
+		
+		return false;
+	
+		
 	}
 }
