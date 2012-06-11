@@ -31,10 +31,14 @@ class Pulse_CPT_Form {
 	public static function insert() {
 		
 		$user = wp_get_current_user();
-		if ( empty($_POST) || !wp_verify_nonce( $_POST['_wpnonce_pulse_form'], 'wpnonce_pulse_form' ) || empty($user) ) {
-  	 		print 'Sorry, your nonce did not verify.';
+		if( !isset( $user->ID ) ):
+			echo json_encode( array( 'error' => 'Your login has expired, please login again.' ) );
    			die();
-		}
+   		endif;
+		if ( empty($_POST) || !wp_verify_nonce( $_POST['_wpnonce_pulse_form'], 'wpnonce_pulse_form' ) || empty($user) ):
+  	 		echo json_encode( array( 'error' => 'Sorry, your nonce did not verify.' ) );
+   			die();
+		endif;
 		
 		
 		$user_id		= $user->ID;

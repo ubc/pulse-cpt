@@ -1,163 +1,319 @@
-.postbox{
+.postbox {
 	border:1px solid #CCC;
 }
-.postbox textarea{
+
+.postbox textarea {
 	border:none;
-	height: 25px;
+	height:25px;
 	resize:none;
 }
-.pulse-form-textarea{
+
+.pulse-form-textarea {
 	margin:0 0 5px;
 }
+
 .pulse-shorten-url {
-	text-align: right;
-	margin-right: 5px;
-}
-.pulse-shorten-url a,
-.pulse-shorten-url a:visited{
-	color: #AAA;
-	font-size: 11px;
-	text-decoration: none;
-}
-.pulse-shorten-url a:hover{
-	color:#666;
-}
-.pulse-form-progress{
-	float: left;
-	margin:3px 5px 0 0;
-}
-.pulse-form-progress.hide{
-	display: none;
+	text-align:right;
+	margin-right:5px;
 }
 
-.pulse-form-counter{
+.pulse-shorten-url a,
+.pulse-shorten-url a:visited {
+	color:#AAA;
+	font-size:11px;
+	text-decoration:none;
+}
+
+.pulse-shorten-url a:hover {
+	color:#666;
+}
+
+.pulse-form-progress {
+	float:left;
+	margin:3px 5px 0 0;
+}
+
+.pulse-form-progress.hide {
+	display:none;
+}
+
+.pulse-form-counter {
 	font:bold 16px sans-serif;
 	color:#AAA;
 }
-.pulse-form-counter.warning{
+
+.pulse-form-counter.warning {
 	color:#666;
 }
-.pulse-form-counter.exceeded{
+
+.pulse-form-counter.exceeded {
 	color:red;
 }
+
 .pulse-form-submit-wrap {
-	float: right;
-    margin-right: 5px;
-    margin-top: -25px;
-    position: relative;
-    z-index: 10;
+	float:right;
+	margin-right:5px;
+	margin-top:-25px;
+	position:relative;
+	z-index:10;
 }
+#submit-pulse.disabled{
+	color:#CCC;
+	cursor: not-allowed;
+}	
 .postbox ::-webkit-input-placeholder {
-   color: #AAA;
+	color:#AAA;
 }
+
 .postbox :-moz-placeholder {
-   color: #AAA;
-}
-.clear{
-	clear: both;
+	color:#AAA;
 }
 
+.clear {
+	clear:both;
+}
 
 
+	
+/* Sticky Notification */
+.sticky-queue {
+	position:fixed;
+	background:#333;
+	
+	box-shadow:0 0 5px #bbb;
+	-moz-box-shadow:0 0 5px #bbb;
+	-webkit-box-shadow:0 0 5px #bbb;
+	width:400px;
+}
 
+.sticky-note {
+	padding-right:20px;
+}
+
+.sticky {
+	font-size:12px;
+	color:#FFF;
+	display:none;
+	padding:10px;
+	position:relative;
+}
+
+.sticky-close {
+	position:absolute;
+	top:10px;
+	right:10px;
+	height:14px;
+	width:14px;
+	cursor:pointer;
+}
+
+.top-right
+	{ right:50%; margin-right: -200px; }
+.top-right, .top-left
+	{
+	top:50px;
+	border-radius:6px;
+	border-radius:6px;
+	-moz-border-radius:6px;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	-webkit-border-radius:6px;
+	}
+
+	
 /* Tag box */
 .tagbox {
-  background: #fff;
-  cursor: text;
-  overflow: hidden;
-  padding: 0 0 1px 3px;
-  min-height:28px;
-  margin: 0;
-  padding:0 2px;
+	background:#fff;
+	cursor:text;
+	overflow:hidden;
+	padding:0 0 1px 3px;
+	min-height:28px;
+	margin:0;
+	padding:0 2px;
 }
+
 .tagbox li {
-    margin:0;
-    padding:0;
+	margin:0;
+	padding:0;
 }
+
 .tagbox li.tag {
-  float: left;
-  line-height: 1;
-  padding: 3px 6px;
-  list-style-type: none;
-  margin-top: 3px;
-  margin-right: 3px;
+	float:left;
+	line-height:1;
+	padding:3px 6px;
+	list-style-type:none;
+	margin-top:3px;
+	margin-right:3px;
 }
+
 .tagbox li.tag {
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  display:block;
-  border: 1px solid #cad8f3;
-  background: #dee7f8;
-  padding: 2px;
-  margin-bottom: 1px;
-  padding-right: 15px;
-  position: relative;
+	-moz-border-radius:2px;
+	-webkit-border-radius:2px;
+	border-radius:2px;
+	display:block;
+	border:1px solid #cad8f3;
+	background:#dee7f8;
+	padding:2px;
+	margin-bottom:1px;
+	padding-right:15px;
+	position:relative;
 }
-.tagbox li.input {display:block; float:left;}
+
+.tagbox li.input {
+	display:block;
+	float:left;
+}
+
 .tagbox input:focus {
-    border-color: #fff;
+	border-color:#fff;
 }
+
 .tagbox .input input {
-  width: 50px;
-  margin: 2px 0;
-  border: 0;
-  outline: 0;
-  line-height:1.2;
-  padding: 3px 0;
-  font-size:12px;
-} 
+	width:50px;
+	margin:2px 0;
+	border:0;
+	outline:0;
+	line-height:1.2;
+	padding:3px 0;
+	font-size:12px;
+}
+
 .tagbox a.close {
-  position: absolute;
-  right: 4px; top: 5px;
-  display: block;
-  text-indent:-9999px;
-  cursor:pointer;
-  width: 7px; height: 7px;
-  font-size: 1px;
-  background: url('../img/sprite.gif'); }
-  
+	position:absolute;
+	right:4px;
+	top:5px;
+	display:block;
+	text-indent:-9999px;
+	cursor:pointer;
+	width:7px;
+	height:7px;
+	font-size:1px;
+	background:url(../img/sprite.gif);
+}
+
 .tagbox a.close:hover {
-  background-position: 0 -7px;
+	background-position:0 -7px;
 }
 
-.ui-autocomplete {border:1px solid #ddd; 
-    background:#fff; list-style:none; position: absolute; cursor: default;
-    padding:0;
+/* Auttocomplete */
+.ui-autocomplete {
+	border:1px solid #ddd;
+	background:#fff;
+	list-style:none;
+	position:absolute;
+	cursor:default;
+	padding:0;
 }
-.ui-autocomplete li {margin:0; list-style:none; padding:0}
-.ui-autocomplete li a {display:block; padding:4px;}
+
+.ui-autocomplete li {
+	margin:0;
+	list-style:none;
+	padding:0;
+}
+
+.ui-autocomplete li a {
+	display:block;
+	padding:4px;
+}
+
 .ui-autocomplete li a.ui-state-hover,
-.ui-autocomplete li a:hover {background:#eee;}
-* html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
+.ui-autocomplete li a:hover {
+	background:#eee;
+}
 
+* html .ui-autocomplete {
+	width:1px;
+}
+
+
+	
+/* without this, the menu expands to 100% in IE6 */
+
+
+/* Tabs */
 /* from jquery ui tabs */
-.pulse-tabs{
+.pulse-tabs {
 	border-top:1px dotted #CCC;
 }
-.ui-tabs { position: relative; padding:0; zoom: 1; } /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
-.ui-tabs .ui-tabs-nav { margin: 0; padding:0; background: #DDD; height: 27px; }
-.ui-tabs .ui-tabs-nav li { list-style: none; float: left; position: relative; top: 0px; margin: 0 .2em 1px 0; border-bottom: 0 !important; padding: 0; white-space: nowrap; }
-.ui-tabs .ui-tabs-nav li a { float: left; padding: 3px 10px; text-decoration: none; color:#999; background:#DDD url('../img/sprite.gif') no-repeat; }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li a:hover{ color:#333; }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected { margin-bottom: 0; padding-bottom: 1px; }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-disabled a, .ui-tabs .ui-tabs-nav li.ui-state-processing a { cursor: text; }
-.ui-tabs .ui-tabs-nav li a, .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a { cursor: pointer; } /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
-.ui-tabs .ui-tabs-panel { display: block; border-width: 0; padding:0; background: none; }
-.ui-tabs .ui-tabs-hide { display: none !important; }
-.ui-tabs .ui-tabs-nav .pulse-tabs-tags{
-	background-position: 2px -62px;
-	padding-left: 20px;
+
+.ui-tabs {
+	position:relative;
+	padding:0;
+	zoom:1;
 }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-tags,
-.ui-tabs .ui-tabs-nav .pulse-tabs-tags:hover{
-	background-position: 2px -26px;
+
+
+/* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
+.ui-tabs .ui-tabs-nav {
+	margin:0;
+	padding:0;
+	background:#DDD;
+	height:27px;
 }
-.ui-tabs .ui-tabs-nav .pulse-tabs-author{
-	background-position: -1px -137px;
-	padding-left: 20px;
+
+.ui-tabs .ui-tabs-nav li {
+	list-style:none;
+	float:left;
+	position:relative;
+	top:0;
+	margin:0 .2em 1px 0;
+	border-bottom:0!important;
+	padding:0;
+	white-space:nowrap;
 }
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-author,
-.ui-tabs .ui-tabs-nav .pulse-tabs-author:hover{
-	background-position: -1px -99px;
+
+.ui-tabs .ui-tabs-nav li a {
+	float:left;
+	padding:3px 10px;
+	text-decoration:none;
+	color:#999;
+	background:#DDD url(../img/sprite.gif) no-repeat;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a,.ui-tabs .ui-tabs-nav li a:hover {
+	color:#333;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+	margin-bottom:0;
+	padding-bottom:1px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a,.ui-tabs .ui-tabs-nav li.ui-state-disabled a,.ui-tabs .ui-tabs-nav li.ui-state-processing a {
+	cursor:text;
+}
+
+.ui-tabs .ui-tabs-nav li a,.ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a {
+	cursor:pointer;
+}
+
+
+	
+/* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
+.ui-tabs .ui-tabs-panel {
+	display:block;
+	border-width:0;
+	padding:0;
+	background:none;
+}
+.ui-tabs .ui-tabs-hide {
+	display:none!important;
+}
+
+.ui-tabs .ui-tabs-nav .pulse-tabs-tags {
+	background-position:2px -62px;
+	padding-left:20px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-tags,.ui-tabs .ui-tabs-nav .pulse-tabs-tags:hover {
+	background-position:2px -26px;
+}
+
+.ui-tabs .ui-tabs-nav .pulse-tabs-author {
+	background-position:-1px -137px;
+	padding-left:20px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-author,.ui-tabs .ui-tabs-nav .pulse-tabs-author:hover {
+	background-position:-1px -99px;
 }

@@ -27,8 +27,8 @@ add_action( 'template_redirect', 	array( 'Pulse_CPT', 'template_redirect' ) );
 
 add_action( 'wp_ajax_pulse_cpt_insert', 			array( 'Pulse_CPT_Form', 'insert' ) );
 add_action( 'template_redirect', 	array( 'Pulse_CPT', 'template_redirect' ) );
+add_action( 'wp_footer',			array( 'Pulse_CPT', 'footer'), 1 ); // templates should be generated before calling the js
 
-add_action('wp_ajax_my_action', 'my_action_callback');
 // install and uninstall
 register_activation_hook( __FILE__, array( 'Pulse_CPT', 'install' ) );
 

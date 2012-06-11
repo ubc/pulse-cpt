@@ -32,7 +32,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			'enable_tagging' 		=> $enable_tagging,
 			'enable_co_authoring' 	=> $enable_co_authoring,
 			'enable_file_uploads' 	=> $enable_file_uploads,
-			'enable_subscribers'	=> $enable_subscribers,
 			'enable_tabs'			=> (bool)($enable_tagging || $enable_co_authoring || $enable_file_uploads)
 		);
 		
@@ -92,10 +91,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<span class="pulse-form-progress">
 						<img title="Loading..." alt="Loading..." src="<?php echo  PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
 					</span>					
-					<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" id="submit">
+					<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" id="submit-pulse">
 				</div>
-				
-				<input type="hidden" value="pulse_cpt_insert" name="action">
+				<input type="hidden" value="<?php echo $enable_location_sensitive; ?>" name="location_sensitive" />
+				<input type="hidden" value="<?php echo $enable_comments; ?>" name="enable_comments" />
+				<input type="hidden" value="pulse_cpt_insert" name="action" />
 				<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); ?> 
 			</form>
 			<div class="clear"></div>
@@ -134,7 +134,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$instance['enable_tagging'] 		= (bool) $new_instance['enable_tagging'];
 		$instance['enable_co_authoring'] 	= (bool) $new_instance['enable_co_authoring'];
 		$instance['enable_file_uploads'] 	= (bool) $new_instance['enable_file_uploads'];
-		$instance['enable_subscribers']		= (bool) $new_instance['enable_subscribers'];
+		$instance['enable_location_sensitive'] 	= (bool) $new_instance['enable_location_sensitive'];
+		$instance['enable_comments'] 	= (bool) $new_instance['enable_comments'];
 		
 		return $instance;
 	}
@@ -152,7 +153,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			'enable_tagging' 	=> false,
 			'enable_co_authoring' => false,
 			'enable_file_uploads' => false,
-			'enable_subscribers'=> false
+			'enable_location_sensitive'=> false,
+			'enable_comments'	=> false
+			
 		 ) );
 		extract( $instance );
 		
@@ -177,6 +180,10 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		
 		<small class="clear">To get your <a href="http://bit.ly" target="_blank">bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API KEY</a></small>
 		</p>
+		<!-- Enable Subscribers -->
+		<p><label for="<?php echo $this->get_field_id( 'enable_comments' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_comments' ); ?>" name="<?php echo $this->get_field_name( 'enable_comments' ); ?>" type="checkbox"<?php echo checked( $enable_comments ); ?> />Enable Comments</label><br />
+		<small>Enable comments by default</small>
+		</p>
 		
 		<!-- Enable Tagging -->
 		<p><label for="<?php echo $this->get_field_id( 'enable_tagging' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_tagging' ); ?>" name="<?php echo $this->get_field_name( 'enable_tagging' ); ?>" type="checkbox"<?php echo checked( $enable_tagging ); ?> />Enable Tagging</label><br />
@@ -197,8 +204,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		</p>
 		
 		<!-- Enable Subscribers -->
-		<p><label for="<?php echo $this->get_field_id( 'enable_subscribers' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_subscribers' ); ?>" name="<?php echo $this->get_field_name( 'enable_subscribers' ); ?>" type="checkbox"<?php echo checked( $enable_subscribers ); ?> />Enable Subscribers to post</label><br />
-		<small>Allow any registered member to post</small>
+		<p><label for="<?php echo $this->get_field_id( 'enable_location_sensitive' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_location_sensitive' ); ?>" name="<?php echo $this->get_field_name( 'enable_location_sensitive' ); ?>" type="checkbox"<?php echo checked( $enable_location_sensitive ); ?> />Location Aware</label><br />
+		<small>If enabled you will be able to create pulses that only show up on a particular page, post or category archive</small>
 		</p>
 		
 		<?php 

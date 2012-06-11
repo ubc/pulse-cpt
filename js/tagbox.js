@@ -121,7 +121,7 @@
             } else {
                 tags = this.tags.join(",");
             }
-            console.log(this.input);
+            
             this.input.text(tags);
         }
     }

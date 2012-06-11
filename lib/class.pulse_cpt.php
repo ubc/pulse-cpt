@@ -3,6 +3,7 @@
 
 class Pulse_CPT {
   static $add_form_script;
+  
   public static function init() {
   
 	  Pulse_CPT::register_pulse();
@@ -68,13 +69,17 @@ class Pulse_CPT {
     	wp_register_script( 'autoGrowInput', PULSE_CPT_DIR_URL.'/js/jquery.autoGrowInput.js' , array('jquery'), '1.0', true );
     	wp_register_script( 'autogrow', PULSE_CPT_DIR_URL.'/js/autogrow.js' , array('jquery'), '1.0', true );
     	
+    	wp_register_script( 'doT', PULSE_CPT_DIR_URL.'/js/doT.js' , array('jquery'), '1.0', true );
+    	wp_register_script( 'sticky', PULSE_CPT_DIR_URL.'/js/sticky.js', array('jquery'), '1.0', true );
+    	
     	wp_register_script( 'charCount', PULSE_CPT_DIR_URL.'/js/charCount.js' , array('jquery'), '1.0', true );
     	
     	wp_register_script( 'jquery-ui-position', PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js' , array('jquery'), '1.0', true );
     	wp_register_script( 'jquery-ui-autocomplete', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js' , 
     	array( 'jquery','jquery-ui-position','jquery-ui-widget','jquery-ui-core'), '1.0', true );
     	
-    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'jquery-ui-tabs', 'charCount' ), '1.0', true );
+    	
+    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT', 'sticky', 'jquery-ui-tabs', 'charCount' ), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
@@ -103,9 +108,7 @@ class Pulse_CPT {
 		  		'authors' => Pulse_CPT_Form::get_authors()
 			)
 		);
-		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', 
-	    	$pulse_cpt_widget_ids
-		);
+		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
 		
 		
 		wp_print_scripts( 'pulse-cpt-form' );
@@ -117,48 +120,106 @@ class Pulse_CPT {
   
   	}
   	
-  	public static function the_pulse(){
-  		global $post;
-  		
-  		$author = get_the_author();
-			?>
-			<div class="pulse">
-				<?php echo get_avatar( get_the_author_meta('ID') , '30'); ?>
-				<div class="pulse-author-meta"><a href="<?php echo get_author_posts_url( get_the_author_meta('ID') ); ?>"><?php echo get_the_author_meta('display_name'); ?> <small>@<?php echo get_the_author_meta('user_login'); ?></small></a></div>
-				<div class="pulse-meta"><a href="<?php the_permalink(); ?>"><?php Pulse_CPT::the_date(); ?></a></div>
-				<div class="pulse-content"><?php the_content(); ?></div>
-				<ul class="pulse-tags"></ul>
-				<ul class="pulse-co-authors"></ul>
-				<div class="pulse-footer"><div class="pulse-footer-action"><a href="">Expand</a> · <a href="">Reply</a> · </div><div class="pulse-comments-intro"><?php echo get_avatar($current_user->ID, '14'); ?> Tom is dicussing</div></div>
-			</div>
-			<?php
+  	public static function footer(){
+  		$it = Pulse_CPT::the_pulse_array_js();
+  		?>
+  		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it ); ?></script>
+  		<?php 
+  	}
+  	
+  	public static function the_pulse( $it = null) {
+  		 
+  		if( $it == null )
+  			$it = Pulse_CPT::the_pulse_array();
+  			
+		?>
+		<div class="pulse">
+			<?php echo $it['author']['avatar_30']; ?>
+			<div class="pulse-author-meta"><a href="<?php echo $it['author']['post_url']; ?>"><?php echo $it['author']['display_name']; ?> <small>@<?php echo $it['author']['user_login']; ?></small></a></div>
+			<div class="pulse-meta"><a href="<?php echo $it['permalink']; ?>"><?php echo $it['date']; ?></a></div>
+			<div class="pulse-content"><?php echo $it['content']; ?></div>
+			<?php 
+			if( isset( $it['tags'])  && is_array( $it['tags'] ) ) : ?>
+			<ul class="pulse-tags">
+			<?php foreach( $it['tags'] as $tag ): ?>
+				<li><a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a></li>
+			<?php endforeach; ?>
+			</ul>
+			<?php elseif( isset( $it['tags'] ) && is_string( $it['tags'] )): 
+				echo $it['tags'];
+			endif; ?>
+			<ul class="pulse-co-authors"></ul>
+			<?php /*<div class="pulse-footer"><div class="pulse-footer-action"><a href="">Expand</a> · <a href="">Reply</a> · </div><div class="pulse-comments-intro"><?php echo get_avatar($current_user->ID, '14'); ?> Tom is dicussing</div></div>
+			*/ ?>
+		</div>
+		<?php
   	}
   	
   	public static function the_pulse_json(){
+  		$it = Pulse_CPT::the_pulse_array();
+  		return json_encode( $it );
+  	}
+  	
+  	public static function the_pulse_array() {
+  	
+  		$posttags = get_the_tags();
   		
-  		return json_encode( array(  
+  		if( $posttags ):
+  		
+	  		foreach( $posttags as $tag ):
+	  			$tags[] = array(
+	  				'name' => $tag->name,
+	  				'url'  => get_tag_link($tag->term_id)
+	  			);
+	  		endforeach;
+  		else:
+  			$tags = false;
+  		endif;
+  		
+  		return array(  
   			"ID"	=> get_the_ID(),
   			"date" 	=> Pulse_CPT::get_the_date(),
   			"content" => get_the_content(),
+  			"permalink" => get_permalink(),
   			"author"  => array( 
-  				"ID" => get_the_author_meta('ID'),
-  				"avatar_30" => get_avatar( get_the_author_meta('ID') , '30'),
-  				"user_login"=> get_the_author_meta('user_login'),
-  				"display_name"=>get_the_author_meta('display_name')
-  				)
-  			) );
+  				"ID" 			=> get_the_author_meta( 'ID' ),
+  				"avatar_30" 	=> get_avatar( get_the_author_meta( 'ID' ) , '30'),
+  				"user_login"	=> get_the_author_meta( 'user_login' ),
+  				"display_name"	=> get_the_author_meta( 'display_name' ),
+  				"post_url"		=> get_author_posts_url( get_the_author_meta('ID') )
+  				),
+  			"tags"	=> $tags
+  			);
   	}
   	
+  	public static function the_pulse_array_js() {
+  		return array(  
+  			"ID"		=> '{{=it.ID}}',
+  			"date" 		=> '{{=it.date}}',
+  			"content" 	=> '{{=it.content}}',
+  			"permalink" => '{{=it.permalink}}',
+  			"author"  	=> array( 
+  				"ID" 			=> '{{it.author.ID}}',
+  				"avatar_30" 	=> '{{=it.author.avatar_30}}',
+  				"user_login"	=> '{{=it.author.user_login}}',
+  				"display_name"	=> '{{=it.author.display_name}}',
+  				"post_url"		=> '{{=it.author.post_url}}'
+  				),
+  			"tags"  	=> '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}!</a></li> {{~}} </ul> {{ } }}'
+  			);
+  	}
+
   	public static function get_the_date() {
   		$date  = get_the_date('Ymd');
   		
-  		if( $date = date('Ymd') ):
+  		if( $date == date('Ymd') ):
   			return get_the_date('g:iA');
   		else:
   			return get_the_date('j M');
   		endif;
   		
   	}
+  	
   	public static function the_date() {
   		echo Pulse_CPT::get_the_date();
   		
