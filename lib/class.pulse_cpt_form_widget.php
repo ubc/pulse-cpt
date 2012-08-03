@@ -46,7 +46,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<div class="pulse-shorten-url"><a href="#">shorten url</a></div>
 				<?php } ?>
 				
-				<?php if($enable_tagging || $enable_co_authoring || $enable_file_uploads ): ?>
+				<?php if($enable_tagging || ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ) || $enable_file_uploads ): ?>
 				
 				<div class="pulse-tags-shell"></div>
 				<div class="pulse-author-shell"></div>
@@ -58,7 +58,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<textarea placeholder="Seperate tags by commas" class="pulse-textarea-tags" name="tags"></textarea>
 					</div>
 					<?php } ?>
-					<?php if( $enable_co_authoring ){?>
+					<?php if( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ){?>
 					<div id="tabs-2">
 						<textarea placeholder="People you are posting with" class="pulse-textarea-author" name="author"></textarea>
 					</div>
@@ -73,7 +73,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<?php if( $enable_tagging ){?>
 						<li><a href="#tabs-1" class="pulse-tabs-tags">tags</a></li>
 						<?php } ?>
-						<?php if( $enable_co_authoring ){?>
+						<?php if( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ){?>
 						<li><a href="#tabs-2" class="pulse-tabs-author">author</a></li>
 						<?php } ?>
 						<?php if( $enable_file_uploads ){?>
@@ -205,7 +205,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<p><label for="<?php echo $this->get_field_id( 'enable_tagging' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_tagging' ); ?>" name="<?php echo $this->get_field_name( 'enable_tagging' ); ?>" type="checkbox"<?php echo checked( $enable_tagging ); ?> />Enable Tagging</label><br />
 		<small>Pulse authors can add tags to the pulse</small>
 		</p>
-		<?php if( true ): // co authoring plugin is enabled ?>
+		<?php if( defined( 'COAUTHORS_PLUS_VERSION' ) ): // co authoring plugin is enabled ?>
 		<!-- Enable Co Authoring -->
 		<p><label for="<?php echo $this->get_field_id( 'enable_co_authoring' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_co_authoring' ); ?>" name="<?php echo $this->get_field_name( 'enable_co_authoring' ); ?>" type="checkbox"<?php echo checked( $enable_co_authoring ); ?> />Enable Co Authoring</label><br />
 		<small>Pulse authors can add other as contributing authors</small>

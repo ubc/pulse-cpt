@@ -43,18 +43,23 @@ class Pulse_CPT_Form {
 		
 		$user_id		= $user->ID;
 		$post_content	= $_POST['posttext'];
-		$tags			= trim( $_POST['tags'] );
-		$single_tags    = trim( $_POST['single_tags']);
 		
 		if( isset($_POST['location']) )
 			$location =  $_POST['location'];
 		else
 			$location = false;
+		
+		// tags
+		$tags			= trim( $_POST['tags'] );
+		$single_tags    = trim( $_POST['single_tags']);
 		if( !empty( $single_tags ) )
 			$tags .= ",".$single_tags;
 		
-		
-		$post_title = Pulse_CPT_Form::title_from_content( $post_content );
+		// authors
+		$authors 		= trim( $_POST['authors'] );
+		$single_author   = trim( $_POST['single_author'] );
+		if( !empty( $single_author ) )
+			$authors .= ",".$single_author;
 		
 		 // 'post_parent' => [ <post ID> ] //Sets the parent of the new post.
 		 
@@ -62,7 +67,6 @@ class Pulse_CPT_Form {
 		  'post_author' => $user_id,
 		  'post_content' => $post_content,
 		  'post_status' => 'publish',  //Set the status of the new post. 
-		  'post_title' => $post_title,
 		  'post_type' => 'pulse-cpt', 
 		  'tags_input' => $tags
 		);  
@@ -75,11 +79,13 @@ class Pulse_CPT_Form {
 				$post['post_category'] = array( $location['ID']);
 		
 		endif;
-		
-		
 
 		$id = wp_insert_post( $post );
 		$args = array('post_type' => 'pulse-cpt', 'p' => (int)$id );
+		
+		global $coauthors_plus;
+		$coauthors_plus->add_coauthors( $id, explode( ",", $authors ) );
+		
 		// The Query
 		$the_query = new WP_Query( $args );
 		
@@ -92,6 +98,16 @@ class Pulse_CPT_Form {
 		wp_reset_postdata();
 		die();
 	}
+	
+	public static function edit_post_data( $data, $postarr ) {
+		
+		// change the post title into something more meaning full 
+		if( $data['post_type'] == 'pulse-cpt' && $data['post_status'] != 'auto-draft' )
+			$data['post_title'] = Pulse_CPT_Form::title_from_content( $data['post_content'] );
+  		
+  		
+  		return $data;
+  	}
 	
 	public static function title_from_content( $content ){
 		static $strlen =  null;

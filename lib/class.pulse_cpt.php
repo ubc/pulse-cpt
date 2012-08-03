@@ -145,10 +145,13 @@ class Pulse_CPT {
 				<li><a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a></li>
 			<?php endforeach; ?>
 			</ul>
+			
 			<?php elseif( isset( $it['tags'] ) && is_string( $it['tags'] )): 
 				echo $it['tags'];
 			endif; ?>
-			<ul class="pulse-co-authors"></ul>
+			<ul class="pulse-co-authors">
+				<?php var_dump($authors); ?>
+			</ul>
 			<?php /*<div class="pulse-footer"><div class="pulse-footer-action"><a href="">Expand</a> · <a href="">Reply</a> · </div><div class="pulse-comments-intro"><?php echo get_avatar($current_user->ID, '14'); ?> Tom is dicussing</div></div>
 			*/ ?>
 		</div>
@@ -161,7 +164,7 @@ class Pulse_CPT {
   	}
   	
   	public static function the_pulse_array() {
-  	
+  		global $post;
   		$posttags = get_the_tags();
   		
   		if( $posttags ):
@@ -176,6 +179,8 @@ class Pulse_CPT {
   			$tags = false;
   		endif;
   		
+  		$authors = get_coauthors($post->ID);
+  		
   		return array(  
   			"ID"	=> get_the_ID(),
   			"date" 	=> Pulse_CPT::get_the_date(),
@@ -188,7 +193,8 @@ class Pulse_CPT {
   				"display_name"	=> get_the_author_meta( 'display_name' ),
   				"post_url"		=> get_author_posts_url( get_the_author_meta('ID') )
   				),
-  			"tags"	=> $tags
+  			"tags"	=> $tags,
+  			"authors" => $authors
   			);
   	}
   	
@@ -224,7 +230,5 @@ class Pulse_CPT {
   		echo Pulse_CPT::get_the_date();
   		
   	}
-  	
-  	
-  	
+
 }
