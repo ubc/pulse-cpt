@@ -180,7 +180,15 @@ class Pulse_CPT {
   		endif;
   		
   		$authors = get_coauthors($post->ID);
-  		
+  		$coauthors = array();
+  		foreach($authors as $author):
+  			$coauthors[] = array(
+  				'name' => $author->user_nicename,
+  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
+  				'ID'   =>  $author->ID
+  			);
+  			
+  		endforeach;
   		return array(  
   			"ID"	=> get_the_ID(),
   			"date" 	=> Pulse_CPT::get_the_date(),
@@ -194,7 +202,7 @@ class Pulse_CPT {
   				"post_url"		=> get_author_posts_url( get_the_author_meta('ID') )
   				),
   			"tags"	=> $tags,
-  			"authors" => $authors
+  			"authors" =>$coauthors;
   			);
   	}
   	

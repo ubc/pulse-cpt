@@ -83,8 +83,15 @@ class Pulse_CPT_Form {
 		$id = wp_insert_post( $post );
 		$args = array('post_type' => 'pulse-cpt', 'p' => (int)$id );
 		
-		global $coauthors_plus;
-		$coauthors_plus->add_coauthors( $id, explode( ",", $authors ) );
+		global $coauthors_plus, $current_user;
+		
+		$current_user_user_login =  $current_user->user_login;
+		
+		$authors_array = explode( ',', $authors );
+		if( !in_array( $current_user_user_login, $authors_array ) )
+			$authors_array[] = $current_user_user_login;
+		
+		$coauthors_plus->add_coauthors( $id, $authors_array );
 		
 		// The Query
 		$the_query = new WP_Query( $args );
@@ -104,7 +111,6 @@ class Pulse_CPT_Form {
 		// change the post title into something more meaning full 
 		if( $data['post_type'] == 'pulse-cpt' && $data['post_status'] != 'auto-draft' )
 			$data['post_title'] = Pulse_CPT_Form::title_from_content( $data['post_content'] );
-  		
   		
   		return $data;
   	}
