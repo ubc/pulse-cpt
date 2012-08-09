@@ -13,12 +13,20 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	function widget( $args, $instance ) {
 		global $current_user; global $pulse_cpt_widget_ids;
-		Pulse_CPT::$add_form_script = true;
 		
 		
 		extract( $instance );
 		// wp_enqueue_script( 'pulse-form', '')
 		extract( $args, EXTR_SKIP);
+		
+		echo $before_widget; 
+		if ( ! empty( $title ) && $display_title )
+			echo $before_title . $title . $after_title;
+			
+		if( $current_user->ID > 0 ):
+		
+		Pulse_CPT::$add_form_script = true;
+
 		$id = substr( $widget_id, 10);
 		
 		$pulse_cpt_widget_ids[$id] = 
@@ -34,10 +42,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			'enable_file_uploads' 	=> $enable_file_uploads,
 			'enable_tabs'			=> (bool)($enable_tagging || $enable_co_authoring || $enable_file_uploads)
 		);
-		
-		echo $before_widget; 
-		if ( ! empty( $title ) && $display_title )
-			echo $before_title . $title . $after_title;
+	
 		?>
 		<div class="postbox">
 			<form action="" method="post" name="new-post" class="pulse-form">
@@ -48,19 +53,19 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				
 				<?php if($enable_tagging || ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ) || $enable_file_uploads ): ?>
 				
-				<div class="pulse-tags-shell"></div>
-				<div class="pulse-author-shell"></div>
-				<div class="pulse-file-shell"></div>
+				<div class="pulse-tags-shell pulse-display-shell"></div>
+				<div class="pulse-author-shell pulse-display-shell"></div>
+				<div class="pulse-file-shell pulse-display-shell"></div>
 				
 				<div class="pulse-tabs">
 					<?php if( $enable_tagging ){?>
 					<div id="tabs-1">
-						<textarea placeholder="Seperate tags by commas" class="pulse-textarea-tags" name="tags"></textarea>
+						<textarea placeholder="Seperate tags by commas" class="pulse-textarea-tags pulse-meta-textarea" name="tags"></textarea>
 					</div>
 					<?php } ?>
 					<?php if( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ){?>
 					<div id="tabs-2">
-						<textarea placeholder="People you are posting with" class="pulse-textarea-author" name="author"></textarea>
+						<textarea placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author"></textarea>
 					</div>
 					<?php } ?>
 					<?php if( $enable_file_uploads ){?>
@@ -108,6 +113,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			</form>
 			<div class="clear"></div>
 		</div>
+		<?php endif; // don't display the form for loged out users ?>
 		<div class="pulse-list">
 		<?php 
 		$args = array( 'post_type' => 'pulse-cpt' );

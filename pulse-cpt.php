@@ -14,6 +14,7 @@ if ( !defined('ABSPATH') )
 define( 'PULSE_CPT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PULSE_CPT_BASENAME', plugin_basename(__FILE__) );
 define( 'PULSE_CPT_DIR_URL',  plugins_url( ''  , PULSE_CPT_BASENAME ) );
+define( 'PULSE_CPT_VERSION',  0.5 );
 
 require_once( 'lib/class.pulse_cpt.php' );
 require_once( 'lib/class.pulse_cpt_form.php' );
@@ -35,6 +36,8 @@ add_action( 'admin_menu', array( 'Pulse_CPT_Settings', 'admin_menu' ) );
 
 // filters
 add_filter( 'wp_insert_post_data' , array( 'Pulse_CPT_Form', 'edit_post_data' ), 10, 2 );
+add_action( 'pre_get_posts', array( 'Pulse_CPT', 'include_pulse_cpt') );
+add_filter( 'carry_content_template', array( 'Pulse_CPT', 'load_pulse_template') );
 
 
 // install and uninstall

@@ -52,6 +52,9 @@
                 }
             }
         });
+        input.parents('form:first').bind("submit", function() { self.removeAllTags(); })
+        //console.log(  );
+
         
         self.tagInput.bind("selectTag", function() {
             if(!$(this).val()) {
@@ -70,10 +73,8 @@
 
         self.tags = []
         
-        
         input.after(self.tagbox).hide();
         
-
         self.inputHolder = $('<li class="input">');
         self.tagbox.append(self.inputHolder);
         self.inputHolder.append(self.tagInput);
@@ -123,15 +124,23 @@
             }
             
             this.input.text(tags);
+            this.options.update( tags );
+        },
+        removeAllTags: function () {
+        	var i = 0;
+        	this.tags = []; // empty array
+        	this.tagbox.find("li.tag").remove();
+        	this.updateInput();
         }
     }
     
     $.fn.tagbox = function(options) {
-
         var defaults = {
-            delimit_by_space : false 
+            delimit_by_space : false,
+            update : function() {},
+            single_input : ''
         }
-        var options = $.extend(defaults, options);
+        var options = $.extend(defaults, options );
         return this.each(function() {
             
             var input = $(this);

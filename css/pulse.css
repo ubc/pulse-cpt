@@ -38,11 +38,19 @@
 	float: left;
 }
 .pulse-tags{
- margin-left: 30px;
- padding-left: 20px;
- background: url(../img/sprite.gif) no-repeat 0 -65px;
+	margin-left: 30px;
+	padding-left: 20px;
+	background: url(../img/sprite.gif) no-repeat 0 -65px;
 }
+.pulse-co-authors,
+.pulse-co-authors li,
 .pulse-tags li{
- list-style: none;
- display: inline;
+	list-style: none;
+	display: inline;
+}
+.pulse-co-authors{ 
+	margin: 0;
+}
+.posted-with{
+	color: #999;
 }

@@ -70,7 +70,7 @@ class Pulse_CPT {
     	wp_register_script( 'autogrow', PULSE_CPT_DIR_URL.'/js/autogrow.js' , array('jquery'), '1.0', true );
     	
     	wp_register_script( 'doT', PULSE_CPT_DIR_URL.'/js/doT.js' , array('jquery'), '1.0', true );
-    	wp_register_script( 'sticky', PULSE_CPT_DIR_URL.'/js/sticky.js', array('jquery'), '1.0', true );
+    	
     	
     	wp_register_script( 'charCount', PULSE_CPT_DIR_URL.'/js/charCount.js' , array('jquery'), '1.0', true );
     	
@@ -79,7 +79,7 @@ class Pulse_CPT {
     	array( 'jquery','jquery-ui-position','jquery-ui-widget','jquery-ui-core'), '1.0', true );
     	
     	
-    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT', 'sticky', 'jquery-ui-tabs', 'charCount' ), '1.0', true );
+    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount'), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
@@ -122,6 +122,7 @@ class Pulse_CPT {
   	
   	public static function footer(){
   		$it = Pulse_CPT::the_pulse_array_js();
+  		
   		?>
   		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it ); ?></script>
   		<?php 
@@ -149,17 +150,26 @@ class Pulse_CPT {
 			<?php elseif( isset( $it['tags'] ) && is_string( $it['tags'] )): 
 				echo $it['tags'];
 			endif; ?>
-			<ul class="pulse-co-authors">
-				<?php var_dump($authors); ?>
-			</ul>
-			<?php /*<div class="pulse-footer"><div class="pulse-footer-action"><a href="">Expand</a> · <a href="">Reply</a> · </div><div class="pulse-comments-intro"><?php echo get_avatar($current_user->ID, '14'); ?> Tom is dicussing</div></div>
-			*/ ?>
+			<?php 
+			
+			if( isset( $it['authors'] ) && is_array( $it['authors'] ) ) : ?>
+				<span class="posted-with">posted with</span>
+				<ul class="pulse-co-authors">
+				<?php foreach( $it['authors'] as $author ): ?>
+					<li><a href="<?php echo $author['url']; ?>"><?php echo $author['name']; ?></a></li>
+				<?php endforeach; ?>
+				</ul>
+			<?php 
+			elseif( isset( $it['authors'] ) && is_string( $it['authors'] )): 
+				echo $it['authors'];
+			endif; ?>
 		</div>
 		<?php
   	}
   	
   	public static function the_pulse_json(){
   		$it = Pulse_CPT::the_pulse_array();
+  		
   		return json_encode( $it );
   	}
   	
@@ -180,15 +190,27 @@ class Pulse_CPT {
   		endif;
   		
   		$authors = get_coauthors($post->ID);
+  		
   		$coauthors = array();
   		foreach($authors as $author):
-  			$coauthors[] = array(
-  				'name' => $author->user_nicename,
-  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
-  				'ID'   =>  $author->ID
-  			);
   			
+  			if( $post->post_author != $author->ID && is_author( $post->post_author ) ):
+	  			$coauthors[] = array(
+	  				'name' => $author->user_nicename,
+	  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
+	  				'ID'   =>  $author->ID
+	  			);
+	  		elseif( is_author() && $author->ID != get_the_author_meta( "ID" ) ):
+	  			$coauthors[] = array(
+	  				'name' => $author->user_nicename,
+	  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
+	  				'ID'   =>  $author->ID
+	  			);
+  			endif;
   		endforeach;
+  		if( empty( $coauthors ) )
+  			$coauthors = false;
+  		
   		return array(  
   			"ID"	=> get_the_ID(),
   			"date" 	=> Pulse_CPT::get_the_date(),
@@ -202,7 +224,7 @@ class Pulse_CPT {
   				"post_url"		=> get_author_posts_url( get_the_author_meta('ID') )
   				),
   			"tags"	=> $tags,
-  			"authors" =>$coauthors;
+  			"authors" =>$coauthors
   			);
   	}
   	
@@ -219,7 +241,8 @@ class Pulse_CPT {
   				"display_name"	=> '{{=it.author.display_name}}',
   				"post_url"		=> '{{=it.author.post_url}}'
   				),
-  			"tags"  	=> '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}!</a></li> {{~}} </ul> {{ } }}'
+  			"tags"  	=> '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
+  			'authors'   => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}'
   			);
   	}
 
@@ -238,5 +261,34 @@ class Pulse_CPT {
   		echo Pulse_CPT::get_the_date();
   		
   	}
+  	
+  	
+  	public static function include_pulse_cpt( $query ) {
+  		
+  		if ( ! is_admin() && $query->is_main_query() && !$query->is_singular() ):
+  		
+        
+         $query->set( 'post_type', array( 'post', 'pulse-cpt') );
+ 		 //return $query;
+  
+        endif;
+        //return $query;
+       
+  	
+  	}
+  	
+  	public static function load_pulse_template( $template ) {
+  		global $post;
+  		
+  		if( $post->post_type == 'pulse-cpt')
+  			return 'pulse';
+  		return $template;
+  	}
+  	
+  	
 
+}
+
+function the_pulse() {
+	Pulse_CPT::the_pulse();
 }

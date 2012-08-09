@@ -21,7 +21,8 @@ class Pulse_CPT_Form {
 		$args = array();
 		$users =  get_users( $args );
 		foreach( $users as $user):
-			$simple_user[] = $user->display_name;
+			$avatar = get_avatar($user->user_email, 20);
+			$simple_user[] = array( 'value' => $user->display_name, 'label'=> $avatar.' '.$user->display_name );
 		endforeach;
 			
 		return $simple_user;
@@ -56,7 +57,7 @@ class Pulse_CPT_Form {
 			$tags .= ",".$single_tags;
 		
 		// authors
-		$authors 		= trim( $_POST['authors'] );
+		$authors 		= trim( $_POST['author'] );
 		$single_author   = trim( $_POST['single_author'] );
 		if( !empty( $single_author ) )
 			$authors .= ",".$single_author;
