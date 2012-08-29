@@ -92,7 +92,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<?php if( $enable_character_count ) { ?>
 					<span class="pulse-form-counter"><?php echo $num_char; ?></span>
 					<?php } ?>
-					
 					<span class="pulse-form-progress">
 						<img title="Loading..." alt="Loading..." src="<?php echo  PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
 					</span>					
@@ -103,7 +102,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<input type="hidden" value="pulse_cpt_insert" name="action" />
 				<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); 
 				
-				$location = Pulse_CPT_Form_Widget::get_location( $enable_location_sensitive );
+				$location = Pulse_CPT_Form_Widget::get_location();
 				if( $location ):
 				?> 
 				<input type="hidden" value="<?php echo $location['type']; ?>" name="location[type]" />
@@ -113,21 +112,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			</form>
 			<div class="clear"></div>
 		</div>
-		<?php endif; // don't display the form for loged out users ?>
+		<?php endif; // don't display the form for loged out users 
+		 
+		?>
 		<div class="pulse-list">
 		<?php 
-		$args = array( 'post_type' => 'pulse-cpt' );
-		if( $location ):
-			
-			if( $location['type'] == 'singular' )
-				$args['post_parent'] = $location['ID'];
-				
-			if($location['type'] == 'category')
-				$args['cat'] = $location['ID'];
-		endif;
-		
+		global $wp_query;
 		// The Query
-		$the_query = new WP_Query( $args );
+		$the_query = new WP_Query( Pulse_CPT::query_arguments() );
 		
 		// The Loop
 		while ( $the_query->have_posts() ) : $the_query->the_post();
@@ -138,7 +130,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		wp_reset_postdata(); ?>
 		</div>
 		
-		<?php	
+		<?php
 		echo $after_widget;
 	}
 	
@@ -155,7 +147,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$instance['bitly_api_key'] 			= strip_tags( $new_instance['bitly_api_key'] );
 		$instance['enable_tagging'] 		= (bool) $new_instance['enable_tagging'];
 		$instance['enable_co_authoring'] 	= (bool) $new_instance['enable_co_authoring'];
-		$instance['enable_file_uploads'] 	= (bool) $new_instance['enable_file_uploads'];
+		$instance['enable_file_uploads'] 	= false; // todo: implement file uploading ui(bool) $new_instance['enable_file_uploads'];
 		$instance['enable_location_sensitive'] 	= (bool) $new_instance['enable_location_sensitive'];
 		$instance['enable_comments'] 	= (bool) $new_instance['enable_comments'];
 		
@@ -219,30 +211,27 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<?php else: // enable co-authoring plugin enable this functionality ?>
 		
 		<?php endif; ?>
-		
+		<?php /*
 		<!-- Enable File Uploads -->
 		<p><label for="<?php echo $this->get_field_id( 'enable_file_uploads' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_file_uploads' ); ?>" name="<?php echo $this->get_field_name( 'enable_file_uploads' ); ?>" type="checkbox"<?php echo checked( $enable_file_uploads ); ?> />Enable File Uploads</label><br />
 		<small>Pulse authors can upload a files</small>
 		</p>
-		
+		*/ ?>
 		<!-- Enable Subscribers -->
 		<p><label for="<?php echo $this->get_field_id( 'enable_location_sensitive' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_location_sensitive' ); ?>" name="<?php echo $this->get_field_name( 'enable_location_sensitive' ); ?>" type="checkbox"<?php echo checked( $enable_location_sensitive ); ?> />Location Aware</label><br />
-		<small>If enabled you will be able to create pulses that only show up on a particular page, post or category archive</small>
+		<small>If enabled you will be able to create pulses that only show up on a particular single post and pages.</small>
 		</p>
 		
 		<?php 
 	}
 	
 	
-	public static function get_location( $enable_location_sensitive ){
-		if( !$enable_location_sensitive )
-			return false;
+	public static function get_location(){
 		
-		if( is_singular() ):
+		if( is_singular() || is_page() ):
 			return array( 'type' => 'singular', 'ID' => get_the_ID() );
 			
-		endif;
-		if( is_category()):
+		elseif( is_category() ):
 			$term = get_queried_object();
 			return array( 'type' => 'category', 'ID' => $term->term_id );
 		endif;

@@ -22,6 +22,14 @@
 .pulse-meta a,
 .pulse-author-meta a{
 	text-decoration: none;
+	
+}
+.pulse-author-meta a small{
+	display: none;
+}
+.pulse-author-meta a:hover small{
+	display: inline;
+	font-weight: normal;
 }
 .pulse-content{
 	margin-left:35px;
@@ -38,9 +46,9 @@
 	float: left;
 }
 .pulse-tags{
-	margin-left: 30px;
-	padding-left: 20px;
 	background: url(../img/sprite.gif) no-repeat 0 -65px;
+	padding: 0 0 0 20px;
+	margin: 0 0 0 30px;
 }
 .pulse-co-authors,
 .pulse-co-authors li,

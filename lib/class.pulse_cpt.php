@@ -2,14 +2,15 @@
 
 
 class Pulse_CPT {
+
   static $add_form_script;
   
   public static function init() {
   
 	  Pulse_CPT::register_pulse();
+	  
 	  if( !is_admin() )
 	  	Pulse_CPT::register_script_and_style();
-	  
   }
   
   public static function template_redirect() {
@@ -20,9 +21,7 @@ class Pulse_CPT {
   public static function install() {
   
 	  Pulse_CPT::register_pulse();
-	  
 	  flush_rewrite_rules();
-	  
   }
   
   public static function register_pulse(){
@@ -57,7 +56,8 @@ class Pulse_CPT {
 			'menu_position' => null,
 			'taxonomies' => array('category', 'post_tag', 'mention'),
 			'supports' => array( 'editor', 'author' )
-		); 
+		);
+		
   		register_post_type( 'pulse-cpt', $args );
     }
     
@@ -71,20 +71,17 @@ class Pulse_CPT {
     	
     	wp_register_script( 'doT', PULSE_CPT_DIR_URL.'/js/doT.js' , array('jquery'), '1.0', true );
     	
-    	
     	wp_register_script( 'charCount', PULSE_CPT_DIR_URL.'/js/charCount.js' , array('jquery'), '1.0', true );
     	
     	wp_register_script( 'jquery-ui-position', PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js' , array('jquery'), '1.0', true );
-    	wp_register_script( 'jquery-ui-autocomplete', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js' , 
-    	array( 'jquery','jquery-ui-position','jquery-ui-widget','jquery-ui-core'), '1.0', true );
+    	wp_register_script( 'jquery-ui-autocomplete', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js' , array( 'jquery','jquery-ui-position','jquery-ui-widget','jquery-ui-core'), '1.0', true );
     	
+    	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js' , array( 'jquery-ui-autocomplete'), '1.0', true );
     	
-    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount'), '1.0', true );
+    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
-		
-    	
 		
     }
     
@@ -100,7 +97,6 @@ class Pulse_CPT {
 			return;
 		global $pulse_cpt_widget_ids;
  		
- 		
  		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', 
 	    	array(
 		  		'ajaxUrl' => admin_url( 'admin-ajax.php' ) ,
@@ -109,9 +105,8 @@ class Pulse_CPT {
 			)
 		);
 		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
-		
-		
 		wp_print_scripts( 'pulse-cpt-form' );
+		
     }
     
     public static function widgets_init() {
@@ -162,11 +157,28 @@ class Pulse_CPT {
 			<?php 
 			elseif( isset( $it['authors'] ) && is_string( $it['authors'] )): 
 				echo $it['authors'];
-			endif; ?>
+			endif; 
+			
+			if( isset($it['comments']) ):
+			?>
+			<ol class="pulse-commentslist">
+				<?php foreach($it['comments'] as $comment): ?>
+					<li class="comment">
+						<div class="comment-author vcard">
+							<?php echo $comment['comment_avatar']; ?>
+							<cite class="fn"><?php echo $comment['comment_author']; ?></cite>
+						</div>
+						<div class="comment-meta"><?php echo $comment['comment_date']; ?></div>
+						<div class="comment-content"><?php echo $comment['comment_content']; ?></div>
+					</li>
+				<?php endforeach; ?>
+			</ol>
+			<?php endif; ?>
 		</div>
 		<?php
   	}
   	
+  	  	
   	public static function the_pulse_json(){
   		$it = Pulse_CPT::the_pulse_array();
   		
@@ -175,6 +187,8 @@ class Pulse_CPT {
   	
   	public static function the_pulse_array() {
   		global $post;
+  		
+  		// tags
   		$posttags = get_the_tags();
   		
   		if( $posttags ):
@@ -189,27 +203,54 @@ class Pulse_CPT {
   			$tags = false;
   		endif;
   		
-  		$authors = get_coauthors($post->ID);
+  		//  coauthors 
+  	    if( defined( 'COAUTHORS_PLUS_VERSION' ) ):
+	  		$authors = get_coauthors($post->ID);
+	  		
+	  		$coauthors = array();
+	  		foreach($authors as $author):
+	  			
+	  			if( $post->post_author != $author->ID && is_author( $post->post_author ) ):
+		  			$coauthors[] = array(
+		  				'name' => $author->user_nicename,
+		  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
+		  				'ID'   =>  $author->ID
+		  			);
+		  		
+		  		elseif( is_author() && $author->ID != get_the_author_meta( "ID" ) ):
+		  			$coauthors[] = array(
+		  				'name' => $author->user_nicename,
+		  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
+		  				'ID'   =>  $author->ID
+		  			);
+	  			
+	  			elseif( $post->post_author != $author->ID && !is_author()):
+	  				$coauthors[] = array(
+		  				'name' => $author->user_nicename,
+		  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
+		  				'ID'   =>  $author->ID
+		  			);
+	  			endif;
+	  		endforeach;
+  		endif;
   		
-  		$coauthors = array();
-  		foreach($authors as $author):
-  			
-  			if( $post->post_author != $author->ID && is_author( $post->post_author ) ):
-	  			$coauthors[] = array(
-	  				'name' => $author->user_nicename,
-	  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
-	  				'ID'   =>  $author->ID
-	  			);
-	  		elseif( is_author() && $author->ID != get_the_author_meta( "ID" ) ):
-	  			$coauthors[] = array(
-	  				'name' => $author->user_nicename,
-	  				'url'  => get_author_posts_url($author->ID, $author->user_nicename),
-	  				'ID'   =>  $author->ID
-	  			);
-  			endif;
-  		endforeach;
   		if( empty( $coauthors ) )
   			$coauthors = false;
+  		
+  		// comments 
+  		$raw_comments =  get_comments('post_id='.$post->ID.'&order=ASC');
+  		
+  		foreach($raw_comments as $comment):
+  			$comments[] = array( 
+  				'ID' 				=> $comment->comment_ID,
+  				'comment_author' 	=> $comment->comment_author,
+  				'comment_content'	=> $comment->comment_content,
+  				'comment_date'		=> Pulse_CPT::get_the_date( $comment->comment_date_gmt ),
+  				'comment_avatar'    => get_avatar( $comment->comment_author_email ,'30' )
+  				);
+  		endforeach;
+  		
+  		
   		
   		return array(  
   			"ID"	=> get_the_ID(),
@@ -220,11 +261,12 @@ class Pulse_CPT {
   				"ID" 			=> get_the_author_meta( 'ID' ),
   				"avatar_30" 	=> get_avatar( get_the_author_meta( 'ID' ) , '30'),
   				"user_login"	=> get_the_author_meta( 'user_login' ),
-  				"display_name"	=> get_the_author_meta( 'display_name' ),
+  				"display_name"	=> get_the_author(),
   				"post_url"		=> get_author_posts_url( get_the_author_meta('ID') )
   				),
   			"tags"	=> $tags,
-  			"authors" =>$coauthors
+  			"authors" =>$coauthors,
+  			"comments" => $comments,
   			);
   	}
   	
@@ -246,13 +288,17 @@ class Pulse_CPT {
   			);
   	}
 
-  	public static function get_the_date() {
-  		$date  = get_the_date('Ymd');
+  	public static function get_the_date( $date_str = null ) {
+  		if( $date_str ):
+  			$date = date ( 'Ymd' , strtotime( $date_str ) );
+  		else:
+  			$date  = get_the_date('Ymd');
+  		endif;
   		
   		if( $date == date('Ymd') ):
-  			return get_the_date('g:iA');
+  			return ( $date_str ? date( 'g:iA' , strtotime( $date_str ) ) : get_the_date( 'g:iA' ) );
   		else:
-  			return get_the_date('j M');
+  			return ( $date_str ? date( 'j M' , strtotime( $date_str ) ) : get_the_date( 'j M' ) );
   		endif;
   		
   	}
@@ -260,6 +306,50 @@ class Pulse_CPT {
   	public static function the_date() {
   		echo Pulse_CPT::get_the_date();
   		
+  	}
+  	
+  	/* 
+  	 * this function prepares 
+  	 */
+  	public static function query_arguments() {
+  		global $wp_query;
+  	
+  		$arg = array( 'post_type' => 'pulse-cpt' );
+  		
+ 		if( is_date() ):
+ 			$arg['year'] = $wp_query->query_vars['year'];
+ 			
+ 			if( !empty( $wp_query->query_vars['monthnum'] ) ):
+ 				$arg['monthnum'] = $wp_query->query_vars['monthnum'];
+ 			endif;
+ 			
+ 			if( !empty( $wp_query->query_vars['day'] ) ):
+ 				$arg['day'] = $wp_query->query_vars['day'];
+ 			endif;
+ 			
+  		elseif( is_author() ):
+  			$arg['author_name'] = $wp_query->query_vars['author_name'];
+  		elseif( is_category() ):
+  			$arg['cat'] = $wp_query->query_vars['cat'];
+  			
+  		elseif( is_tag() ):
+  			$arg['tag_id'] = $wp_query->query_vars['tag_id'];
+  			
+  		elseif( is_single() || is_page() ):
+  			$arg['post_parent'] = get_the_ID(); 
+  		
+  		elseif( is_404() ):
+  			
+  			return false; // don't display anything
+  		
+  		endif;
+  		// what
+  		
+  		if( is_paged() ):
+  			$arg['paged'] = $wp_query->query_vars['paged'];
+  		endif;
+  		
+  		return $arg;
   	}
   	
   	

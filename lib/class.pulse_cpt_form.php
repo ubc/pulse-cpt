@@ -135,11 +135,5 @@ class Pulse_CPT_Form {
 		}
 		return $title;
 	}
-	
-	
-	
-
-
-
 }
 

@@ -6,6 +6,8 @@
 	border:none;
 	height:25px;
 	resize:none;
+	width: 98%;
+	background: #FFF;
 }
 
 .pulse-form-textarea {
@@ -61,24 +63,24 @@
 	color:#CCC;
 	cursor: not-allowed;
 }	
-.postbox ::-webkit-input-placeholder {
+.pulse-form .postbox ::-webkit-input-placeholder {
 	color:#AAA;
 }
 
-.postbox :-moz-placeholder {
+.pulse-form .postbox :-moz-placeholder {
 	color:#AAA;
 }
 .pulse-display-shell{
 	padding: 2px 5px;
 	color:#AAA;
 }
-.pulse-tags-shell{
+.pulse-form .pulse-tags-shell{
  margin-left: 2px;
  padding-left: 20px;
  background: url(../img/sprite.gif) no-repeat 0 -65px;
 }
 
-.clear {
+.pulse-form .clear {
 	clear:both;
 }
 
@@ -86,7 +88,7 @@
 	
 /* Sticky Notification */
 
-.pulse-alert{
+.pulse-form .pulse-alert{
 	background: rgba(0, 0, 0, 0.75);
 	color: #FFF;
 	font-size: 16px;
@@ -108,7 +110,7 @@
 
 
 /* Tag box */
-.tagbox {
+.pulse-form .tagbox {
 	background:#fff;
 	cursor:text;
 	overflow:hidden;
@@ -118,43 +120,37 @@
 	padding:0 2px;
 }
 
-.tagbox li {
+.pulse-form .tagbox li {
 	margin:0;
 	padding:0;
 }
-
-.tagbox li.tag {
+.pulse-form .tagbox li.tag {
 	float:left;
 	line-height:1;
-	padding:3px 6px;
+	padding:3px 16px 3px 3px;
+	margin:3px;
+	position:relative;
+	display:block;
 	list-style-type:none;
-	margin-top:3px;
-	margin-right:3px;
-}
-
-.tagbox li.tag {
+	
+	background:#EEE;
+	border:1px solid #D0D0D0;
 	-moz-border-radius:2px;
 	-webkit-border-radius:2px;
 	border-radius:2px;
-	display:block;
-	border:1px solid #cad8f3;
-	background:#dee7f8;
-	padding:2px;
-	margin-bottom:1px;
-	padding-right:15px;
-	position:relative;
+
 }
 
-.tagbox li.input {
+.pulse-form .tagbox li.input {
 	display:block;
 	float:left;
 }
 
-.tagbox input:focus {
+.pulse-form .tagbox input:focus {
 	border-color:#fff;
 }
 
-.tagbox .input input {
+.pulse-form .tagbox .input input {
 	width:50px;
 	margin:2px 0;
 	border:0;
@@ -164,7 +160,7 @@
 	font-size:12px;
 }
 
-.tagbox a.close {
+.pulse-form .tagbox a.close {
 	position:absolute;
 	right:4px;
 	top:5px;
@@ -177,7 +173,7 @@
 	background:url(../img/sprite.gif);
 }
 
-.tagbox a.close:hover {
+.pulse-form .tagbox a.close:hover {
 	background-position:0 -7px;
 }
 
@@ -222,7 +218,7 @@
 	border-top:1px dotted #CCC;
 }
 
-.ui-tabs {
+.pulse-form .ui-tabs {
 	position:relative;
 	padding:0;
 	zoom:1;
@@ -230,14 +226,14 @@
 
 
 /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
-.ui-tabs .ui-tabs-nav {
-	margin:0;
+.pulse-form .ui-tabs .ui-tabs-nav {
+	margin:0!important;
 	padding:0;
 	background:#DDD;
 	height:27px;
 }
 
-.ui-tabs .ui-tabs-nav li {
+.pulse-form .ui-tabs .ui-tabs-nav li {
 	list-style:none;
 	float:left;
 	position:relative;
@@ -248,7 +244,7 @@
 	white-space:nowrap;
 }
 
-.ui-tabs .ui-tabs-nav li a {
+.pulse-form .ui-tabs .ui-tabs-nav li a {
 	float:left;
 	padding:3px 10px;
 	text-decoration:none;
@@ -256,50 +252,55 @@
 	background:#DDD url(../img/sprite.gif) no-repeat;
 }
 
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a,.ui-tabs .ui-tabs-nav li a:hover {
+.pulse-form .ui-tabs .ui-tabs-nav li.ui-tabs-selected a,.ui-tabs .ui-tabs-nav li a:hover {
 	color:#333;
 }
 
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+.pulse-form .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
 	margin-bottom:0;
 	padding-bottom:1px;
 }
 
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected a,.ui-tabs .ui-tabs-nav li.ui-state-disabled a,.ui-tabs .ui-tabs-nav li.ui-state-processing a {
+.pulse-form .ui-tabs .ui-tabs-nav li.ui-tabs-selected a,.ui-tabs .ui-tabs-nav li.ui-state-disabled a,.ui-tabs .ui-tabs-nav li.ui-state-processing a {
 	cursor:text;
 }
 
-.ui-tabs .ui-tabs-nav li a,.ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a {
+.pulse-form .ui-tabs .ui-tabs-nav li a,.ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a {
 	cursor:pointer;
 }
 
 
 	
 /* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
-.ui-tabs .ui-tabs-panel {
+.pulse-form .ui-tabs .ui-tabs-panel {
 	display:block;
 	border-width:0;
 	padding:0;
 	background:none;
 }
-.ui-tabs .ui-tabs-hide {
+.pulse-form .ui-tabs .ui-tabs-hide {
 	display:none!important;
 }
 
-.ui-tabs .ui-tabs-nav .pulse-tabs-tags {
+.pulse-form .ui-tabs .ui-tabs-nav .pulse-tabs-tags {
 	background-position:2px -62px;
 	padding-left:20px;
 }
 
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-tags,.ui-tabs .ui-tabs-nav .pulse-tabs-tags:hover {
+.pulse-form .ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-tags,
+.pulse-form .ui-tabs .ui-tabs-nav .pulse-tabs-tags:hover {
 	background-position:2px -26px;
 }
 
-.ui-tabs .ui-tabs-nav .pulse-tabs-author {
+.pulse-form .ui-tabs .ui-tabs-nav .pulse-tabs-author {
 	background-position:-1px -137px;
 	padding-left:20px;
 }
 
-.ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-author,.ui-tabs .ui-tabs-nav .pulse-tabs-author:hover {
+.pulse-form .ui-tabs .ui-tabs-nav li.ui-tabs-selected .pulse-tabs-author,
+.pulse-form .ui-tabs .ui-tabs-nav .pulse-tabs-author:hover {
 	background-position:-1px -99px;
+}
+.pulse-form .ui-tabs .ui-tabs-nav .pulse-tabs-file{
+	background-position: 
 }
