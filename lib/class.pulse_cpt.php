@@ -79,6 +79,7 @@ class Pulse_CPT {
     	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js' , array( 'jquery-ui-autocomplete'), '1.0', true );
     	
     	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
+    	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js' , array( 'jquery'), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
@@ -106,15 +107,30 @@ class Pulse_CPT {
 		);
 		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
 		wp_print_scripts( 'pulse-cpt-form' );
+		wp_print_scripts( 'pulse-cpt' );
 		
     }
     
+    /**
+     * widgets_init function.
+     * 
+     * @access public
+     * @static
+     * @return void
+     */
     public static function widgets_init() {
   
   		register_widget( 'Pulse_CPT_Form_Widget' );
   
   	}
   	
+  	/**
+  	 * footer function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @return void
+  	 */
   	public static function footer(){
   		$it = Pulse_CPT::the_pulse_array_js();
   		
@@ -123,6 +139,14 @@ class Pulse_CPT {
   		<?php 
   	}
   	
+  	/**
+  	 * the_pulse function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @param mixed $it (default: null)
+  	 * @return void
+  	 */
   	public static function the_pulse( $it = null) {
   		 
   		if( $it == null )
@@ -135,6 +159,16 @@ class Pulse_CPT {
 			<div class="pulse-author-meta"><a href="<?php echo $it['author']['post_url']; ?>"><?php echo $it['author']['display_name']; ?> <small>@<?php echo $it['author']['user_login']; ?></small></a></div>
 			<div class="pulse-meta"><a href="<?php echo $it['permalink']; ?>"><?php echo $it['date']; ?></a></div>
 			<div class="pulse-content"><?php echo $it['content']; ?></div>
+			<div class="pulse-actions">
+				<ul>
+					<li><a href="#expand-url">Expand</a></li>
+					<li><a href="#reply-url">Reply</a></li>
+					<li><a href="#favorite">Favorite</a></li>
+					<li><span>5</span> Replies</li>
+				</ul>
+			</div>
+			<div class="pulse-expand-content">
+			
 			<?php 
 			if( isset( $it['tags'])  && is_array( $it['tags'] ) ) : ?>
 			<ul class="pulse-tags">
@@ -174,18 +208,32 @@ class Pulse_CPT {
 				<?php endforeach; ?>
 			</ol>
 			<?php endif; ?>
-			</div>
+			</div><!-- end of pulse-expand-content -->
+			</div> <!-- end of pulse wrap -->
 		</div>
 		<?php
   	}
   	
-  	  	
+  	/**
+  	 * the_pulse_json function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @return void
+  	 */
   	public static function the_pulse_json(){
   		$it = Pulse_CPT::the_pulse_array();
   		
   		return json_encode( $it );
   	}
   	
+  	/**
+  	 * the_pulse_array function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @return void
+  	 */
   	public static function the_pulse_array() {
   		global $post;
   		
@@ -240,7 +288,7 @@ class Pulse_CPT {
   		
   		// comments 
   		$raw_comments =  get_comments('post_id='.$post->ID.'&order=ASC');
-  		
+  		$comments = array();
   		foreach($raw_comments as $comment):
   			$comments[] = array( 
   				'ID' 				=> $comment->comment_ID,
@@ -271,6 +319,13 @@ class Pulse_CPT {
   			);
   	}
   	
+  	/**
+  	 * the_pulse_array_js function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @return void
+  	 */
   	public static function the_pulse_array_js() {
   		return array(  
   			"ID"		=> '{{=it.ID}}',
@@ -288,7 +343,15 @@ class Pulse_CPT {
   			'authors'   => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}'
   			);
   	}
-
+	
+  	/**
+  	 * get_the_date function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @param mixed $date_str (default: null)
+  	 * @return void
+  	 */
   	public static function get_the_date( $date_str = null ) {
   		if( $date_str ):
   			$date = date ( 'Ymd' , strtotime( $date_str ) );
@@ -304,6 +367,13 @@ class Pulse_CPT {
   		
   	}
   	
+  	/**
+  	 * the_date function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @return void
+  	 */
   	public static function the_date() {
   		echo Pulse_CPT::get_the_date();
   		
@@ -311,6 +381,14 @@ class Pulse_CPT {
   	
   	/* 
   	 * this function prepares 
+  	 */
+  	
+  	/**
+  	 * query_arguments function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @return void
   	 */
   	public static function query_arguments() {
   		global $wp_query;
@@ -354,6 +432,14 @@ class Pulse_CPT {
   	}
   	
   	
+  	/**
+  	 * include_pulse_cpt function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @param mixed $query
+  	 * @return void
+  	 */
   	public static function include_pulse_cpt( $query ) {
   		
   		if ( ! is_admin() && $query->is_main_query() && !$query->is_singular() ):
@@ -368,6 +454,14 @@ class Pulse_CPT {
   	
   	}
   	
+  	/**
+  	 * load_pulse_template function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @param mixed $template
+  	 * @return void
+  	 */
   	public static function load_pulse_template( $template ) {
   		global $post;
   		

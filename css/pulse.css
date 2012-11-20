@@ -1,10 +1,24 @@
 .pulse{
-	padding: 5px 0;
+	padding: 5px;
 	border-bottom: 1px solid #ECECEC;
+	margin: 0 5px;
+}
+.pulse:hover{
+	cursor: pointer;
+	background: #EEE;
+}
+.pulse.expand{
+	background: #FFF;
+	cursor: default;
+	border:1px solid #ECECEC;
+	margin: 10px 5px;
 	
 }
 .pulse-wrap{
 	margin-left:40px;
+}
+.widget_pulse_cpt .pulse-wrap ul{
+	margin: 0;
 }
 .pulse .avatar{
 	float: left;
@@ -33,8 +47,11 @@
 	display: inline;
 	font-weight: normal;
 }
-.pulse-content{
-	
+.expand .pulse-expand-content{
+	display: block;
+}
+.pulse-expand-content{
+	display: none;
 }
 .pulse,
 .pulse-footer,
@@ -50,19 +67,34 @@
 .pulse-tags{
 	background: url(../img/sprite.gif) no-repeat 0 -65px;
 	padding: 0 0 0 20px;
-	margin: 0 0 0 30px;
 }
 .pulse-co-authors,
 .pulse-co-authors li,
+.pulse-actions ul li,
 .pulse-tags li{
 	list-style: none;
 	display: inline;
+	font-size: 11px;
 }
+.pulse-tags,
+.pulse-actions ul,
 .pulse-co-authors{ 
 	margin: 0;
 }
 .posted-with{
 	color: #999;
+}
+/* Pulse Actions */
+.pulse-actions{
+	
+	display: none;
+}
+.expand .pulse-actions,
+.pulse:hover .pulse-actions{
+	display: block;
+}
+.pulse-actions ul li{
+
 }
 
 /* Pulse Comments */

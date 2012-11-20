@@ -191,6 +191,10 @@
 	margin:0;
 	list-style:none;
 	padding:0;
+	line-height: 20px;
+}
+.ui-autocomplete li img{
+	vertical-align: middle;
 }
 
 .ui-autocomplete li a {
