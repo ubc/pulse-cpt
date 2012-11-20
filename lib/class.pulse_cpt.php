@@ -1,29 +1,29 @@
-<?php 
-
+<?php
 
 class Pulse_CPT {
 
   static $add_form_script;
-  
+
   public static function init() {
-  
-	  Pulse_CPT::register_pulse();
-	  
-	  if( !is_admin() )
-	  	Pulse_CPT::register_script_and_style();
+
+    Pulse_CPT::register_pulse();
+
+    if (!is_admin())
+      Pulse_CPT::register_script_and_style();
   }
-  
+
   public static function template_redirect() {
-  		
-  		Pulse_CPT::print_form_style();
+
+    Pulse_CPT::print_form_style();
   }
-  
+
   public static function install() {
-  
-	  Pulse_CPT::register_pulse();
-	  flush_rewrite_rules();
+
+    Pulse_CPT::register_pulse();
+    flush_rewrite_rules();
   }
-  
+
+
   public static function register_pulse(){
   
 		$labels = array(
@@ -470,10 +470,9 @@ class Pulse_CPT {
   		return $template;
   	}
   	
-  	
 
 }
 
 function the_pulse() {
-	Pulse_CPT::the_pulse();
+  Pulse_CPT::the_pulse();
 }
