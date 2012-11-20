@@ -185,23 +185,23 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		extract( $instance );
 		
 		?><!-- Title -->
-		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>">Title: <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo attribute_escape( $title); ?>" /></label>
+		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>">Title: <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title); ?>" /></label>
 		<label for="<?php echo $this->get_field_id( 'display_title' ); ?>"> <input  id="<?php echo $this->get_field_id( 'display_title' ); ?>" name="<?php echo $this->get_field_name( 'display_title' ); ?>" type="checkbox"<?php echo checked( $display_title ); ?> /> Display Title</label>
 		</p>
 		<!-- Placeholder -->
-		<p><label for="<?php echo $this->get_field_id( 'placeholder' ); ?>">Placeholder: <input class="widefat" id="<?php echo $this->get_field_id( 'placeholder' ); ?>" name="<?php echo $this->get_field_name( 'placeholder' ); ?>" type="text" value="<?php echo attribute_escape( $placeholder); ?>" /></label></p>
+		<p><label for="<?php echo $this->get_field_id( 'placeholder' ); ?>">Placeholder: <input class="widefat" id="<?php echo $this->get_field_id( 'placeholder' ); ?>" name="<?php echo $this->get_field_name( 'placeholder' ); ?>" type="text" value="<?php echo esc_attr( $placeholder); ?>" /></label></p>
 		
 		<!-- Character Count -->
 		<p><label for="<?php echo $this->get_field_id( 'enable_character_count' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_character_count' ); ?>" name="<?php echo $this->get_field_name( 'enable_character_count' ); ?>" type="checkbox"<?php echo checked( $enable_character_count); ?> />Character Count</label><br />
-		<label for="<?php echo $this->get_field_id( 'num_char' ); ?>"> Number of Characters: <input  id="<?php echo $this->get_field_id( 'num_char' ); ?>" name="<?php echo $this->get_field_name( 'num_char' ); ?>" type="text" value="<?php echo attribute_escape( $num_char ); ?>" /></label>
+		<label for="<?php echo $this->get_field_id( 'num_char' ); ?>"> Number of Characters: <input  id="<?php echo $this->get_field_id( 'num_char' ); ?>" name="<?php echo $this->get_field_name( 'num_char' ); ?>" type="text" value="<?php echo esc_attr( $num_char ); ?>" /></label>
 		<br /><small class="clear">A counter restricting the number of characters a person can enter.</small>
 		
 		<br />
 		<p><label for="<?php echo $this->get_field_id( 'enable_url_shortener' ); ?>"> <input  id="<?php echo $this->get_field_id( 'enable_url_shortener' ); ?>" name="<?php echo $this->get_field_name( 'enable_url_shortener' ); ?>" type="checkbox"<?php echo checked( $enable_url_shortener ); ?> />Enable URL Shortening</label><br />
 		<!-- Enable Url Shortener -->
-		<label for="<?php echo $this->get_field_id( 'bitly_user' ); ?>"> Bitly Username: <input  id="<?php echo $this->get_field_id( 'bitly_user' ); ?>" name="<?php echo $this->get_field_name( 'bitly_user' ); ?>"  class="widefat" type="text" value="<?php echo attribute_escape( $bitly_user ); ?>" /></label>
+		<label for="<?php echo $this->get_field_id( 'bitly_user' ); ?>"> Bitly Username: <input  id="<?php echo $this->get_field_id( 'bitly_user' ); ?>" name="<?php echo $this->get_field_name( 'bitly_user' ); ?>"  class="widefat" type="text" value="<?php echo esc_attr( $bitly_user ); ?>" /></label>
 		<br />
-		<label for="<?php echo $this->get_field_id( 'bitly_api_key' ); ?>"> Bitly API Key: <input  id="<?php echo $this->get_field_id( 'bitly_api_key' ); ?>" name="<?php echo $this->get_field_name( 'bitly_api_key' ); ?>"  class="widefat" type="text" value="<?php echo attribute_escape( $bitly_api_key ); ?>" /></label>
+		<label for="<?php echo $this->get_field_id( 'bitly_api_key' ); ?>"> Bitly API Key: <input  id="<?php echo $this->get_field_id( 'bitly_api_key' ); ?>" name="<?php echo $this->get_field_name( 'bitly_api_key' ); ?>"  class="widefat" type="text" value="<?php echo esc_attr( $bitly_api_key ); ?>" /></label>
 		
 		<small class="clear">To get your <a href="http://bit.ly" target="_blank">bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API KEY</a></small>
 		</p>

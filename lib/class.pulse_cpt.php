@@ -240,6 +240,7 @@ class Pulse_CPT {
   		
   		// comments 
   		$raw_comments =  get_comments('post_id='.$post->ID.'&order=ASC');
+                $comments = array();
   		
   		foreach($raw_comments as $comment):
   			$comments[] = array( 

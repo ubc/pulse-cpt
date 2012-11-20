@@ -10,6 +10,7 @@ class Pulse_CPT_Form {
 	public static function get_tags(){
 	
 		$tags = get_terms( 'post_tag', 'hide_empty=0' );
+                $simple_tags = array();
 		foreach ($tags as $tag):
 			$simple_tags[] = $tag->name;
 		endforeach;
@@ -98,7 +99,7 @@ class Pulse_CPT_Form {
 			$authors_array[] = $current_user_user_login;
 		
 		if( is_object($coauthors_plus) ):
-			$coauthors_plus->add_coauthors( $id, $authors_array );
+			@$coauthors_plus->add_coauthors( $id, $authors_array ); //suppress warnings from Co-Authors plugin
 		endif;
 		// The Query
 		$the_query = new WP_Query( $args );
