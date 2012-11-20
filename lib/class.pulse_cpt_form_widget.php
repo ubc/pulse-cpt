@@ -11,9 +11,19 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		);
 	}
 	
+	/**
+	 * widget function.
+	 * 
+	 * @access public
+	 * @param mixed $args
+	 * @param mixed $instance
+	 * @return void
+	 */
 	function widget( $args, $instance ) {
 		global $current_user; global $pulse_cpt_widget_ids;
 		
+		if( is_singular( 'pulse-cpt' ) )
+			return true;
 		
 		extract( $instance );
 		// wp_enqueue_script( 'pulse-form', '')
@@ -155,6 +165,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	}
 	
 	function form( $instance ) {
+	
 		$instance = wp_parse_args( (array) $instance, array( 
 			'title' 			=> '', 
 			'display_title' 	=> false, 

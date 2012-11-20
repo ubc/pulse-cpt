@@ -43,7 +43,12 @@ class Pulse_CPT_Form {
 		
 		
 		$user_id		= $user->ID;
-		$post_content	= $_POST['posttext'];
+		$post_content	= wp_kses_post(trim($_POST['posttext']));
+		
+		if( empty( $post_content ) ):
+			echo json_encode( array( 'error' => 'Please write some content.' ) );
+   			die();
+		endif;
 		
 		if( isset($_POST['location']) )
 			$location =  $_POST['location'];
@@ -92,8 +97,9 @@ class Pulse_CPT_Form {
 		if( !in_array( $current_user_user_login, $authors_array ) )
 			$authors_array[] = $current_user_user_login;
 		
-		$coauthors_plus->add_coauthors( $id, $authors_array );
-		
+		if( is_object($coauthors_plus) ):
+			$coauthors_plus->add_coauthors( $id, $authors_array );
+		endif;
 		// The Query
 		$the_query = new WP_Query( $args );
 		

@@ -55,7 +55,7 @@ class Pulse_CPT {
 			'hierarchical' => false,
 			'menu_position' => null,
 			'taxonomies' => array('category', 'post_tag', 'mention'),
-			'supports' => array( 'editor', 'author' )
+			'supports' => array( 'editor', 'author', 'comments' )
 		);
 		
   		register_post_type( 'pulse-cpt', $args );
@@ -130,6 +130,7 @@ class Pulse_CPT {
   			
 		?>
 		<div class="pulse">
+			<div class="pulse-wrap">
 			<?php echo $it['author']['avatar_30']; ?>
 			<div class="pulse-author-meta"><a href="<?php echo $it['author']['post_url']; ?>"><?php echo $it['author']['display_name']; ?> <small>@<?php echo $it['author']['user_login']; ?></small></a></div>
 			<div class="pulse-meta"><a href="<?php echo $it['permalink']; ?>"><?php echo $it['date']; ?></a></div>
@@ -159,8 +160,7 @@ class Pulse_CPT {
 				echo $it['authors'];
 			endif; 
 			
-			if( isset($it['comments']) ):
-			?>
+			if( isset($it['comments']) && !is_singular('pulse-cpt')): ?>
 			<ol class="pulse-commentslist">
 				<?php foreach($it['comments'] as $comment): ?>
 					<li class="comment">
@@ -174,6 +174,7 @@ class Pulse_CPT {
 				<?php endforeach; ?>
 			</ol>
 			<?php endif; ?>
+			</div>
 		</div>
 		<?php
   	}

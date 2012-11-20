@@ -1,10 +1,14 @@
 .pulse{
 	padding: 5px 0;
 	border-bottom: 1px solid #ECECEC;
+	
+}
+.pulse-wrap{
+	margin-left:40px;
 }
 .pulse .avatar{
 	float: left;
-	margin: 5px 5px 0 0;
+	margin-left: -40px;
 }
 .pulse-meta{
 	position: absolute;
@@ -16,8 +20,6 @@
 	
 }
 .pulse-author-meta{
-	filter: left;
-	margin:1px 5px;
 }
 .pulse-meta a,
 .pulse-author-meta a{
@@ -32,7 +34,7 @@
 	font-weight: normal;
 }
 .pulse-content{
-	margin-left:35px;
+	
 }
 .pulse,
 .pulse-footer,
@@ -61,4 +63,9 @@
 }
 .posted-with{
 	color: #999;
+}
+
+/* Pulse Comments */
+.pulse-commentslist .comment-author .fn{
+	margin-left: 5px;
 }
