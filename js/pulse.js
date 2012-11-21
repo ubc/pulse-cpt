@@ -5,7 +5,7 @@ var Pulse_CPT = {
 	onReady: function(){
 		Pulse_CPT.listen();
 		
-		jQuery('.pulse').on( 'click', Pulse_CPT.expand );
+		jQuery('.pulse').live( 'click', Pulse_CPT.expand );
 		jQuery('.expand-action').on('click', function(e) { e.preventDefault(); } );
 		
 	},

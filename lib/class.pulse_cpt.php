@@ -256,23 +256,7 @@ class Pulse_CPT {
 			elseif( isset( $it['authors'] ) && is_string( $it['authors'] )): 
 				echo $it['authors'];
 			endif; 
-			
-			
-			if( isset($it['comments']) && !is_singular('pulse-cpt')): ?>
-			<ol class="pulse-commentslist">
-				<?php foreach($it['comments'] as $comment): ?>
-					<li class="comment">
-						<div class="comment-author vcard">
-							<?php echo $comment['comment_avatar']; ?>
-							<cite class="fn"><?php echo $comment['comment_author']; ?></cite>
-						</div>
-						<div class="comment-meta"><?php echo $comment['comment_date']; ?></div>
-						<div class="comment-content"><?php echo $comment['comment_content']; ?></div>
-					</li>
-				<?php endforeach; ?>
-			</ol>
-			
-			<?php endif; ?>
+			?>
 			</div><!-- end of pulse-expand-content -->
 			</div> <!-- end of pulse wrap -->
 		</div>
@@ -351,20 +335,6 @@ class Pulse_CPT {
   		if( empty( $coauthors ) )
   			$coauthors = false;
   		
-  		// comments 
-  		$raw_comments =  get_comments('post_id='.$post->ID.'&order=ASC');
-  		$comments = array();
-  		foreach($raw_comments as $comment):
-  			$comments[] = array( 
-  				'ID' 				=> $comment->comment_ID,
-  				'comment_author' 	=> $comment->comment_author,
-  				'comment_content'	=> $comment->comment_content,
-  				'comment_date'		=> Pulse_CPT::get_the_date( $comment->comment_date_gmt ),
-  				'comment_avatar'    => get_avatar( $comment->comment_author_email ,'30' )
-  				);
-  		endforeach;
-  		
-  		
   		
   		return array(  
   			"ID"	=> get_the_ID(),
@@ -380,7 +350,6 @@ class Pulse_CPT {
   				),
   			"tags"	=> $tags,
   			"authors" =>$coauthors,
-  			"comments" => $comments,
   			);
   	}
   	

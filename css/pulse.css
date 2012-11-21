@@ -81,6 +81,14 @@
 .pulse-co-authors{ 
 	margin: 0;
 }
+.pulse-actions ul{
+	overflow: hidden;
+}
+.pulse-actions ul li{
+	margin: 0 5px 0 0;
+	float: left;
+	
+}
 .posted-with{
 	color: #999;
 }

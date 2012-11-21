@@ -10,7 +10,7 @@ class Pulse_CPT_Settings {
   }
 
   public static function admin_page() {
-
+	
     echo "admin page";
   }
 
