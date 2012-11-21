@@ -1,3 +1,4 @@
+
 var Pulse_CPT_Form = {
 	single_pulse_template: false,
 	msg_t1 : false,
@@ -54,7 +55,6 @@ var Pulse_CPT_Form = {
 			form_data += '&tags='+tags;
 		}
 		
-		console.log( form_data );
 		// return false;
 		jQuery( '.pulse-form-progress' ).removeClass( 'hide' );
 	

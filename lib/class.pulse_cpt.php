@@ -116,7 +116,7 @@ class Pulse_CPT {
     	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js' , array( 'jquery-ui-autocomplete'), '1.0', true );
     	
     	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
-    	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js' , array( 'jquery'), '1.0', true );
+    	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js' , array( 'jquery' ), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
@@ -158,8 +158,19 @@ class Pulse_CPT {
 		);
 		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
 		wp_print_scripts( 'pulse-cpt-form' );
-		wp_print_scripts( 'pulse-cpt' );
 		
+		
+    }
+    
+    /**
+     * print_pulse_script function.
+     * 
+     * @access public
+     * @static
+     * @return void
+     */
+    public static function print_pulse_script(){ 
+    	wp_print_scripts( 'pulse-cpt' );
     }
     
     /**
@@ -202,7 +213,7 @@ class Pulse_CPT {
   		 
   		if( $it == null )
   			$it = Pulse_CPT::the_pulse_array();
-  			
+
 		?>
 		<div class="pulse">
 			<div class="pulse-wrap">
@@ -212,7 +223,7 @@ class Pulse_CPT {
 			<div class="pulse-content"><?php echo $it['content']; ?></div>
 			<div class="pulse-actions">
 				<ul>
-					<li><a href="#expand-url">Expand</a></li>
+					<li><a href="#expand-url" class="expand-action">Expand</a></li>
 					<li><a href="#reply-url">Reply</a></li>
 					<li><a href="#favorite">Favorite</a></li>
 					<li><span>5</span> Replies</li>
@@ -231,6 +242,7 @@ class Pulse_CPT {
 			<?php elseif( isset( $it['tags'] ) && is_string( $it['tags'] )): 
 				echo $it['tags'];
 			endif; ?>
+			
 			<?php 
 			
 			if( isset( $it['authors'] ) && is_array( $it['authors'] ) ) : ?>
@@ -245,6 +257,7 @@ class Pulse_CPT {
 				echo $it['authors'];
 			endif; 
 			
+			
 			if( isset($it['comments']) && !is_singular('pulse-cpt')): ?>
 			<ol class="pulse-commentslist">
 				<?php foreach($it['comments'] as $comment): ?>
@@ -258,6 +271,7 @@ class Pulse_CPT {
 					</li>
 				<?php endforeach; ?>
 			</ol>
+			
 			<?php endif; ?>
 			</div><!-- end of pulse-expand-content -->
 			</div> <!-- end of pulse wrap -->
