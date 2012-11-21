@@ -123,6 +123,52 @@ class Pulse_CPT {
 		
     }
     
+    
+    /**
+     * add_new_columns function.
+     * 
+     * @access public
+     * @param mixed $columns
+     * @return void
+     */
+    function add_new_column( $columns ){
+    	
+    	$last = array_splice( $columns, 3 );
+    	$columns = array_merge( $columns , array('reply-to' => 'Reply To'), $last );
+    	
+    	return  $columns;
+    
+    }
+    
+    /**
+     * manage_columns function.
+     * 
+     * @access public
+     * @return void
+     */
+    function manage_columns( $column_name, $id ) {
+    	global $post;
+    	if('reply-to' == $column_name ):
+    		if( $post->post_parent ):
+    			$reply_to = get_post( $post->post_parent );
+    			if( 'pulse-cpt' == $reply_to->post_type ):
+    				echo "Pulse";
+    			else:
+    				echo ucfirst( $reply_to->post_type ) ;
+    			endif;
+    			
+    			// if($post)
+    			echo '<div class="row-actions"><span><a href="'.admin_url('post.php?post='.$post->post_parent.'&action=edit').'">Edit</a></span> | <span><a href="'.site_url().'/?p='.$post->post_parent.'">View</a></span></div>';
+    		else:
+    			// echo "Home";
+    		endif;
+    		
+    	endif;
+    	/*switch ($column_name) {
+    		
+    	}
+    	*/
+    }
     /**
      * print_form_style function.
      * 

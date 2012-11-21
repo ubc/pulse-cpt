@@ -25,6 +25,7 @@ require_once( 'lib/class.pulse_cpt_settings.php' );
 add_action('init', array('Pulse_CPT', 'init'));
 add_action('widgets_init', array('Pulse_CPT', 'widgets_init'));
 
+
 add_action('wp_footer', array('Pulse_CPT', 'print_form_script'));
 add_action('wp_footer', array('Pulse_CPT', 'print_pulse_script'));
 add_action('template_redirect', array('Pulse_CPT', 'template_redirect'));
@@ -33,7 +34,12 @@ add_action('wp_ajax_pulse_cpt_insert', array('Pulse_CPT_Form', 'insert'));
 add_action('template_redirect', array('Pulse_CPT', 'template_redirect'));
 add_action('wp_footer', array('Pulse_CPT', 'footer'), 1); // templates should be generated before calling the js
 
+// add column 
+add_filter('manage_pulse-cpt_posts_columns', array( 'Pulse_CPT', 'add_new_column' ) );
 
+add_action('manage_pulse-cpt_posts_custom_column', array( 'Pulse_CPT','manage_columns'), 10, 2);
+
+	
 add_action('admin_menu', array('Pulse_CPT_Settings', 'admin_menu'));
 
 // filters
