@@ -385,7 +385,7 @@ class Pulse_CPT {
   		return array(  
   			"ID"	=> get_the_ID(),
   			"date" 	=> Pulse_CPT::get_the_date(),
-  			"content" => apply_filters( 'the_content', make_clickable( get_the_content())),
+  			"content" => apply_filters( 'the_content', make_clickable( get_the_content()) ),
   			"permalink" => get_permalink(),
   			"author"  => array( 
   				"ID" 			=> get_the_author_meta( 'ID' ),
