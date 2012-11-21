@@ -3,16 +3,15 @@
 	border-bottom: 1px solid #ECECEC;
 	margin: 0 5px;
 }
-.pulse:hover{
+.pulse-list .pulse:hover{
 	cursor: pointer;
 	background: #EEE;
 }
-.pulse.expand{
+.pulse-list .pulse.expand{
 	background: #FFF;
 	cursor: default;
 	border:1px solid #ECECEC;
 	margin: 10px 5px;
-	
 }
 .pulse-wrap{
 	margin-left:40px;
@@ -50,7 +49,7 @@
 .expand .pulse-expand-content{
 	display: block;
 }
-.pulse-expand-content{
+.pulse-list .pulse-expand-content{
 	display: none;
 }
 .pulse,
@@ -94,18 +93,12 @@
 }
 /* Pulse Actions */
 .pulse-actions{
-	
 	display: none;
 }
-.expand .pulse-actions,
-.pulse:hover .pulse-actions{
+.pulse-list .expand .pulse-actions,
+.pulse-list .pulse:hover .pulse-actions{
 	display: block;
 }
 .pulse-actions ul li{
 
-}
-
-/* Pulse Comments */
-.pulse-commentslist .comment-author .fn{
-	margin-left: 5px;
 }
