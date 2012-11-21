@@ -1,11 +1,16 @@
+.pulse-list{
+	margin-top: 10px;
+}
 .pulse{
 	padding: 5px;
+	border:1px solid #FFF;
 	border-bottom: 1px solid #ECECEC;
 	margin: 0 5px;
 }
 .pulse-list .pulse:hover{
 	cursor: pointer;
 	background: #EEE;
+	border:1px solid #ECECEC;
 }
 .pulse-list .pulse.expand{
 	background: #FFF;
