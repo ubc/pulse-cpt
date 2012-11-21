@@ -57,7 +57,7 @@
 	margin-right:5px;
 	margin-top:-25px;
 	position:relative;
-	z-index:10;
+	z-index:1;
 }
 #submit-pulse.disabled{
 	color:#CCC;
@@ -185,6 +185,7 @@
 	position:absolute;
 	cursor:default;
 	padding:0;
+	z-index: 10000;
 }
 
 .ui-autocomplete li {
@@ -233,7 +234,7 @@
 .pulse-form .ui-tabs .ui-tabs-nav {
 	margin:0!important;
 	padding:0;
-	background:#DDD;
+	background:#EEE;
 	height:27px;
 }
 
@@ -253,7 +254,7 @@
 	padding:3px 10px;
 	text-decoration:none;
 	color:#999;
-	background:#DDD url(../img/sprite.gif) no-repeat;
+	background: url(../img/sprite.gif) no-repeat;
 }
 
 .pulse-form .ui-tabs .ui-tabs-nav li.ui-tabs-selected a,.ui-tabs .ui-tabs-nav li a:hover {
@@ -297,7 +298,7 @@
 }
 
 .pulse-form .ui-tabs .ui-tabs-nav .pulse-tabs-author {
-	background-position:-1px -137px;
+	background-position:-1px -136px;
 	padding-left:20px;
 }
 

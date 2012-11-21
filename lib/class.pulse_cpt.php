@@ -1,9 +1,19 @@
 <?php
 
+/**
+ * Pulse_CPT class.
+ */
 class Pulse_CPT {
 
   static $add_form_script;
-
+  
+  /**
+   * init function.
+   * 
+   * @access public
+   * @static
+   * @return void
+   */
   public static function init() {
 
     Pulse_CPT::register_pulse();
@@ -11,19 +21,39 @@ class Pulse_CPT {
     if (!is_admin())
       Pulse_CPT::register_script_and_style();
   }
-
+  
+  /**
+   * template_redirect function.
+   * 
+   * @access public
+   * @static
+   * @return void
+   */
   public static function template_redirect() {
 
     Pulse_CPT::print_form_style();
   }
-
+  
+  /**
+   * install function.
+   * 
+   * @access public
+   * @static
+   * @return void
+   */
   public static function install() {
 
     Pulse_CPT::register_pulse();
     flush_rewrite_rules();
   }
-
-
+  
+  /**
+   * register_pulse function.
+   * 
+   * @access public
+   * @static
+   * @return void
+   */
   public static function register_pulse(){
   
 		$labels = array(
@@ -61,6 +91,13 @@ class Pulse_CPT {
   		register_post_type( 'pulse-cpt', $args );
     }
     
+    /**
+     * register_script_and_style function.
+     * 
+     * @access public
+     * @static
+     * @return void
+     */
     public static function register_script_and_style(){
     	
     	wp_register_script( 'autoGrowInput', PULSE_CPT_DIR_URL.'/js/jquery.autoGrowInput.js' , array('jquery'), '1.0', true );
@@ -86,12 +123,26 @@ class Pulse_CPT {
 		
     }
     
+    /**
+     * print_form_style function.
+     * 
+     * @access public
+     * @static
+     * @return void
+     */
     public static function print_form_style(){
     	
     	wp_enqueue_style( 'pulse-cpt-form' );
     	wp_enqueue_style( 'pulse-cpt-list' );
     }
     
+    /**
+     * print_form_script function.
+     * 
+     * @access public
+     * @static
+     * @return void
+     */
     public static function print_form_script(){
     	
     	if ( ! self::$add_form_script )
@@ -473,6 +524,12 @@ class Pulse_CPT {
 
 }
 
+/**
+ * the_pulse function.
+ * 
+ * @access public
+ * @return void
+ */
 function the_pulse() {
   Pulse_CPT::the_pulse();
 }
