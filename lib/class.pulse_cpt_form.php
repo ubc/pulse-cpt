@@ -5,6 +5,14 @@
  *  as well as. 
  */
 class Pulse_CPT_Form {
+  
+  /**
+   * get_tags function.
+   * 
+   * @access public
+   * @static
+   * @return void
+   */
   public static function get_tags() {
 
     $tags = get_terms('post_tag', 'hide_empty=0');
@@ -15,7 +23,14 @@ class Pulse_CPT_Form {
 
     return $simple_tags;
   }
-
+  
+  /**
+   * get_authors function.
+   * 
+   * @access public
+   * @static
+   * @return void
+   */
   public static function get_authors() {
     $args = array();
     $users = get_users($args);
@@ -26,7 +41,14 @@ class Pulse_CPT_Form {
 
     return $simple_user;
   }
-
+  
+  /**
+   * insert function.
+   * 
+   * @access public
+   * @static
+   * @return void
+   */
   public static function insert() {
 
     $user = wp_get_current_user();
@@ -110,7 +132,16 @@ class Pulse_CPT_Form {
     wp_reset_postdata();
     die();
   }
-
+  
+  /**
+   * edit_post_data function.
+   * 
+   * @access public
+   * @static
+   * @param mixed $data
+   * @param mixed $postarr
+   * @return void
+   */
   public static function edit_post_data($data, $postarr) {
 
     // change the post title into something more meaning full 
@@ -119,7 +150,15 @@ class Pulse_CPT_Form {
 
     return $data;
   }
-
+  
+  /**
+   * title_from_content function.
+   * 
+   * @access public
+   * @static
+   * @param mixed $content
+   * @return void
+   */
   public static function title_from_content($content) {
     static $strlen = null;
     if (!$strlen) {
