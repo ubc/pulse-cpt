@@ -85,11 +85,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	  <small class="clear">To get your <a href="http://bit.ly" target="_blank">bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API KEY</a></small>
 	</p>
+	<?php /*
 	<!-- Enable Subscribers -->
 	<p><label for="<?php echo $this->get_field_id('enable_comments'); ?>"> <input  id="<?php echo $this->get_field_id('enable_comments'); ?>" name="<?php echo $this->get_field_name('enable_comments'); ?>" type="checkbox"<?php echo checked($enable_comments); ?> />Enable Comments</label><br />
 	  <small>Enable comments by default</small>
 	</p>
-	
+	*/
+	?>
 	<!-- Enable Tagging -->
 	<p><label for="<?php echo $this->get_field_id('enable_tagging'); ?>"> <input  id="<?php echo $this->get_field_id('enable_tagging'); ?>" name="<?php echo $this->get_field_name('enable_tagging'); ?>" type="checkbox"<?php echo checked($enable_tagging); ?> />Enable Tagging</label><br />
 	  <small>Pulse authors can add tags to the pulse</small>
@@ -109,11 +111,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	  </p>
 	 */ ?>
 	<!-- Enable Subscribers -->
+	<?php /*
 	<p><label for="<?php echo $this->get_field_id('enable_location_sensitive'); ?>"> <input  id="<?php echo $this->get_field_id('enable_location_sensitive'); ?>" name="<?php echo $this->get_field_name('enable_location_sensitive'); ?>" type="checkbox"<?php echo checked($enable_location_sensitive); ?> />Location Aware</label><br />
 	  <small>If enabled you will be able to create pulses that only show up on a particular single post and pages.</small>
 	</p>
 	
 	<?php
+	*/
 	}
 
 
@@ -166,7 +170,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			<form action="" method="post" name="new-post" class="pulse-form">
 				<textarea cols="60" rows="4" tabindex="1" class="pulse-form-textarea autogrow" name="posttext" placeholder="<?php echo $placeholder; ?>"></textarea>
 				<?php if( $enable_url_shortener ) { ?>
-				<div class="pulse-shorten-url"><a href="#">shorten url</a></div>
+					<a href="#shorten-url" class="pulse-shorten-url">shorten url</a>
 				<?php } ?>
 				
 				<?php if($enable_tagging || ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ) || $enable_file_uploads ): ?>

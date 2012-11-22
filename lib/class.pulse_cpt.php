@@ -205,7 +205,6 @@ class Pulse_CPT {
 		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
 		wp_print_scripts( 'pulse-cpt-form' );
 		
-		
     }
     
     /**
@@ -216,7 +215,9 @@ class Pulse_CPT {
      * @return void
      */
     public static function print_pulse_script(){ 
+    
     	wp_print_scripts( 'pulse-cpt' );
+    
     }
     
     /**

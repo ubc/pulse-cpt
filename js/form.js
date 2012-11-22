@@ -13,6 +13,8 @@ var Pulse_CPT_Form = {
 		jQuery.each( Pulse_CPT_Form_local, function( i, v ) { Pulse_CPT_Form.init( i, v ) }); 
 				
 		Pulse_CPT_Form.single_pulse_template = doT.template( document.getElementById('pulse-cpt-single').text );
+		
+		jQuery('.pulse-shorten-url').live('click', Pulse_CPT_Form.shorten_url_action );
 
 		
 	},
@@ -20,7 +22,7 @@ var Pulse_CPT_Form = {
 	 * takes the rains and run with them
 	 */
 	init : function( index, meta ) {
-		
+		// console.log(index, meta);
 		var parent = jQuery( "#"+meta.id );
 		
 		if( meta.enable_character_count ) {
@@ -116,14 +118,15 @@ var Pulse_CPT_Form = {
         
         
 		tags_input.autocomplete( arg );
-	}
-	,
+	},
+	
 	focusInput: function(el){
 		var element = jQuery(el);
 		if( element.is(":visible") ) {
 			element.focus();
 		}
 	},
+	
 	display_nicely: function( tags, options, parent ) {
 	    var i = 0;
 	    var html_tags = new Array();
@@ -207,11 +210,103 @@ var Pulse_CPT_Form = {
 
 		// If message is fully transparent, fade it out
 		jQuery('#'+Pulse_CPT_Form.msg_id).animate({ opacity: 0 }, 1000, function() { jQuery(this).hide() })
-	}
+	},
+	
+	shorten_url_action: function(e){
+		e.preventDefault();
+		// console.log(Pulse_CPT_Form_local.enable_url_shortener);
+		var el = jQuery(this);
+		var parent = el.parents( '.widget_pulse_cpt' );
+		var id = parent.attr('id').substring(10);
+		
+		// get the c
+		if( !Pulse_CPT_Form_local[id].enable_url_shortener ){ return ; }
+		
+		var textarea = el.siblings('textarea');
+		var words = textarea.val().split(" ");
+		var i=0;
+		var num_of_words =  words.length;
+		// var new_words = new Array();
+		
+		if( words[0] ) {
+			for ( i=0; i< num_of_words; i++ ) {
+				if( words[i].substring(4,0)  == "http" && 
+				    words[i].substring(13,0) != "http://bit.ly" && // ignore bitly as well 
+				    words[i].substring(11,0) != "http://j.mp" && // ignore bitly as well 
+				    words[i].substring(13,0) != "http://goo.gl" &&
+				    words[i].substring(14,0) != "http://yhoo.it") {
+			    	
+			    	
+			    	Pulse_CPT_Form.shorten_url( words[i], Pulse_CPT_Form_local[id].bitly_user, Pulse_CPT_Form_local[id].bitly_api_key, function( short_url, long_url ) {
+						
+						
+			    		// how do I replace the string with the proper 
+			    		var i=0;
+						for ( i=0; i<num_of_words; i++ ) {
+							
+							if( words[i] == long_url ){
+								
+						 		words[i] = short_url;
+						 	}
+						}
+					
+			   		textarea.val( words.join(" ") ); // replace the right stuff back
+			   		
+			    	}); // end of call back
+			    } // end of if statment 
+			} // end of for loop
+		} // end of if
+	
+	},
+	
+	shortened_urls : new Array, 
+	
+	shorten_url: function( url, api_login, api_key, callback  ) {
+                // Build the URL to query
+               	var api_call =  "http://api.bitly.com/v3/shorten?longUrl="+encodeURIComponent(url)+"&login="+api_login+"&apiKey="+api_key+"&callback=?";
+                
+               //  console.log("check cache", enej, enej[''+url] );
+                
+                for( var prop in Pulse_CPT_Form.shortened_urls) {
+    					
+        				console.log( enej.prop, prop );
+					}
+                
+                // See if we've shortened this url already
+                var cached_result = Pulse_CPT_Form.shortened_urls[url];
+                
+                if (cached_result !== undefined) {
+                        // the timeout is to eliminate race conditions arising 
+                        // from the assumption that the callback will be
+                        // called after an ajax call
+                        window.setTimeout(function() {
+                        	    
+                                callback( cached_result, url );
+                        }, 1 );
+                }
+                else {
+                        // Utilize the bit.ly API
+                        jQuery.getJSON(api_call, function(result) {
+                        		
+                        		if("OK" == result.status_txt) {
+                        			
+                                	Pulse_CPT_Form.shortened_urls[ url ] = result.data.url;
+                                	
+                                	callback( result.data.url, url);
+                        		
+                        		} else {
+                        			alert( "Error with the URL Shortner:<br /> "+data.errorMessage);
+                        		}
+                              
+                        }); // end of 
+                }
+        }
+        
 	
 
 }
-
+var enej = {};
+var Pulse_CPT_url_shortener_cache = {}
 jQuery('document').ready(Pulse_CPT_Form.onReady);
 
 

@@ -14,16 +14,14 @@
 	margin:0 0 5px;
 }
 
-.pulse-shorten-url {
-	text-align:right;
-	margin-right:5px;
-}
-
-.pulse-shorten-url a,
-.pulse-shorten-url a:visited {
+.pulse-shorten-url,
+.pulse-shorten-url:visited {
 	color:#AAA;
-	font-size:11px;
+	font-size:12px;
 	text-decoration:none;
+	float: right;
+	line-height: 20px;
+	margin: -10px 8px 0 0;
 }
 
 .pulse-shorten-url a:hover {
