@@ -262,7 +262,7 @@ class Pulse_CPT {
   			$it = Pulse_CPT::the_pulse_array();
 
 		?>
-		<div class="pulse">
+		<div class="pulse" data-pulse-id="<?php echo $it['ID']; ?>">
 			<div class="pulse-wrap">
 			<?php echo $it['author']['avatar_30']; ?>
 			<div class="pulse-author-meta"><a href="<?php echo $it['author']['post_url']; ?>"><?php echo $it['author']['display_name']; ?> <small>@<?php echo $it['author']['user_login']; ?></small></a></div>
@@ -273,7 +273,7 @@ class Pulse_CPT {
 					<li><a href="#expand-url" class="expand-action">Expand</a></li>
 					<li><a href="#reply-url">Reply</a></li>
 					<li><a href="#favorite">Favorite</a></li>
-					<li><span>5</span> Replies</li>
+					<li><span><?php echo $it['num_replies']; ?></span> Replies</li>
 				</ul>
 			</div>
 			<div class="pulse-expand-content">
@@ -304,6 +304,7 @@ class Pulse_CPT {
 				echo $it['authors'];
 			endif; 
 			?>
+				<div class="pulse-replies"></div>
 			</div><!-- end of pulse-expand-content -->
 			</div> <!-- end of pulse wrap -->
 		</div>
@@ -397,6 +398,7 @@ class Pulse_CPT {
   				),
   			"tags"	=> $tags,
   			"authors" =>$coauthors,
+			'num_replies' => self::get_num_replies()
   			);
   	}
   	
@@ -421,7 +423,8 @@ class Pulse_CPT {
   				"post_url"		=> '{{=it.author.post_url}}'
   				),
   			"tags"  	=> '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
-  			'authors'   => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}'
+  			'authors'   => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
+			'num_replies' => '{{it.num_replies}}'
   			);
   	}
 	
@@ -551,7 +554,28 @@ class Pulse_CPT {
   		return $template;
   	}
   	
-
+	/* function to handle regular and nopriv ajax requests */
+	public static function ajax_replies() {
+	  $data = (isset($_POST['data']) ? $_POST['data'] : false);
+	  if($data) {
+	    $query_args = self::query_arguments();
+	    $query_args['post_parent'] = $data['pulse_id'];
+	    
+	    $query = new WP_Query($query_args);
+	    while($query->have_posts()) {
+	      $query->the_post();
+	      echo self::the_pulse(self::the_pulse_array());
+	    }
+	  }
+	  die(); //prevent wp appending 0 to output
+	}
+	
+	/* return the number of replies for a given pulse */
+	public static function get_num_replies() {
+	  global $post;
+	  $query = get_children($post->ID);
+	  return count($query);
+	}
 }
 
 /**

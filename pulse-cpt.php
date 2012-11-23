@@ -34,6 +34,10 @@ add_action('wp_ajax_pulse_cpt_insert', array('Pulse_CPT_Form', 'insert'));
 add_action('template_redirect', array('Pulse_CPT', 'template_redirect'));
 add_action('wp_footer', array('Pulse_CPT', 'footer'), 1); // templates should be generated before calling the js
 
+//ajax request handler for getting pulse replies
+add_action('wp_ajax_pulse_cpt_replies', array('Pulse_CPT', 'ajax_replies'));
+add_action('wp_ajax_nopriv_pulse_cpt_replies', array('Pulse_CPT', 'ajax_replies'));
+
 // add column 
 add_filter('manage_pulse-cpt_posts_columns', array( 'Pulse_CPT', 'add_new_column' ) );
 
