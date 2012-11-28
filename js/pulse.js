@@ -5,10 +5,29 @@ var Pulse_CPT = {
   onReady: function(){
     Pulse_CPT.listen();
 		
-    jQuery('.pulse-list .pulse').live( 'click', Pulse_CPT.expand );
-    jQuery('.expand-action').on('click', function(e) {
-      e.preventDefault();
-    } );
+    //jQuery('.pulse-list .pulse').live( 'click', Pulse_CPT.expand );
+    jQuery('.expand-action').on('click', Pulse_CPT.expand );
+    jQuery('.reply-action').live('click', function(e) {
+	parent_id = jQuery(this).closest('.pulse').data('pulse-id');
+      //look for location[type] and location[ID] fields, if not add them for the reply
+      if(jQuery('input[name="location[type]"]').length > 0 && jQuery('input[name="location[ID]"]').length > 0) {
+	jQuery('input[name="location[type]"]').val('singular'); //we are guaranteed to always reply to a pulse
+	jQuery('input[name="location[ID]"]').val(parent_id);
+      } else {
+	jQuery('<input>').attr({
+	  name: 'location[ID]',
+	  value: parent_id,
+	  type: 'hidden'
+	}).appendTo('.pulse-form');
+	jQuery('<input>').attr({
+	  name: 'location[type]',
+	  value: 'singular',
+	  type: 'hidden'
+	}).appendTo('.pulse-form');
+      }
+	jQuery('.postbox').append('replying to: ' + parent_id);
+	jQuery(window).scrollTop(jQuery('.widget_pulse_cpt').offset().top);
+    });
 	
   },
 	
@@ -20,14 +39,15 @@ var Pulse_CPT = {
 	
   expand: function(event) { //we need event to check which element is actually clicked
 		
-    var el = jQuery(this);
+    var el = jQuery(this).closest('.pulse');
     el.data('pulse');
-    el.toggleClass('expand');
     
     //prevent collapse if clicked on a reply
     if( jQuery(event.target).parents('.pulse-replies').length ) {
       return;
     }
+    
+    el.toggleClass('expand');
     
     el.find('.pulse-expand-content').toggle(); //toggle visibility of expand-content
 		
@@ -52,6 +72,7 @@ var Pulse_CPT = {
     },
     function(data) { //put replies to its div .pulse-replies
       jQuery(element).find('.pulse-replies').html(data);
+      jQuery(element).find('.pulse-replies .pulse').addClass('expand'); //dont show hover css
     }
     );
   }

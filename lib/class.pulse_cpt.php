@@ -271,7 +271,7 @@ class Pulse_CPT {
 			<div class="pulse-actions">
 				<ul>
 					<li><a href="#expand-url" class="expand-action">Expand</a></li>
-					<li><a href="#reply-url">Reply</a></li>
+					<li><a href="#reply-url" class="reply-action">Reply</a></li>
 					<li><a href="#favorite">Favorite</a></li>
 					<li><span><?php echo $it['num_replies']; ?></span> Replies</li>
 				</ul>
