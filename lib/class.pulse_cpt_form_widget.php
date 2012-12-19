@@ -36,8 +36,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$instance['enable_character_count'] = (bool) $new_instance['enable_character_count'];
 		$instance['num_char'] = (int) $new_instance['num_char'];
 		$instance['enable_url_shortener'] = (bool) $new_instance['enable_url_shortener'];
-		$instance['bitly_user'] = strip_tags($new_instance['bitly_user']);
-		$instance['bitly_api_key'] = strip_tags($new_instance['bitly_api_key']);
+		$instance['bitly_user'] = get_option('pulse_bitly_username');
+		$instance['bitly_api_key'] = get_option('pulse_bitly_key');
 		$instance['enable_tagging'] = (bool) $new_instance['enable_tagging'];
 		$instance['enable_co_authoring'] = (bool) $new_instance['enable_co_authoring'];
 		$instance['enable_file_uploads'] = false; // todo: implement file uploading ui(bool) $new_instance['enable_file_uploads'];
@@ -63,8 +63,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		    'enable_character_count' => false,
 		    'num_char' => 140,
 		    'enable_url_shortener' => false,
-		    'bitly_user' => '',
-		    'bitly_api_key' => '',
+		    'bitly_user' => get_option('pulse_bitly_username'),
+		    'bitly_api_key' => get_option('pulse_bitly_key'),
 		    'enable_tagging' => false,
 		    'enable_co_authoring' => false,
 		    'enable_file_uploads' => false,
@@ -86,12 +86,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	  <br />
 	<p><label for="<?php echo $this->get_field_id('enable_url_shortener'); ?>"> <input  id="<?php echo $this->get_field_id('enable_url_shortener'); ?>" name="<?php echo $this->get_field_name('enable_url_shortener'); ?>" type="checkbox"<?php echo checked($enable_url_shortener); ?> />Enable URL Shortening</label><br />
-	  <!-- Enable Url Shortener -->
-	  <label for="<?php echo $this->get_field_id('bitly_user'); ?>"> Bitly Username: <input  id="<?php echo $this->get_field_id('bitly_user'); ?>" name="<?php echo $this->get_field_name('bitly_user'); ?>"  class="widefat" type="text" value="<?php echo esc_attr($bitly_user); ?>" /></label>
-	  <br />
-	  <label for="<?php echo $this->get_field_id('bitly_api_key'); ?>"> Bitly API Key: <input  id="<?php echo $this->get_field_id('bitly_api_key'); ?>" name="<?php echo $this->get_field_name('bitly_api_key'); ?>"  class="widefat" type="text" value="<?php echo esc_attr($bitly_api_key); ?>" /></label>
-	
-	  <small class="clear">To get your <a href="http://bit.ly" target="_blank">bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API KEY</a></small>
+	  <small>Make sure to set your Bit.ly Username and API Key in <a href="<?php echo admin_url('edit.php?post_type=pulse-cpt&page=pulse-cpt_settings'); ?>">Pulse Settings.</a></small>
 	</p>
 	<?php /*
 	<!-- Enable Subscribers -->
