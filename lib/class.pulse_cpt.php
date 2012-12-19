@@ -115,8 +115,9 @@ class Pulse_CPT {
     	
     	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js' , array( 'jquery-ui-autocomplete'), '1.0', true );
     	
-    	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
-    	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js' , array( 'jquery' ), '1.0', true );
+	
+	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
+	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js' , array( 'jquery' ), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
@@ -190,21 +191,20 @@ class Pulse_CPT {
      * @return void
      */
     public static function print_form_script(){
-    	
-    	if ( ! self::$add_form_script )
-			return;
-		global $pulse_cpt_widget_ids;
+	$global_args = array();
+	$global_args['ajaxUrl'] = admin_url('admin-ajax.php');
+    	if ( ! self::$add_form_script ) { //we still need the ajax url even if user isnt logged in
+	  wp_localize_script('pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args);
+	} else { //localize full data for logged in user
+	  $global_args['tags'] = Pulse_CPT_Form::get_tags();
+	  $global_args['authors'] = Pulse_CPT_Form::get_authors();
+	  
+	  global $pulse_cpt_widget_ids;
  		
- 		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', 
-	    	array(
-		  		'ajaxUrl' => admin_url( 'admin-ajax.php' ) ,
-		  		'tags' => Pulse_CPT_Form::get_tags(),
-		  		'authors' => Pulse_CPT_Form::get_authors()
-			)
-		);
-		wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
-		wp_print_scripts( 'pulse-cpt-form' );
-		
+	  wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args);
+	  wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
+	}
+	wp_print_scripts( 'pulse-cpt-form' );
     }
     
     /**
@@ -271,8 +271,10 @@ class Pulse_CPT {
 			<div class="pulse-actions">
 				<ul>
 					<li><a href="#expand-url" class="expand-action">Expand</a></li>
+					<?php if(is_user_logged_in()) { //display reply and favorite only if user is logged in ?>
 					<li><a href="#reply-url" class="reply-action">Reply</a></li>
 					<li><a href="#favorite">Favorite</a></li>
+					<?php } ?>
 					<li><span><?php echo $it['num_replies']; ?></span> Replies</li>
 				</ul>
 			</div>

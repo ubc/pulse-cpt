@@ -77,15 +77,15 @@ class Pulse_CPT_Form {
 
     // tags
     $tags = trim($_POST['tags']);
-    $single_tags = trim($_POST['single_tags']);
-    if (!empty($single_tags))
-      $tags .= "," . $single_tags;
+//    $single_tags = trim($_POST['single_tags']);
+//    if (!empty($single_tags))
+//      $tags .= "," . $single_tags;
 
     // authors
     $authors = trim($_POST['author']);
-    $single_author = trim($_POST['single_author']);
-    if (!empty($single_author))
-      $authors .= "," . $single_author;
+//    $single_author = trim($_POST['single_author']);
+//    if (!empty($single_author))
+//      $authors .= "," . $single_author;
 
     // 'post_parent' => [ <post ID> ] //Sets the parent of the new post.
 
@@ -131,6 +131,8 @@ class Pulse_CPT_Form {
     // Reset Post Data
     wp_reset_postdata();
     die();
+    
+    
   }
   
   /**
