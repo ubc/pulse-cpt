@@ -10,8 +10,9 @@ var Pulse_CPT_Form = {
 		jQuery( '.pulse-form-progress' ).addClass('hide');
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
 		
-		jQuery.each( Pulse_CPT_Form_local, function( i, v ) { Pulse_CPT_Form.init( i, v ) }); 
-				
+		if(typeof Pulse_CPT_Form_local != 'undefined') {
+		  jQuery.each( Pulse_CPT_Form_local, function( i, v ) { Pulse_CPT_Form.init( i, v, jQuery('.pulse-form') ) }); 
+		}
 		Pulse_CPT_Form.single_pulse_template = doT.template( document.getElementById('pulse-cpt-single').text );
 		
 		jQuery('.pulse-shorten-url').live('click', Pulse_CPT_Form.shorten_url_action );
@@ -21,10 +22,8 @@ var Pulse_CPT_Form = {
 	/**
 	 * takes the rains and run with them
 	 */
-	init : function( index, meta ) {
-		// console.log(index, meta);
-		var parent = jQuery( "#"+meta.id );
-		
+	init : function( index, meta, parent ) {
+//		var parent = jQuery( "#"+meta.id+' .pulse-form' );
 		if( meta.enable_character_count ) {
 			var num_char = (meta.num_char ? meta.num_char: 140 )
 			
@@ -96,13 +95,9 @@ var Pulse_CPT_Form = {
 		return false;
 	},
 	tag_it : function ( parent, el_class, source_autocomplete ) {
-	
 		var el = jQuery( parent ).find( ".pulse-textarea-"+el_class );
-		
-		el.tagbox( { single_input:el_class, update: function( tags ) { Pulse_CPT_Form.display_nicely( tags, this, parent ); } });
-
+		var tr = el.tagBox( { single_input:el_class, update: function( tags ) { Pulse_CPT_Form.display_nicely( tags, this, parent ); } });
 		var tags_input = el.parent().find('.input input');
-		
 		jQuery( parent ).find( '.pulse-tabs-'+el_class ).click( function(){ Pulse_CPT_Form.focusInput( tags_input ); } );
 		
 		var arg = { 
@@ -214,7 +209,6 @@ var Pulse_CPT_Form = {
 	
 	shorten_url_action: function(e){
 		e.preventDefault();
-		// console.log(Pulse_CPT_Form_local.enable_url_shortener);
 		var el = jQuery(this);
 		var parent = el.parents( '.widget_pulse_cpt' );
 		var id = parent.attr('id').substring(10);
@@ -265,12 +259,10 @@ var Pulse_CPT_Form = {
                 // Build the URL to query
                	var api_call =  "http://api.bitly.com/v3/shorten?longUrl="+encodeURIComponent(url)+"&login="+api_login+"&apiKey="+api_key+"&callback=?";
                 
-               //  console.log("check cache", enej, enej[''+url] );
-                
-                for( var prop in Pulse_CPT_Form.shortened_urls) {
-    					
-        				console.log( enej.prop, prop );
-					}
+//                for( var prop in Pulse_CPT_Form.shortened_urls) {
+//    					
+//        				console.log( enej.prop, prop );
+//					}
                 
                 // See if we've shortened this url already
                 var cached_result = Pulse_CPT_Form.shortened_urls[url];
@@ -295,7 +287,7 @@ var Pulse_CPT_Form = {
                                 	callback( result.data.url, url);
                         		
                         		} else {
-                        			alert( "Error with the URL Shortner:<br /> "+data.errorMessage);
+                        			alert( "Error with the URL Shortner:<br /> "+result.data.errorMessage);
                         		}
                               
                         }); // end of 
