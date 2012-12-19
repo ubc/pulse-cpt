@@ -24,7 +24,7 @@ class Pulse_CPT_Settings {
     register_setting('pulse_options', 'pulse_bitly_key');
     
     //define section
-    add_settings_section('pulse_settings', 'Evaluate Settings', function() {
+    add_settings_section('pulse_settings', 'Pulse-CPT Settings', function() {
 	      echo 'Settings and CTLT_Stream/NodeJS Status';
 	    }, 'pulse-cpt_settings');
 
