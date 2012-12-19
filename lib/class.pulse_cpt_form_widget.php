@@ -3,12 +3,20 @@
 global $pulse_cpt_widget_ids;
 
 class Pulse_CPT_Form_Widget extends WP_Widget {
+	static $evaluate_active = false;
+	
 	public function __construct() {
 		parent::__construct(
 		        'pulse_cpt', // Base ID
 		        'Pulse Form', // Name
 		        array('description' => __('A way to simply add new pulses', 'pulse_cpt'),) // Args
 		);
+		
+		//need to put nonce for Evaluate if it's installed
+		if(!function_exists('is_plugin_active')) {
+		  include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+		}
+		self::$evaluate_active = is_plugin_active('evaluate/evaluate.php');
 	}
 	
 	/**
@@ -230,7 +238,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<input type="hidden" value="<?php echo $location['type']; ?>" name="location[type]" />
 				<input type="hidden" value="<?php echo $location['ID']; ?>" name="location[ID]" />
 				<?php 
-				endif; ?>
+				endif; 
+				if(self::$evaluate_active) {
+				  wp_nonce_field('evaluate_pulse-meta', 'evaluate_nonce');
+				}
+    ?>
 			</form>
 			<div class="clear"></div>
 		</div>
