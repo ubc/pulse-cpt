@@ -115,8 +115,8 @@ class Pulse_CPT {
     	
     	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js' , array( 'jquery-ui-autocomplete'), '1.0', true );
     	
-	
-	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js' , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
+	$cachebuster = filemtime(PULSE_CPT_DIR_PATH.'/js/form.js');
+	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js?t='.$cachebuster , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
 	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js' , array( 'jquery' ), '1.0', true );
     	
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
@@ -502,6 +502,9 @@ class Pulse_CPT {
   			
   		elseif( is_single() || is_page() ):
   			$arg['post_parent'] = get_the_ID(); 
+		
+		elseif(!(is_single()||is_page())) :
+		  $arg['post_parent'] = 0;
   		
   		elseif( is_404() ):
   			
