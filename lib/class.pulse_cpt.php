@@ -117,10 +117,13 @@ class Pulse_CPT {
     	
 	$cachebuster = filemtime(PULSE_CPT_DIR_PATH.'/js/form.js');
 	wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js?t='.$cachebuster , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
-	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js' , array( 'jquery' ), '1.0', true );
+	$cachebuster = filemtime(PULSE_CPT_DIR_PATH.'/js/pulse.js');
+	wp_register_script( 'pulse-cpt', PULSE_CPT_DIR_URL.'/js/pulse.js?t='.$cachebuster , array( 'jquery' ), '1.0', true );
     	
-    	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css');
-    	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css');
+	$cachebuster = filemtime(PULSE_CPT_DIR_PATH.'/css/form.css');
+    	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css?t='.$cachebuster);
+	$cachebuster = filemtime(PULSE_CPT_DIR_PATH.'/css/pulse.css');
+    	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css?t='.$cachebuster);
 		
     }
     
@@ -306,6 +309,7 @@ class Pulse_CPT {
 				echo $it['authors'];
 			endif; 
 			?>
+				<div class="pulse-pivot"></div>
 				<div class="pulse-replies"></div>
 			</div><!-- end of pulse-expand-content -->
 			</div> <!-- end of pulse wrap -->

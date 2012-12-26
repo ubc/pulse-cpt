@@ -169,6 +169,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		);
 	
 		?>
+		<div class="postbox-placeholder">Reply to Current</div>
 		<div class="postbox">
 			<form action="" method="post" name="new-post" class="pulse-form">
 				<textarea cols="60" rows="4" tabindex="1" class="pulse-form-textarea autogrow" name="posttext" placeholder="<?php echo $placeholder; ?>"></textarea>

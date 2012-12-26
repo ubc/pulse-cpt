@@ -4,8 +4,13 @@ var Pulse_CPT_Form = {
 	msg_t1 : false,
 	msg_t2 : false,
 	msg_id : 'pulse_msg_wrap',
+	//track location for replies
+	original_location: {
+	  type: null,
+	  ID: null
+	},
+	
 	onReady : function(){
-		
 		jQuery( '.autogrow' ).autogrow();
 		jQuery( '.pulse-form-progress' ).addClass('hide');
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
@@ -17,13 +22,21 @@ var Pulse_CPT_Form = {
 		
 		jQuery('.pulse-shorten-url').live('click', Pulse_CPT_Form.shorten_url_action );
 
+		//assign location type and ids
+		var location = {type: null, ID: null};
+		location.type = jQuery('.postbox input[name="location[type]"]').val();
+		location.ID = jQuery('.postbox input[name="location[ID]"]').val();
+		Pulse_CPT_Form.original_location.type = (typeof location.type == 'undefined') ? null : location.type;
+		Pulse_CPT_Form.original_location.ID = (typeof location.ID == 'undefined') ? null : location.ID;
 		
+		//reply form reset from placeholder hook
+		jQuery('.postbox-placeholder').on('click', function(e){ Pulse_CPT_Form.reply(null); });
 	},
+	
 	/**
 	 * takes the rains and run with them
 	 */
 	init : function( index, meta, parent ) {
-//		var parent = jQuery( "#"+meta.id+' .pulse-form' );
 		if( meta.enable_character_count ) {
 			var num_char = (meta.num_char ? meta.num_char: 140 )
 			
@@ -44,6 +57,50 @@ var Pulse_CPT_Form = {
 				
 			}
 		}
+	},
+	
+	/*
+	 * move form to desired pulse and change location data / reset location
+	 */
+	reply : function(parent_pulse) {
+	  var orig_loc_null = Pulse_CPT_Form.original_location.type == null || Pulse_CPT_Form.original_location.ID == null;
+	  //if ID == null then reset form to original location
+	  if(parent_pulse == null) {
+	    if(orig_loc_null) {
+	      jQuery('input[name="location[type]"]').remove(); 
+	      jQuery('input[name="location[ID]"]').remove(); 
+	    } else {
+	      jQuery('input[name="location[type]"]').val(Pulse_CPT_Form.original_location.type);
+	      jQuery('input[name="location[ID]"]').val(Pulse_CPT_Form.original_location.ID);
+	    }
+	    //hide placeholder and move the form back to its original location
+	    jQuery('.postbox-placeholder').hide();
+	    jQuery('.postbox').insertAfter(jQuery('.postbox-placeholder'));
+	    jQuery('.pulse-form-textarea').focus();
+	    return;
+	  }
+	  if(orig_loc_null) {
+	    //add new elements to track parent on the fly
+	    jQuery('<input>').attr({
+	      name: 'location[type]',
+	      value: 'singular',
+	      type: 'hidden'
+	    }).appendTo('.pulse-form');
+	    
+	    jQuery('<input>').attr({
+	      name: 'location[ID]',
+	      value: parent_pulse.data('pulse-id'),
+	      type: 'hidden'
+	    }).appendTo('.pulse-form');
+	  } else {
+	    //change values of existing elements
+	    jQuery('input[name="location[type]"]').val('singular'); 
+	    jQuery('input[name="location[ID]"]').val(ID); 
+	  }
+	  //show placeholder and insert the form inside the pivot element in the parent pulse
+	  jQuery('.postbox-placeholder').show();
+	  jQuery('.postbox').insertBefore(parent_pulse.find('.pulse-pivot:first'));
+	  jQuery('.pulse-form-textarea').focus();
 	},
 	
 	submitForm : function () {
@@ -86,14 +143,22 @@ var Pulse_CPT_Form = {
 				form.find( '.pulse-tabs' ).tabs( { selected: -1 });
 				
 				var html = Pulse_CPT_Form.single_pulse_template( response );
+				var parent_pulse = jQuery('.postbox').closest('.pulse').find('.pulse-replies:first');
+				if(parent_pulse.length > 0) {
+				  
+				} else {
+				  parent_pulse = jQuery('.pulse-list');
+				}
+				jQuery(html).hide().prependTo(parent_pulse).slideDown('slow');
 				// nicly tranition the addition of the new post
-				jQuery(html).hide().prependTo('.pulse-list').slideDown("slow");
-			
+//				jQuery(html).hide().prependTo('.pulse-list').slideDown("slow");
+//				jQuery('.postbox form').reset(); //reset form contents
 			}
 			
 		}, "json" );
 		return false;
 	},
+	
 	tag_it : function ( parent, el_class, source_autocomplete ) {
 		var el = jQuery( parent ).find( ".pulse-textarea-"+el_class );
 		var tr = el.tagBox( { single_input:el_class, update: function( tags ) { Pulse_CPT_Form.display_nicely( tags, this, parent ); } });
@@ -102,14 +167,14 @@ var Pulse_CPT_Form = {
 		
 		var arg = { 
 			source: source_autocomplete,
-    		minLength: 2,
-    		html : 'html',
-    		select: function(e, ui) {
-                e.preventDefault();
-                jQuery(this).val( ui.item.value );
-                jQuery(this).trigger("selectTag");
-             }
-       }
+			minLength: 2,
+			html : 'html',
+			select: function(e, ui) {
+			  e.preventDefault();
+			  jQuery(this).val( ui.item.value );
+			  jQuery(this).trigger("selectTag");
+			}
+	      }
         
         
 		tags_input.autocomplete( arg );
@@ -293,9 +358,6 @@ var Pulse_CPT_Form = {
                         }); // end of 
                 }
         }
-        
-	
-
 }
 var enej = {};
 var Pulse_CPT_url_shortener_cache = {}

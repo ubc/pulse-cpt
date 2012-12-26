@@ -2,14 +2,19 @@
 
 
 var Pulse_CPT = {
-  clone: null,
   onReady: function(){
     Pulse_CPT.listen();
-    //jQuery('.pulse-list .pulse').live( 'click', Pulse_CPT.expand );
-    jQuery('.expand-action').on('click', Pulse_CPT.expand );
-    jQuery('.reply-action').live('click', Pulse_CPT.reply);
-//    clone = jQuery('.postbox').clone(false);
-//    clone.appendTo(jQuery('body'));
+    //these are delegated to .pulse-list to attach to dynamic elements too
+    jQuery('.pulse-list').on('click', '.pulse', Pulse_CPT.expand);
+    jQuery('.pulse-list').on('click', '.expand-action', Pulse_CPT.expand);
+    //prevent collapse if any of these within a pulse are clicked
+    jQuery('.pulse-list').on('click', '.pulse-replies .pulse, .pulse a, .pulse .postbox', function(e){e.stopPropagation();});
+    //reply
+    jQuery('.pulse-list').on('click', '.reply-action',  function(e) {
+      //we want to know the caller
+      Pulse_CPT.reply.apply(this);
+      e.stopPropagation(); //stop so we dont collapse parent pulse
+    });
   },
 	
   listen: function(){
@@ -18,7 +23,7 @@ var Pulse_CPT = {
 		
   },
 	
-  expand: function(event) { //we need event to check which element is actually clicked
+  expand: function() {
     var el = jQuery(this).closest('.pulse');
     el.data('pulse');
     
@@ -29,7 +34,8 @@ var Pulse_CPT = {
       el.find('.expand-action').text( 'Collapse' );
       Pulse_CPT.expandPulse(el); //ajax call to fetch replies
     } else {
-      el.find('.expand-action').text( 'Expand' );		
+      el.find('.expand-action').text( 'Expand' );
+      Pulse_CPT_Form.reply(); //reset form location if collapsed
     }
   },
 	
@@ -45,13 +51,17 @@ var Pulse_CPT = {
     },
     function(data) { //put replies to its div .pulse-replies
       jQuery(element).find('.pulse-replies').html(data);
-      jQuery(element).find('.pulse-replies .pulse').addClass('expand'); //dont show hover css
     }
     );
   },
   
-  reply: function(event) {
-//    jQuery('#pulse_cpt-2 .pulse-form').appendTo(this.closest('.pulse-expand-content'));
+  reply: function() {
+    var parent_pulse = jQuery(this).closest('.pulse');
+    if( !parent_pulse.hasClass('expand') ) { //expand first if not expanded
+      Pulse_CPT.expand.apply(this);
+    }
+    //reply form, pass caller element along with parent pulse ID
+    Pulse_CPT_Form.reply.apply(this,[parent_pulse]);
   }	
 
 }
