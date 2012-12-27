@@ -107,7 +107,7 @@ class Pulse_CPT_Form {
     endif;
 
     $id = wp_insert_post($post);
-    $args = array('post_type' => 'pulse-cpt', 'p' => (int) $id);
+    $post['num_replies'] = 0; //there can't be any replies just yet
 
     global $coauthors_plus, $current_user;
 
@@ -120,7 +120,9 @@ class Pulse_CPT_Form {
     if (is_object($coauthors_plus)):
       @$coauthors_plus->add_coauthors($id, $authors_array); //suppress warnings from Co-Authors plugin
     endif;
+    
     // The Query
+    $args = array('post_type' => 'pulse-cpt', 'p' => (int) $id);
     $the_query = new WP_Query($args);
 
     // The Loop
@@ -181,5 +183,35 @@ class Pulse_CPT_Form {
     return $title;
   }
 
+  public static function admin_publish($pulse_id) {
+    //check autosave
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+      return;
+    }
+    
+    //we're only interested in the parent post
+    if (wp_is_post_revision($pulse_id))
+      return;
+    
+    //check if CTLT_Stream plugin exists to use with node
+    if (!function_exists('is_plugin_active')) {
+      //include plugins.php to check for other plugins from the frontend
+      include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    }
+    
+    if(CTLT_Stream::is_node_active()) {
+      // The Query
+      $args = array('post_type' => 'pulse-cpt', 'p' => (int) $pulse_id);
+      $the_query = new WP_Query($args);
+      
+      $the_query->the_post();
+      CTLT_Stream::send('pulse', Pulse_CPT::the_pulse_json(), 'new-pulse');
+
+      // Reset Post Data
+      wp_reset_postdata();
+      }
+      
+      return $pulse_id;
+  }
 }
 
