@@ -161,7 +161,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			'num_char' 				=> (int)$num_char,
 			'enable_url_shortener'  => (bool)$enable_url_shortener,
 			'bitly_user' 			=> get_option('pulse_bitly_username'),
-		    'bitly_api_key' => get_option('pulse_bitly_key'),
+			'bitly_api_key' => get_option('pulse_bitly_key'),
 			'enable_tagging' 		=> $enable_tagging,
 			'enable_co_authoring' 	=> $enable_co_authoring,
 			'enable_file_uploads' 	=> $enable_file_uploads,
@@ -218,7 +218,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<?php if( $enable_character_count ) { ?>
 					<span class="pulse-form-counter"><?php echo $num_char; ?></span>
 					<?php } ?>
-					<span class="pulse-form-progress">
+					<span class="pulse-form-progress hide">
 						<img title="Loading..." alt="Loading..." src="<?php echo  PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
 					</span>					
 					<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" id="submit-pulse">
