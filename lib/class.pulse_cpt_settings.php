@@ -41,13 +41,13 @@ class Pulse_CPT_Settings {
     //CTLT_Stream and NodeJS indicators, these are not registered/saved
     add_settings_field('ctlt_stream_found', 'CTLT_Stream plugin found', function() {
 	      echo '<input id="ctlt_stream_status" name="ctlt_stream_status" type="checkbox" disabled="disabled" ' .
-	      checked(1, true, false) . '/>';
+	      checked(1, self::$options['CTLT_STREAM'], false) . '/>';
 	    }, 'pulse-cpt_settings', 'pulse_settings');
 
     if (self::$options['CTLT_STREAM']) {
       add_settings_field('nodejs_server_status', 'NodeJS Server status', function() {
 		echo '<input id="nodejs_server_status" name="nodejs_server_status" type="checkbox" disabled="disabled"' .
-		checked(1, true, false) . '/>';
+		checked(1, CTLT_Stream::is_node_active(), false) . '/>';
 	      }, 'pulse-cpt_settings', 'pulse_settings');
     }
   }
