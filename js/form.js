@@ -12,7 +12,7 @@ var Pulse_CPT_Form = {
 	
 	onReady : function(){
 		jQuery( '.autogrow' ).autogrow();
-		jQuery( '.pulse-form-progress' ).addClass('hide');
+//		jQuery( '.pulse-form-progress' ).addClass('hide');
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
 		
 		if(typeof Pulse_CPT_Form_local != 'undefined') {
@@ -114,13 +114,12 @@ var Pulse_CPT_Form = {
 		}
 		
 		// return false;
-		jQuery( '.pulse-form-progress' ).removeClass( 'hide' );
+		jQuery( '.postbox .pulse-form-progress' ).removeClass( 'hide' );
 	
 		// todo: once the form is succesfuly submited clear the data entered from the form.
 		jQuery.post( Pulse_CPT_Form_global.ajaxUrl , form_data ,  function( response ) {
-			
 			// we need to remove tags and authors
-			jQuery( '.pulse-form-progress' ).addClass('hide');
+			jQuery( '.postbox .pulse-form-progress' ).addClass('hide');
 			if( response == -1){
 				Pulse_CPT_Form.display_msg( 'Your login has expired, please login again' );
 			}
@@ -149,10 +148,8 @@ var Pulse_CPT_Form = {
 				} else {
 				  parent_pulse = jQuery('.pulse-list');
 				}
-				jQuery(html).hide().prependTo(parent_pulse).slideDown('slow');
 				// nicly tranition the addition of the new post
-//				jQuery(html).hide().prependTo('.pulse-list').slideDown("slow");
-//				jQuery('.postbox form').reset(); //reset form contents
+//				jQuery(html).hide().prependTo(parent_pulse).slideDown('slow');
 			}
 			
 		}, "json" );

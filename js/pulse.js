@@ -18,9 +18,28 @@ var Pulse_CPT = {
   },
 	
   listen: function(){
-		
-  // eather do a ajax pull or use socket to do more here
-		
+    if(typeof CTLT_Stream != 'undefined') { //check for stream activity
+      CTLT_Stream.on('server-push', function (data) { //catch server push
+//	console.log(data);
+	if(data.type == 'pulse') { //we are interested
+	  var new_pulse_data = jQuery.parseJSON(data.data); //extract pulse data from the event
+	  if(new_pulse_data.parent == 0) { //no parent -> show on front page
+	    var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
+	    jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+	  } else { //check to see if the parent of the pulse is visible to current user
+	    var all_visible_parents = jQuery('.pulse.expand'); //all visible parents
+	    jQuery.each(all_visible_parents, function(i, val){ //loop through and try to match the ids
+	      if(jQuery(val).data('pulse-id') == new_pulse_data.parent) { //if so, put it to its replies section
+		var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
+		jQuery(new_pulse).prependTo(jQuery(val).find('.pulse-expand-content .pulse-replies')).hide().slideDown('slow');
+	      }
+	    });
+	  }
+	}
+      });
+    } else {
+      
+    }
   },
 	
   expand: function() {
@@ -43,16 +62,21 @@ var Pulse_CPT = {
     var args = {};
     args['pulse_id'] = element.data('pulse-id');
     
-    //ajax post request, returns html data
-    jQuery.post(Pulse_CPT_Form_global.ajaxUrl,
-    {
-      action: 'pulse_cpt_replies',
-      data: args
-    },
-    function(data) { //put replies to its div .pulse-replies
-      jQuery(element).find('.pulse-replies').html(data);
-    }
-    );
+    //show loading spinner
+    element.find( '.pulse-form-progress' ).removeClass( 'hide' );
+    jQuery.ajax({
+      url: Pulse_CPT_Form_global.ajaxUrl,
+      data: {
+	action: 'pulse_cpt_replies',
+	data: args
+      },
+      type: 'post',
+      success: function(data) {
+	//hide spinner again and show content
+	element.find( '.pulse-form-progress' ).addClass( 'hide' );
+	jQuery(element).find('.pulse-replies').html(data);
+      }
+    });
   },
   
   reply: function() {
