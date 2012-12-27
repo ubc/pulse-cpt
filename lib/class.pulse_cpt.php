@@ -310,6 +310,10 @@ class Pulse_CPT {
 			endif; 
 			?>
 				<div class="pulse-pivot"></div>
+				
+					<span class="pulse-form-progress hide">
+						<img title="Loading..." alt="Loading..." src="<?php echo  PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
+					</span>				
 				<div class="pulse-replies"></div>
 			</div><!-- end of pulse-expand-content -->
 			</div> <!-- end of pulse wrap -->
@@ -404,7 +408,8 @@ class Pulse_CPT {
   				),
   			"tags"	=> $tags,
   			"authors" =>$coauthors,
-			'num_replies' => self::get_num_replies()
+			'num_replies' => self::get_num_replies(),
+			'parent' => $post->post_parent
   			);
   	}
   	
@@ -430,7 +435,7 @@ class Pulse_CPT {
   				),
   			"tags"  	=> '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
   			'authors'   => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
-			'num_replies' => '{{it.num_replies}}'
+			'num_replies' => '{{=it.num_replies}}'
   			);
   	}
 	
