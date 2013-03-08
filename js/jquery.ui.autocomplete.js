@@ -530,7 +530,7 @@ $.widget("ui.menu", {
 
 	deactivate: function() {
 		if (!this.active) { return; }
-
+		
 		this.active.children("a")
 			.removeClass("ui-state-hover")
 			.removeAttr("id");

@@ -32,14 +32,16 @@
 		
         self.input = input;
         self.tagInput = $('<input>', {
-            'type' : 'text',
-            'keydown' : function(e) {
+            'type': 'text',
+			'placeholder': input.attr('placeholder'),
+			'width': 240,
+            'keydown': function(e) {
                 if ( e.keyCode == 13 || e.keyCode == self.delimit_key ) {
                     $(this).trigger("selectTag");
                     e.preventDefault();
                 }
             },
-            'blur' : function(e) {
+            'blur': function(e) {
                 $(this).val("");
             }
         });
@@ -52,8 +54,8 @@
         });
         
         self.tagbox = $('<ul>', {
-            'class' : "tagbox",
-            'click' : function(e) {
+            'class': "tagbox",
+            'click': function(e) {
                 self.tagInput.focus();
             }
         });
@@ -65,10 +67,9 @@
         self.inputHolder = $('<li class="input">');
         self.tagbox.append(self.inputHolder);
         self.inputHolder.append(self.tagInput);
-        self.tagInput.autoGrowInput();
+        //self.tagInput.autoGrowInput();
         
         for ( tag in tags ) {
-			console.log(tag);
             self.addTag(tags[tag]);
         }
     }

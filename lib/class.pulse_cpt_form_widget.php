@@ -160,20 +160,20 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<?php endif; ?>
 					
 					<?php if ( $enable_tagging || ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ) || $enable_file_uploads ): ?>
-						<div class="pulse-tags-shell pulse-display-shell"></div>
-						<div class="pulse-author-shell pulse-display-shell"></div>
-						<div class="pulse-file-shell pulse-display-shell"></div>
+						<div class="pulse-tags-shell tagbox-display-shell"></div>
+						<div class="pulse-author-shell tagbox-display-shell"></div>
+						<div class="pulse-file-shell tagbox-display-shell"></div>
 						
 						<div class="pulse-tabs">
 							<?php if ( $enable_tagging ): ?>
 								<div id="tabs-1">
-									<textarea placeholder="Seperate tags by commas" class="pulse-textarea-tags pulse-meta-textarea" name="tags"></textarea>
+									<input type="text" placeholder="Seperate tags by commas" class="pulse-textarea-tags pulse-meta-textarea" name="tags" />
 								</div>
 							<?php endif; ?>
 							
 							<?php if ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ): ?>
 								<div id="tabs-2">
-									<textarea placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author"></textarea>
+									<input type="text" placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author" />
 								</div>
 							<?php endif; ?>
 							
@@ -229,20 +229,21 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			</div>
 		<?php endif; ?>
 		<div class="pulse-list">
-		<?php 
-		$the_query = new WP_Query( Pulse_CPT::query_arguments() );
-		
-		// The Loop
-		while ( $the_query->have_posts() ):
-			$the_query->the_post();
-			Pulse_CPT::the_pulse();
-		endwhile;
-		
-		// Reset Post Data
-		wp_reset_postdata();
-		?>
+			<?php 
+			$the_query = new WP_Query( Pulse_CPT::query_arguments() );
+			
+			// The Loop
+			while ( $the_query->have_posts() ):
+				$the_query->the_post();
+				Pulse_CPT::the_pulse();
+			endwhile;
+			
+			// Reset Post Data
+			wp_reset_postdata();
+			?>
 		</div>
 		<?php
+		
 		echo $after_widget;
 	}
 	
