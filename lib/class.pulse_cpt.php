@@ -20,6 +20,13 @@ class Pulse_CPT {
 		if ( ! is_admin() ):
 			Pulse_CPT::register_script_and_style();
 		endif;
+		
+		add_action( 'admin_menu', array( __CLASS__, 'remove_submenus' ) );
+	}
+	
+	public static function remove_submenus() {
+		remove_submenu_page( 'edit.php?post_type=pulse-cpt', 'edit-tags.php?taxonomy=post_tag&amp;post_type=pulse-cpt' );
+		remove_submenu_page( 'edit.php?post_type=pulse-cpt', 'edit-tags.php?taxonomy=category&amp;post_type=pulse-cpt' );
 	}
 	
 	/**
@@ -415,11 +422,11 @@ class Pulse_CPT {
 				"avatar_30"     => '{{=it.author.avatar_30}}',
 				"user_login"    => '{{=it.author.user_login}}',
 				"display_name"  => '{{=it.author.display_name}}',
-				"post_url"      => '{{=it.author.post_url}}'
+				"post_url"      => '{{=it.author.post_url}}',
 				),
 			"tags"        => '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
 			'authors'     => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
-			'num_replies' => '{{=it.num_replies}}'
+			'num_replies' => '{{=it.num_replies}}',
 		);
 	}
 	
@@ -428,20 +435,20 @@ class Pulse_CPT {
 	 * 
 	 * @access public
 	 * @static
-	 * @param mixed $date_str (default: null)
+	 * @param mixed $date_format (default: null)
 	 * @return void
 	 */
-	public static function get_the_date( $date_str = null ) {
-		if ( $date_str ):
-			$date = date ( 'Ymd', strtotime( $date_str ) );
+	public static function get_the_date( $date_format = null ) {
+		if ( $date_format ):
+			$date = date ( 'Ymd', strtotime( $date_format ) );
 		else:
 			$date = get_the_date( 'Ymd' );
 		endif;
 		
 		if ( $date == date('Ymd') ):
-			return ( $date_str ? date( 'g:iA', strtotime( $date_str ) ) : get_the_date( 'g:iA' ) );
+			return ( $date_format ? date( 'g:iA', strtotime( $date_format ) ) : get_the_date( 'g:iA' ) );
 		else:
-			return ( $date_str ? date( 'j M', strtotime( $date_str ) ) : get_the_date( 'j M' ) );
+			return ( $date_format ? date( 'j M', strtotime( $date_format ) ) : get_the_date( 'j M' ) );
 		endif;
 	}
 	

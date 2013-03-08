@@ -52,13 +52,13 @@
         });
         
         self.tagbox = $('<ul>', {
-            "class" : "tagbox",
-            click : function(e) {
+            'class' : "tagbox",
+            'click' : function(e) {
                 self.tagInput.focus();
             }
         });
 		
-        self.tags = []
+        self.tags = {}
         
         input.after(self.tagbox).hide();
 		
@@ -68,6 +68,7 @@
         self.tagInput.autoGrowInput();
         
         for ( tag in tags ) {
+			console.log(tag);
             self.addTag(tags[tag]);
         }
     }
@@ -75,41 +76,55 @@
     TagBox.prototype = {
 		
         addTag: function(label) {
-            var self = this;
-            var tag = $('<li class="tag">' + $('<div>').text(label).remove().html() + '</li>');
-            
-            this.tags.push(label);
-			
-            tag.append($('<a>', {
-                "href" : "#",
-                "class": "close",
-                "text": "close",
-                click: function(e) {
-                    e.preventDefault();
-                    var index = self.tagbox.find("li").index($(this).parent());
-                    self.removeTag(index);
-                },
-            }));
-            self.inputHolder.before(tag);
-            self.updateInput();
+			if ( ! this.tags.hasOwnProperty(label) ) {
+				var self = this;
+				var tag = $('<li class="tag">' + $('<div>').text(label).remove().html() + '</li>');
+				
+				this.tags[label] = true;
+				
+				tag.append($('<a>', {
+					"href" : "#",
+					"class": "close",
+					"text": "close",
+					click: function(e) {
+						e.preventDefault();
+						var index = self.tagbox.find("li").index($(this).parent());
+						self.removeTag(index);
+					},
+				}));
+				
+				this.inputHolder.before(tag);
+				this.updateInput();
+			}
         },
 		
         removeTag: function(index) {
             this.tagbox.find("li").eq(index).remove();
-            this.tags.splice(index, 1);
+            delete this.tags[index];
             this.updateInput();
         },
 		
         updateInput: function() {
             var tags;
             if (this.options.delimit_by_space) {
-                tags = this.tags.join(" ");
+				tags = this.getTags().join(" ");
             } else {
-                tags = this.tags.join(",");
-            }
+				tags = this.getTags().join(",");
+			}
 			
             this.input.val(tags);
-        }
+        },
+		
+		getTags: function() {
+			var tags = [];
+			for ( var tag in this.tags ) {
+				if (this.tags.hasOwnProperty(tag)) { //to be safe
+					tags.push(tag);
+				}
+			}
+			
+			return tags;
+		}
     }
     
     $.fn.tagBox = function(options) {

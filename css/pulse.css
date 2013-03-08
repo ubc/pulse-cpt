@@ -9,6 +9,10 @@
 	margin: 0 5px;
 }
 
+.pulse-content {
+    word-wrap: break-word;
+}
+
 .pulse-list .pulse:hover {
 	cursor: pointer;
 	background: #EEE;

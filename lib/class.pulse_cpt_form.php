@@ -35,7 +35,10 @@ class Pulse_CPT_Form {
 		$users = get_users($args);
 		foreach ( $users as $user ):
 			$avatar = get_avatar( $user->user_email, 20 );
-			$simple_user[] = array( 'value' => $user->display_name, 'label' => $avatar.' '.$user->display_name );
+			$simple_user[] = array(
+				'value' => $user->display_name,
+				'label' => $avatar.' '.$user->display_name,
+			);
 		endforeach;
 	  
 		return $simple_user;
