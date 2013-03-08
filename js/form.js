@@ -31,7 +31,7 @@ var Pulse_CPT_Form = {
 		Pulse_CPT_Form.original_location.ID = (typeof location.ID == 'undefined') ? null : location.ID;
 		
 		//reply form reset from placeholder hook
-		jQuery('.postbox-placeholder').on('click', function(e){ Pulse_CPT_Form.reply(null); });
+		jQuery('.postbox-placeholder').on('click', function(e) { Pulse_CPT_Form.reply(null); });
 	},
 	
 	/**
@@ -41,14 +41,20 @@ var Pulse_CPT_Form = {
 		if ( meta.enable_character_count ) {
 			var num_char = (meta.num_char ? meta.num_char: 140 )
 			
-			var counter_shell =  parent.find( '.pulse-form-counter' );
+			var counter_shell = parent.find( '.pulse-form-counter' );
 			
 			counter_shell.data( 'num_char', num_char );
-			parent.find('.pulse-form-textarea').charCount({allowed: num_char, counterElement: counter_shell });
+			parent.find('.pulse-form-textarea').charCount( {
+				allowed: num_char,
+				counterElement: counter_shell,
+			} );
 		}
 		
 		if ( meta.enable_tabs ) {
-			parent.find( '.pulse-tabs' ).tabs( {selected: -1, collapsible: true } );
+			parent.find( '.pulse-tabs' ).tabs( {
+				selected: -1,
+				collapsible: true,
+			} );
 			
 			if ( meta.enable_tagging ) {
 				Pulse_CPT_Form.tag_it( parent, 'tags', Pulse_CPT_Form_global.tags);
@@ -56,6 +62,7 @@ var Pulse_CPT_Form = {
 			
 			if ( meta.enable_co_authoring ) {
 				Pulse_CPT_Form.tag_it( parent, 'author', Pulse_CPT_Form_global.authors );
+				console.debug(Pulse_CPT_Form_global.authors)
 			}
 		}
 	},
@@ -142,10 +149,10 @@ var Pulse_CPT_Form = {
 				
 				var html = Pulse_CPT_Form.single_pulse_template( response );
 				var parent_pulse = jQuery('.postbox').closest('.pulse').find('.pulse-replies:first');
-				if(parent_pulse.length > 0) {
-				  
+				if (parent_pulse.length > 0) {
+					
 				} else {
-				  parent_pulse = jQuery('.pulse-list');
+					parent_pulse = jQuery('.pulse-list');
 				}
 			}
 		}, "json" );
@@ -153,22 +160,22 @@ var Pulse_CPT_Form = {
 	},
 	
 	tag_it: function ( parent, el_class, source_autocomplete ) {
-		var el = jQuery( parent ).find( ".pulse-textarea-"+el_class );
-		var tr = el.tagBox( {
+		var element = jQuery( parent ).find( ".pulse-textarea-"+el_class );
+		var tr = element.tagBox( {
 			single_input: el_class,
 			update: function( tags ) {
-				Pulse_CPT_Form.display_nicely( tags, this, parent );
+				Pulse_CPT_Form.display_nicely( tags, this.options, parent );
 			},
 		} );
 		
-		var tags_input = el.parent().find('.input input');
+		var tags_input = element.parent().find('.input input');
 		jQuery( parent ).find( '.pulse-tabs-'+el_class ).click( function() { Pulse_CPT_Form.focusInput( tags_input ); } );
 		
 		var arg = { 
 			source: source_autocomplete,
 			minLength: 2,
 			html: 'html',
-			select: function(e, ui) {
+			select: function( e, ui ) {
 				e.preventDefault();
 				jQuery(this).val( ui.item.value );
 				jQuery(this).trigger("selectTag");
@@ -176,7 +183,7 @@ var Pulse_CPT_Form = {
 			messages: {
 				noResults: '',
 				results: function() { }
-			}
+			},
 	    }
         
 		tags_input.autocomplete( arg );
@@ -212,24 +219,41 @@ var Pulse_CPT_Form = {
 		case "author":
 			if ( tags ) {
 				while ( tags_array[i] ) {
-					html_tags.push('<a href="?author='+tags_array[i]+'">'+tags_array[i]+'</a>');
+					jQuery.ajax( Pulse_CPT_Form_global.ajaxUrl, {
+						async: false,
+						dataType: 'html',
+						type: 'post',
+						data: {
+							action: 'pulse_get_user_image',
+							user: tags_array[i],
+							size: 12,
+						},
+						success: function( response ) {
+							html_tags.push(response+' <a href="?author='+tags_array[i]+'">'+tags_array[i]+'</a>');
+						},
+					} );
+					//html_tags.push('<a href="?author='+tags_array[i]+'">'+tags_array[i]+'</a>');
 					i++;		   	  	
 				}
 				
+				parent.find( '.pulse-author-shell').html(html_tags.join(' '));
+				
+				/*
 				switch( tags_array.length ) {
 				case 1:
-					parent.find( '.pulse-author-shell').html('posting with ' +tags_array[0]);
+					parent.find('.pulse-author-shell').html('posting with ' +tags_array[0]);
 					break;
 				case 2:
-					parent.find( '.pulse-author-shell').html('posting with ' +tags_array[0]+' and '+tags_array[1] );
+					parent.find('.pulse-author-shell').html('posting with ' +tags_array[0]+' and '+tags_array[1] );
 					break;
 				default:
 					var last = tags_array.pop();
-					parent.find( '.pulse-author-shell').html('posting with ' +tags_array.join(', ') + ' and '+last );
+					parent.find('.pulse-author-shell').html('posting with ' +tags_array.join(', ') + ' and '+last );
 					break;
 				}
+				*/
 			} else {
-			  parent.find( '.pulse-author-shell').html('');
+				parent.find('.pulse-author-shell').html('');
 			}
 			
 			break;

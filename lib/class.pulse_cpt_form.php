@@ -5,6 +5,17 @@
  *  as well as. 
  */
 class Pulse_CPT_Form {
+	
+	public static function init() {
+		add_action( 'wp_ajax_pulse_get_user_image', array( __CLASS__, 'get_user_image' ) );
+	}
+	
+	public static function get_user_image() {
+		$user = get_user_by( 'login', $_POST['user'] );
+		echo get_avatar( $user->user_email, $_POST['size'] );
+		die();
+	}
+	
 	/**
 	 * get_tags function.
 	 * 
@@ -32,13 +43,16 @@ class Pulse_CPT_Form {
 	 */
 	public static function get_authors() {
 		$args = array();
+		global $current_user;
 		$users = get_users($args);
 		foreach ( $users as $user ):
-			$avatar = get_avatar( $user->user_email, 20 );
-			$simple_user[] = array(
-				'value' => $user->display_name,
-				'label' => $avatar.' '.$user->display_name,
-			);
+			if ( $user != $current_user ) {
+				$avatar = get_avatar( $user->user_email, 20 );
+				$simple_user[] = array(
+					'value' => $user->display_name,
+					'label' => $avatar.' '.$user->display_name,
+				);
+			}
 		endforeach;
 	  
 		return $simple_user;
@@ -206,3 +220,4 @@ class Pulse_CPT_Form {
 	}
 }
 
+Pulse_CPT_Form::init();

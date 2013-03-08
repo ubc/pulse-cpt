@@ -24,6 +24,8 @@
             self.delimit_expr = /\s+/;
         }
 		
+		self.update = options['update'];
+		
         var val = input.val();
         var tags = [];
         if ( val ) {
@@ -75,9 +77,9 @@
     }
     
     TagBox.prototype = {
-		
         addTag: function(label) {
 			if ( ! this.tags.hasOwnProperty(label) ) {
+				console.debug(label);
 				var self = this;
 				var tag = $('<li class="tag">' + $('<div>').text(label).remove().html() + '</li>');
 				
@@ -114,6 +116,7 @@
 			}
 			
             this.input.val(tags);
+			this.update(tags);
         },
 		
 		getTags: function() {
@@ -128,7 +131,7 @@
 		}
     }
     
-    $.fn.tagBox = function(options) {
+    $.fn.tagBox = function( options ) {
         var defaults = {
             delimit_by_space : false
         };
@@ -137,7 +140,7 @@
 		
         return this.each(function() {
             var input = $(this);
-            var tagbox = new TagBox(input, options);
+            var tagbox = new TagBox( input, options );
         });
     }
 	

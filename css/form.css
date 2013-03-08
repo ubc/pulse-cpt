@@ -99,6 +99,14 @@
     background: url(../img/sprite.gif) no-repeat 0 -65px;
 }
 
+.pulse-form .pulse-author-shell {
+    margin-left: 4px;
+}
+
+.pulse-form .pulse-author-shell img {
+    margin-bottom: -2px;
+}
+
 .pulse-form .clear {
 	clear:both;
 }

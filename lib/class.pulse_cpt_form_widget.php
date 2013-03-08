@@ -70,7 +70,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		    'enable_location_sensitive' => false,
 		    'enable_comments'           => false
 	    ) );
-		extract($instance);	
+		
+		extract($instance);
+		
 		?><!-- Title -->
 			<p>
 				<label for="<?php echo $this->get_field_id('title'); ?>">Title: <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label>
