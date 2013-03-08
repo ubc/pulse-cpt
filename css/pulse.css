@@ -1,109 +1,121 @@
-.pulse-list{
+.pulse-list {
 	margin-top: 10px;
 }
-.pulse{
+
+.pulse {
 	padding: 5px;
-	border:1px solid #FFF;
+	border: 1px solid #FFF;
 	border-bottom: 1px solid #ECECEC;
 	margin: 0 5px;
 }
-.pulse-list .pulse:hover{
+
+.pulse-list .pulse:hover {
 	cursor: pointer;
 	background: #EEE;
-	border:1px solid #ECECEC;
+	border: 1px solid #ECECEC;
 }
-.pulse-list .pulse.expand{
+
+.pulse-list .pulse.expand {
 	background: #FFF;
 	cursor: default;
-	border:1px solid #ECECEC;
+	border: 1px solid #ECECEC;
 	margin: 10px 5px;
 }
-.pulse-wrap{
-	margin-left:40px;
+
+.pulse-wrap {
+	margin-left: 40px;
 }
-.widget_pulse_cpt .pulse-wrap ul{
+
+.widget_pulse_cpt .pulse-wrap ul {
 	margin: 0;
 }
-.pulse .avatar{
+
+.pulse .avatar {
 	float: left;
 	margin-left: -40px;
 }
-.pulse-meta{
+
+.pulse-meta {
 	position: absolute;
-	top:5px;
+	top: 5px;
 	right: 5px;
 	font-size: 11px;
 }
-.pulse-meta a{
-	
-}
-.pulse-author-meta{
-}
+
 .pulse-meta a,
-.pulse-author-meta a{
+.pulse-author-meta a {
 	text-decoration: none;
-	
 }
-.pulse-author-meta a small{
+
+.pulse-author-meta a small {
 	display: none;
 }
-.pulse-author-meta a:hover small{
+
+.pulse-author-meta a:hover small {
 	display: inline;
 	font-weight: normal;
 }
-.expand .pulse-expand-content{
+
+.expand .pulse-expand-content {
 	display: block;
 }
-.pulse-list .pulse-expand-content{
+
+.pulse-list .pulse-expand-content {
 	display: none;
 }
+
 .pulse,
 .pulse-footer,
 .pulse-footer-action,
-.pulse-comments-intro{
+.pulse-comments-intro {
 	position: relative;
 	overflow: hidden;
 }
+
 .pulse-footer-action,
-.pulse-comments-intro{
+.pulse-comments-intro {
 	float: left;
 }
-.pulse-tags{
+
+.pulse-tags {
 	background: url(../img/sprite.gif) no-repeat 0 -65px;
 	padding: 0 0 0 20px;
 }
+
 .pulse-co-authors,
 .pulse-co-authors li,
 .pulse-actions ul li,
-.pulse-tags li{
+.pulse-tags li {
 	list-style: none;
 	display: inline;
 	font-size: 11px;
 }
+
 .pulse-tags,
 .pulse-actions ul,
-.pulse-co-authors{ 
+.pulse-co-authors {
 	margin: 0;
 }
-.pulse-actions ul{
+
+.pulse-actions ul {
 	overflow: hidden;
 }
-.pulse-actions ul li{
+
+.pulse-actions ul li {
 	margin: 0 5px 0 0;
 	float: left;
-	
 }
-.posted-with{
+
+.posted-with {
 	color: #999;
 }
+
 /* Pulse Actions */
-.pulse-actions{
+.pulse-actions {
 	display: none;
 }
-.pulse-list .expand .pulse-actions,
-.pulse-list .pulse:hover .pulse-actions{
-	display: block;
-}
-.pulse-actions ul li{
 
+.pulse-list .expand .pulse-actions,
+.pulse-list .pulse:hover .pulse-actions {
+	display: block;
 }

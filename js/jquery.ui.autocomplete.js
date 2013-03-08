@@ -28,7 +28,7 @@ $.widget( "ui.autocomplete", {
 			at: "left bottom",
 			collision: "none"
 		},
-		source: null
+		source: null,
 	},
 
 	pending: 0,
@@ -38,7 +38,7 @@ $.widget( "ui.autocomplete", {
 			doc = this.element[ 0 ].ownerDocument,
 			suppressKeyPress;
 		this.isMultiLine = this.element.is( "textarea" );
-
+		
 		this.element
 			.addClass( "ui-autocomplete-input" )
 			.attr( "autocomplete", "off" )
@@ -52,7 +52,7 @@ $.widget( "ui.autocomplete", {
 				if ( self.options.disabled || self.element.propAttr( "readOnly" ) ) {
 					return;
 				}
-
+				
 				suppressKeyPress = false;
 				var keyCode = $.ui.keyCode;
 				switch( event.keyCode ) {
@@ -79,7 +79,7 @@ $.widget( "ui.autocomplete", {
 					}
 					//passthrough - ENTER and TAB both select the current element
 				case keyCode.TAB:
-					if ( !self.menu.active ) {
+					if ( ! self.menu.active ) {
 						return;
 					}
 					self.menu.select( event );
@@ -111,7 +111,7 @@ $.widget( "ui.autocomplete", {
 				if ( self.options.disabled ) {
 					return;
 				}
-
+				
 				self.selectedItem = null;
 				self.previous = self.element.val();
 			})
@@ -119,7 +119,7 @@ $.widget( "ui.autocomplete", {
 				if ( self.options.disabled ) {
 					return;
 				}
-
+				
 				clearTimeout( self.searching );
 				// clicks on the menu (or a button to trigger a search) will cause a blur event
 				self.closing = setTimeout(function() {
@@ -138,7 +138,7 @@ $.widget( "ui.autocomplete", {
 				// so we have to track the next mousedown and close the menu if
 				// the user clicks somewhere outside of the autocomplete
 				var menuElement = self.menu.element[ 0 ];
-				if ( !$( event.target ).closest( ".ui-menu-item" ).length ) {
+				if ( ! $( event.target ).closest( ".ui-menu-item" ).length ) {
 					setTimeout(function() {
 						$( document ).one( 'mousedown', function( event ) {
 							if ( event.target !== self.element[ 0 ] &&
@@ -149,7 +149,7 @@ $.widget( "ui.autocomplete", {
 						});
 					}, 1 );
 				}
-
+				
 				// use another timeout to make sure the blur-event-handler on the input was already triggered
 				setTimeout(function() {
 					clearTimeout( self.closing );
@@ -168,7 +168,7 @@ $.widget( "ui.autocomplete", {
 				selected: function( event, ui ) {
 					var item = ui.item.data( "item.autocomplete" ),
 						previous = self.previous;
-
+					
 					// only trigger when focus was lost (click on menu)
 					if ( self.element[0] !== doc.activeElement ) {
 						self.element.focus();
@@ -181,14 +181,14 @@ $.widget( "ui.autocomplete", {
 							self.selectedItem = item;
 						}, 1);
 					}
-
+					
 					if ( false !== self._trigger( "select", event, { item: item } ) ) {
 						self.element.val( item.value );
 					}
 					// reset the term after the select event
 					// this allows custom select handling to work properly
 					self.term = self.element.val();
-
+					
 					self.close( event );
 					self.selectedItem = item;
 				},
@@ -235,9 +235,11 @@ $.widget( "ui.autocomplete", {
 		if ( key === "source" ) {
 			this._initSource();
 		}
+		
 		if ( key === "appendTo" ) {
 			this.menu.element.appendTo( $( value || "body", this.element[0].ownerDocument )[0] )
 		}
+		
 		if ( key === "disabled" && value && this.xhr ) {
 			this.xhr.abort();
 		}
@@ -247,6 +249,7 @@ $.widget( "ui.autocomplete", {
 		var self = this,
 			array,
 			url;
+		
 		if ( $.isArray(this.options.source) ) {
 			array = this.options.source;
 			this.source = function( request, response ) {
@@ -277,38 +280,38 @@ $.widget( "ui.autocomplete", {
 
 	search: function( value, event ) {
 		value = value != null ? value : this.element.val();
-
+		
 		// always save the actual value, not the one passed as an argument
 		this.term = this.element.val();
-
+		
 		if ( value.length < this.options.minLength ) {
 			return this.close( event );
 		}
-
+		
 		clearTimeout( this.closing );
 		if ( this._trigger( "search", event ) === false ) {
-			return;
+			return false;
 		}
-
+		
 		return this._search( value );
 	},
 
 	_search: function( value ) {
 		this.pending++;
 		this.element.addClass( "ui-autocomplete-loading" );
-
+		
 		this.source( { term: value }, this._response() );
 	},
 
 	_response: function() {
 		var that = this,
 			index = ++requestIndex;
-
+		
 		return function( content ) {
 			if ( index === requestIndex ) {
 				that.__response( content );
 			}
-
+			
 			that.pending--;
 			if ( !that.pending ) {
 				that.element.removeClass( "ui-autocomplete-loading" );
