@@ -22,36 +22,62 @@ class Pulse_CPT_Settings {
 		register_setting( 'pulse_options', 'pulse_bitly_key' );
 		
 		//define section
-		add_settings_section( 'pulse_settings', 'Pulse-CPT Settings', function() {
-			echo 'Settings and CTLT_Stream/NodeJS Status';
-		}, 'pulse-cpt_settings' );
+		add_settings_section( 'pulse_settings', 'Pulse-CPT Settings', array( __CLASS__, 'setting_section' ), 'pulse-cpt_settings' );
 	  
 		//add fields
-		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', function() {
-			echo '<input id="pulse_bitly_username" name="pulse_bitly_username" value="'.get_option('pulse_bitly_username').'" type="text" />';
-		}, 'pulse-cpt_settings', 'pulse_settings' );
+		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 'pulse-cpt_settings', 'pulse_settings' );
 			
-		add_settings_field( 'pulse_bitly_key', 'Bit.ly API Key', function() {
-			?>
-			<input id="pulse_bitly_key" name="pulse_bitly_key" value="<?php echo get_option('pulse_bitly_key'); ?>" type="text" />
-			<small class="clear">To get your <a href="http://bit.ly" target="_blank">bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API KEY</a></small>
-			<?php
-		}, 'pulse-cpt_settings', 'pulse_settings' );
+		add_settings_field( 'pulse_bitly_key', 'Bit.ly API Key', array( __CLASS__, 'setting_bitly_key' ), 'pulse-cpt_settings', 'pulse_settings' );
 	  
-		//CTLT_Stream and NodeJS indicators, these are not registered/saved
-		add_settings_field( 'ctlt_stream_found', 'CTLT_Stream plugin found', function() {
-			?>
-			<input id="ctlt_stream_status" name="ctlt_stream_status" type="checkbox" disabled="disabled" <?php checked( 1, self::$options['CTLT_STREAM'], false); ?>/>
-			<?php
-		}, 'pulse-cpt_settings', 'pulse_settings' );
+		//CTLT_Stream and NodeJS indicators, these are not registered/savesd
+		add_settings_field( 'ctlt_stream_found', 'CTLT Stream plugin', array( __CLASS__, 'setting_stream_plugin' ), 'pulse-cpt_settings', 'pulse_settings' );
 	  
 		if ( self::$options['CTLT_STREAM'] ):
-			add_settings_field( 'nodejs_server_status', 'NodeJS Server status', function() {
-				?>
-				<input id="nodejs_server_status" name="nodejs_server_status" type="checkbox" disabled="disabled" <?php checked(1, CTLT_Stream::is_node_active(), false); ?>/>
-				<?php
-			}, 'pulse-cpt_settings', 'pulse_settings' );
+			add_settings_field( 'nodejs_server_status', 'NodeJS Server', array( __CLASS__, 'setting_nodejs_server' ), 'pulse-cpt_settings', 'pulse_settings' );
 		endif;
+	}
+	
+	public static function setting_section() {
+		?>
+		Settings and CTLT Stream/NodeJS Status
+		<?php
+	}
+	
+	public static function setting_bitly_username() {
+		?>
+		<input id="pulse_bitly_username" name="pulse_bitly_username" value="<?php get_option( 'pulse_bitly_username' ); ?>" type="text" />
+		<?php
+	}
+	
+	public static function setting_bitly_key() {
+		?>
+		<input id="pulse_bitly_key" name="pulse_bitly_key" value="<?php echo get_option('pulse_bitly_key'); ?>" type="text" />
+		<small class="clear">
+			To get your <a href="http://bit.ly" target="_blank">bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API KEY</a>
+		</small>
+		<?php
+	}
+	
+	public static function setting_stream_plugin() {
+		?>
+		<input id="ctlt_stream_status" name="ctlt_stream_status" type="checkbox" style="display: none" disabled="disabled" <?php checked( self::$options['CTLT_STREAM'] ); ?>/>
+		
+		<?php if ( self::$options['CTLT_STREAM'] == true ): ?>
+			<div style="color: green">Enabled</div>
+		<?php else: ?>
+			<div style="color: red">Not Found</div>
+		<?php endif;
+	}
+	
+	public static function setting_nodejs_server() {
+		?>
+		<input id="nodejs_server_status" name="nodejs_server_status" type="checkbox" style="display: none" disabled="disabled" <?php checked( CTLT_Stream::is_node_active() ); ?>/>
+		
+		<?php if ( CTLT_Stream::is_node_active() == true ): ?>
+			<div style="color: green">Connected</div>
+		<?php else: ?>
+			<div style="color: red">Not Found</div>
+		<?php endif;
 	}
 	
 	public static function admin_page() {
@@ -61,6 +87,7 @@ class Pulse_CPT_Settings {
 				do_settings_sections('pulse-cpt_settings');
 				settings_fields('pulse_options');
 			?>
+			<br />
 			<input type="submit" class="button-primary" value="Save Changes" />
 		</form>
 		<?php
