@@ -24,17 +24,24 @@ var Pulse_CPT = {
             CTLT_Stream.on( 'server-push', function (data) { //catch server push
                 if ( data.type == 'pulse' ) { //we are interested
                     var new_pulse_data = jQuery.parseJSON(data.data); //extract pulse data from the event
+                    
                     if ( new_pulse_data.parent == 0 ) { //no parent -> show on front page
                         var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
+                        
                         jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
                     } else { //check to see if the parent of the pulse is visible to current user
                         var all_visible_parents = jQuery('.pulse.expand'); //all visible parents
+                        var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
+                        
                         jQuery.each( all_visible_parents, function( i, val ) { //loop through and try to match the ids
                             if ( jQuery(val).data('pulse-id') == new_pulse_data.parent ) { //if so, put it to its replies section
-                                var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
                                 jQuery(new_pulse).prependTo(jQuery(val).find('.pulse-expand-content .pulse-replies')).hide().slideDown('slow');
+                                return;
                             }
                         } );
+                        
+                        // If no appropriate place is found for the new pulse, put it in the main pulse-list
+                        jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
                     }
                 }
             });

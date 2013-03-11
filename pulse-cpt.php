@@ -22,13 +22,13 @@ require_once( 'lib/class.pulse_cpt_form.php' );
 require_once( 'lib/class.pulse_cpt_form_widget.php' );
 require_once( 'lib/class.pulse_cpt_settings.php' );
 
-add_action( 'init',              array( 'Pulse_CPT', 'init' ) );
-add_action( 'widgets_init',      array( 'Pulse_CPT', 'widgets_init' ) );
-add_action( 'wp_footer',         array( 'Pulse_CPT', 'print_form_script' ) );
-add_action( 'wp_footer',         array( 'Pulse_CPT', 'print_pulse_script' ) );
-add_action( 'template_redirect', array( 'Pulse_CPT', 'template_redirect' ) );
-add_action( 'wp_footer',         array( 'Pulse_CPT', 'footer' ), 1 ); // templates should be generated before calling the js
-add_action( 'wp_ajax_pulse_cpt_insert', array ('Pulse_CPT_Form', 'insert' ) );
+add_action( 'init',                     array( 'Pulse_CPT', 'init' ) );
+add_action( 'widgets_init',             array( 'Pulse_CPT', 'widgets_init' ) );
+add_action( 'wp_footer',                array( 'Pulse_CPT', 'print_form_script' ) );
+add_action( 'wp_footer',                array( 'Pulse_CPT', 'print_pulse_script' ) );
+add_action( 'template_redirect',        array( 'Pulse_CPT', 'template_redirect' ) );
+add_action( 'wp_footer',                array( 'Pulse_CPT', 'footer' ), 1 ); // templates should be generated before calling the js
+add_action( 'wp_ajax_pulse_cpt_insert', array( 'Pulse_CPT_Form', 'insert' ) );
 
 //ajax request handler for getting pulse replies
 add_action( 'wp_ajax_pulse_cpt_replies', array( 'Pulse_CPT', 'ajax_replies' ) );

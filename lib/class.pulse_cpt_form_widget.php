@@ -158,7 +158,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<form action="" method="post" name="new-post" class="pulse-form">
 					<textarea cols="60" rows="4" tabindex="1" class="pulse-form-textarea autogrow" name="posttext" placeholder="<?php echo $placeholder; ?>"></textarea>
 					<?php if ( $enable_url_shortener ): ?>
-						<a href="#shorten-url" class="pulse-shorten-url">shorten url</a>
+						<div class="pulse-shorten-url">
+							<a href="#shorten-url">shorten url</a>
+						</div>
 					<?php endif; ?>
 					
 					<?php if ( $enable_tagging || ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ) || $enable_file_uploads ): ?>

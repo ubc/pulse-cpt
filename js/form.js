@@ -12,7 +12,6 @@ var Pulse_CPT_Form = {
 	
 	onReady: function() {
 		jQuery( '.autogrow' ).autogrow();
-		//jQuery( '.pulse-form-progress' ).addClass('hide');
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
 		
 		if ( typeof Pulse_CPT_Form_local != 'undefined' ) {
@@ -21,8 +20,8 @@ var Pulse_CPT_Form = {
 		
 		Pulse_CPT_Form.single_pulse_template = doT.template( document.getElementById('pulse-cpt-single').text );
 		
-		jQuery('.pulse-shorten-url').live('click', Pulse_CPT_Form.shorten_url_action );
-
+		jQuery('.pulse-shorten-url a').live( 'click', Pulse_CPT_Form.shorten_url_action );
+		
 		//assign location type and ids
 		var location = { type: null, ID: null };
 		location.type = jQuery('.postbox input[name="location[type]"]').val();
@@ -62,7 +61,6 @@ var Pulse_CPT_Form = {
 			
 			if ( meta.enable_co_authoring ) {
 				Pulse_CPT_Form.tag_it( parent, 'author', Pulse_CPT_Form_global.authors );
-				console.debug(Pulse_CPT_Form_global.authors)
 			}
 		}
 	},
@@ -72,6 +70,7 @@ var Pulse_CPT_Form = {
 	 */
 	reply: function(parent_pulse) {
 		var orig_loc_null = Pulse_CPT_Form.original_location.type == null || Pulse_CPT_Form.original_location.ID == null;
+		
 		//if ID == null then reset form to original location
 		if ( parent_pulse == null ) {
 			if ( orig_loc_null ) {
@@ -87,6 +86,7 @@ var Pulse_CPT_Form = {
 			jQuery('.pulse-form-textarea').focus();
 			return;
 		}
+		
 		if ( orig_loc_null ) {
 			//add new elements to track parent on the fly
 			jQuery('<input>').attr( {
@@ -103,7 +103,7 @@ var Pulse_CPT_Form = {
 		} else {
 			//change values of existing elements
 			jQuery('input[name="location[type]"]').val('singular'); 
-			jQuery('input[name="location[ID]"]').val(ID); 
+			jQuery('input[name="location[ID]"]').val(parent_pulse.data('pulse-id')); 
 		}
 		
 		//show placeholder and insert the form inside the pivot element in the parent pulse
@@ -123,21 +123,21 @@ var Pulse_CPT_Form = {
 		}
 		
 		// return false;
-		jQuery( '.postbox .pulse-form-progress' ).removeClass( 'hide' );
-	
-		// todo: once the form is succesfuly submited clear the data entered from the form.
+		jQuery( '.postbox .pulse-form-progress' ).show();
+		
 		jQuery.post( Pulse_CPT_Form_global.ajaxUrl, form_data, function( response ) {
 			// we need to remove tags and authors
-			jQuery( '.postbox .pulse-form-progress' ).addClass('hide');
+			jQuery( '.postbox .pulse-form-progress' ).hide();
+			
 			if ( response == -1 ) {
 				Pulse_CPT_Form.display_msg( 'Your login has expired, please login again' );
 			}
-				
+			
 			if ( response.hasOwnProperty('error') ) {
 				Pulse_CPT_Form.display_msg( response.error );
 			} else {
 				// clear the forms
-				form.find('textarea,input[type=text]').val('');
+				form.each( function() { this.reset(); } );
 				
 				// counter goes back to what ever it used to be
 				var num_char_wrap = form.find( '.pulse-form-counter' );
@@ -149,13 +149,12 @@ var Pulse_CPT_Form = {
 				
 				var html = Pulse_CPT_Form.single_pulse_template( response );
 				var parent_pulse = jQuery('.postbox').closest('.pulse').find('.pulse-replies:first');
-				if (parent_pulse.length > 0) {
-					
-				} else {
+				if ( parent_pulse.length <= 0 ) {
 					parent_pulse = jQuery('.pulse-list');
 				}
 			}
 		}, "json" );
+		
 		return false;
 	},
 	
@@ -232,8 +231,7 @@ var Pulse_CPT_Form = {
 							html_tags.push(response+' <a href="?author='+tags_array[i]+'">'+tags_array[i]+'</a>');
 						},
 					} );
-					//html_tags.push('<a href="?author='+tags_array[i]+'">'+tags_array[i]+'</a>');
-					i++;		   	  	
+					i++;
 				}
 				
 				parent.find( '.pulse-author-shell').html(html_tags.join(' '));
@@ -265,13 +263,13 @@ var Pulse_CPT_Form = {
 	    if ( jQuery( "#"+Pulse_CPT_Form.msg_id ) ) {
 	    	jQuery( "#"+Pulse_CPT_Form.msg_id ).html(msg);
 	    } else {
-	    	jQuery( 'body' ).append( '<div class="pulse-alert" id="'+Pulse_CPT_Form.msg_id+'">'+msg+'</div>' );
+	    	jQuery( 'body' ).prepend( '<div class="pulse-alert" id="'+Pulse_CPT_Form.msg_id+'">'+msg+'</div>' );
 	    }
 		
 		// Watch for mouse & keyboard in .7s
-		Pulse_CPT_Form.msg_t1 = setTimeout("Pulse_CPT_Form.bind_msg_events()", 700);
+		Pulse_CPT_Form.msg_t1 = setTimeout( "Pulse_CPT_Form.bind_msg_events()", 700 );
 		// Remove message after 5s
-		Pulse_CPT_Form.msg_t2 = setTimeout("Pulse_CPT_Form.remove_msg()", 5000);
+		Pulse_CPT_Form.msg_t2 = setTimeout( "Pulse_CPT_Form.remove_msg()", 5000 );
 	},
 
 	bind_msg_events: function() {

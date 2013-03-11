@@ -191,7 +191,7 @@ class Pulse_CPT {
 		$global_args['ajaxUrl'] = admin_url('admin-ajax.php');
 		
 		if ( ! self::$add_form_script ): // We still need the ajax url even if user isnt logged in
-			wp_localize_script('pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args);
+			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
 		else: //localize full data for logged in user
 			$global_args['tags'] = Pulse_CPT_Form::get_tags();
 			$global_args['authors'] = Pulse_CPT_Form::get_authors();
