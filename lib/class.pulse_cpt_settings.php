@@ -23,25 +23,32 @@ class Pulse_CPT_Settings {
 		//these need to be in admin_init otherwise Settings API doesn't work
 		register_setting( 'pulse_options', 'pulse_bitly_username' );
 		register_setting( 'pulse_options', 'pulse_bitly_key' );
+		register_setting( 'pulse_options', 'pulse_favourite' );
 		
-		// Define section
-		add_settings_section( 'pulse_settings', 'Pulse-CPT Settings', array( __CLASS__, 'setting_section' ), 'pulse-cpt_settings' );
+		// Define sections
+		add_settings_section( 'pulse_settings_main', 'Pulse-CPT Settings', array( __CLASS__, 'setting_section_main' ), 'pulse-cpt_settings' );
+		add_settings_section( 'pulse_settings_plugins', 'Plugin Integration', array( __CLASS__, 'pulse_settings_plugins' ), 'pulse-cpt_settings' );
 	  
 		// Add fields
-		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 'pulse-cpt_settings', 'pulse_settings' );
-		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      'pulse-cpt_settings', 'pulse_settings' );
+		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 'pulse-cpt_settings', 'pulse_settings_main' );
+		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      'pulse-cpt_settings', 'pulse_settings_main' );
 	  
-		// CTLT Stream and NodeJS indicators, these are not registered/savesd
-		add_settings_field( 'ctlt_stream_found', 'CTLT Stream plugin', array( __CLASS__, 'setting_stream_plugin' ), 'pulse-cpt_settings', 'pulse_settings' );
-	  
-		if ( self::$options['CTLT_STREAM'] ):
-			add_settings_field( 'nodejs_server_status', 'NodeJS Server', array( __CLASS__, 'setting_nodejs_server' ), 'pulse-cpt_settings', 'pulse_settings' );
-		endif;
+		// CTLT Stream and NodeJS indicators
+		add_settings_field( 'ctlt_stream_found', 'CTLT Stream plugin', array( __CLASS__, 'setting_stream_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		add_settings_field( 'nodejs_server_status', 'NodeJS Server', array( __CLASS__, 'setting_nodejs_server' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		add_settings_field( 'evaluate_found', 'Evaluate plugin', array( __CLASS__, 'setting_evaluate_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		add_settings_field( 'pulse_favourite', 'Enable Favourite Rating', array( __CLASS__, 'setting_favourite' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 	}
 	
-	public static function setting_section() {
+	public static function setting_section_main() {
 		?>
-		Settings and CTLT Stream/NodeJS Status
+		Main Settings
+		<?php
+	}
+	
+	public static function pulse_settings_plugins() {
+		?>
+		Integration for the CTLT Stream, and Evaluate plugins
 		<?php
 	}
 	
@@ -75,10 +82,31 @@ class Pulse_CPT_Settings {
 		?>
 		<input id="nodejs_server_status" name="nodejs_server_status" type="checkbox" disabled="disabled" style="display: none" <?php checked( CTLT_Stream::is_node_active() ); ?> />
 		
-		<?php if ( CTLT_Stream::is_node_active() == true ): ?>
+		<?php if ( self::$options['CTLT_STREAM'] != true ): ?>
+			<div style="color: red">Stream Plugin Not Found</div>
+		<?php elseif ( CTLT_Stream::is_node_active() ): ?>
 			<div style="color: green">Connected</div>
 		<?php else: ?>
+			<div style="color: red">Server Not Found</div>
+		<?php endif;
+	}
+	
+	public static function setting_evaluate_plugin() {
+		?>
+		<input id="evaluate_status" name="evaluate_status" type="checkbox" style="display: none" disabled="disabled" <?php checked( class_exists( 'Evaluate' ) ); ?>/>
+		
+		<?php if ( class_exists( 'Evaluate' ) ): ?>
+			<div style="color: green">Enabled</div>
+		<?php else: ?>
 			<div style="color: red">Not Found</div>
+		<?php endif;
+	}
+	
+	public static function setting_favourite() {
+		if ( class_exists( 'Evaluate' ) ): ?>
+			<input id="pulse_favourite" name="pulse_favourite" type="checkbox" value="<?php echo get_option('pulse_favourite'); ?>" />
+		<?php else: ?>
+			<div style="color: red">Enable the Evaluate Plugin to use this option.</div>
 		<?php endif;
 	}
 	
