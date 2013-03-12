@@ -73,7 +73,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		
 		extract($instance);
 		
-		?><!-- Title -->
+		?>
+			<!-- Title -->
 			<p>
 				<label for="<?php echo $this->get_field_id('title'); ?>">Title: <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label>
 				<label for="<?php echo $this->get_field_id('display_title'); ?>"> <input  id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>" type="checkbox"<?php echo checked($display_title); ?> /> Display Title</label>
@@ -111,7 +112,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<small>Pulse authors can add other as contributing authors</small>
 				</p>
 			<?php else: // enable co-authoring plugin enable this functionality  ?>
-				
+				Enable the Co-Authoring+ plugin enable this functionality
 			<?php endif; ?>
 		<?php
 	}

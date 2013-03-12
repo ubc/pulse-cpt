@@ -1,8 +1,7 @@
 <?php
 
 /**
- *  Hadles form submition, ajax, regular, though wordpress, interface fun stuff, basically the creation of the pulse content type
- *  as well as. 
+ *  Hadles form submition, ajax, regular, though wordpress, interface fun stuff, basically the creation of the pulse content type as well as. 
  */
 class Pulse_CPT_Form {
 	
@@ -199,7 +198,7 @@ class Pulse_CPT_Form {
 		//we're only interested in the parent post
 		if ( wp_is_post_revision( $pulse_id ) ) return;
 		
-		//check if CTLT_Stream plugin exists to use with node
+		//check if CTLT Stream plugin exists to use with node
 		if ( ! function_exists('is_plugin_active')):
 			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		endif;
