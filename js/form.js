@@ -30,7 +30,7 @@ var Pulse_CPT_Form = {
 		Pulse_CPT_Form.original_location.ID = (typeof location.ID == 'undefined') ? null : location.ID;
 		
 		//reply form reset from placeholder hook
-		jQuery('.postbox-placeholder').on('click', function(e) { Pulse_CPT_Form.reply(null); });
+		jQuery('.postbox-placeholder').on( 'click', function(e) { Pulse_CPT_Form.reply(null); } );
 	},
 	
 	/**
@@ -68,10 +68,10 @@ var Pulse_CPT_Form = {
 	/*
 	 * move form to desired pulse and change location data / reset location
 	 */
-	reply: function(parent_pulse) {
+	reply: function( parent_pulse ) {
 		var orig_loc_null = Pulse_CPT_Form.original_location.type == null || Pulse_CPT_Form.original_location.ID == null;
 		
-		//if ID == null then reset form to original location
+		// If ID == null then reset form to original location
 		if ( parent_pulse == null ) {
 			if ( orig_loc_null ) {
 				jQuery('input[name="location[type]"]').remove(); 
@@ -80,7 +80,8 @@ var Pulse_CPT_Form = {
 				jQuery('input[name="location[type]"]').val(Pulse_CPT_Form.original_location.type);
 				jQuery('input[name="location[ID]"]').val(Pulse_CPT_Form.original_location.ID);
 			}
-			//hide placeholder and move the form back to its original location
+			
+			// Hide placeholder and move the form back to its original location
 			jQuery('.postbox-placeholder').hide();
 			jQuery('.postbox').insertAfter(jQuery('.postbox-placeholder'));
 			jQuery('.pulse-form-textarea').focus();
@@ -88,7 +89,7 @@ var Pulse_CPT_Form = {
 		}
 		
 		if ( orig_loc_null ) {
-			//add new elements to track parent on the fly
+			// Add new elements to track parent on the fly
 			jQuery('<input>').attr( {
 				name: 'location[type]',
 				value: 'singular',
@@ -101,18 +102,18 @@ var Pulse_CPT_Form = {
 				type: 'hidden'
 			} ).appendTo('.pulse-form');
 		} else {
-			//change values of existing elements
+			// Change values of existing elements
 			jQuery('input[name="location[type]"]').val('singular'); 
-			jQuery('input[name="location[ID]"]').val(parent_pulse.data('pulse-id')); 
+			jQuery('input[name="location[ID]"]').val( parent_pulse.data('pulse-id') ); 
 		}
 		
-		//show placeholder and insert the form inside the pivot element in the parent pulse
+		// Show placeholder and insert the form inside the pivot element in the parent pulse
 		jQuery('.postbox-placeholder').show();
-		jQuery('.postbox').insertBefore(parent_pulse.find('.pulse-pivot:first'));
+		jQuery('.postbox').insertBefore( parent_pulse.find('.pulse-pivot:first') );
 		jQuery('.pulse-form-textarea').focus();
 	},
 	
-	submitForm : function () {
+	submitForm: function () {
 		var form = jQuery(this);
 		var form_data = form.serialize();
 		

@@ -3,7 +3,6 @@
 global $pulse_cpt_widget_ids;
 
 class Pulse_CPT_Form_Widget extends WP_Widget {
-	static $evaluate_active = false;
 	
 	public function __construct() {
 		parent::__construct(
@@ -11,13 +10,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			'Pulse Form', // Name
 			array( 'description' => __( 'A way to simply add new pulses', 'pulse_cpt' ) ) // Args
 		);
-		
-		//need to put nonce for Evaluate if it's installed
-		if ( ! function_exists('is_plugin_active') ):
-			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		endif;
-		
-		self::$evaluate_active = is_plugin_active('evaluate/evaluate.php');
 	}
 	
 	/**
@@ -43,6 +35,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$instance['enable_file_uploads']       = false; // todo: implement file uploading ui(bool) $new_instance['enable_file_uploads'];
 		$instance['enable_location_sensitive'] = (bool) $new_instance['enable_location_sensitive'];
 		$instance['enable_comments']           = (bool) $new_instance['enable_comments'];
+		$instance['rating_metric']             = $new_instance['rating_metric'];
 		
 		return $instance;
 	}
@@ -64,11 +57,12 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		    'enable_url_shortener'      => false,
 		    'bitly_user'                => get_option('pulse_bitly_username'),
 		    'bitly_api_key'             => get_option('pulse_bitly_key'),
+		    'rating_metric'             => false,
 		    'enable_tagging'            => false,
 		    'enable_co_authoring'       => false,
 		    'enable_file_uploads'       => false,
 		    'enable_location_sensitive' => false,
-		    'enable_comments'           => false
+		    'enable_comments'           => false,
 	    ) );
 		
 		extract($instance);
@@ -85,7 +79,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			</p>
 			<!-- Character Count -->
 			<p>
-				<label for="<?php echo $this->get_field_id('enable_character_count'); ?>"> <input  id="<?php echo $this->get_field_id('enable_character_count'); ?>" name="<?php echo $this->get_field_name('enable_character_count'); ?>" type="checkbox"<?php echo checked($enable_character_count); ?> />Character Count</label>
+				<label for="<?php echo $this->get_field_id('enable_character_count'); ?>"> <input  id="<?php echo $this->get_field_id('enable_character_count'); ?>" name="<?php echo $this->get_field_name('enable_character_count'); ?>" type="checkbox"<?php echo checked($enable_character_count); ?> /> Character Count</label>
 				<br />
 				<label for="<?php echo $this->get_field_id('num_char'); ?>"> Number of Characters: <input  id="<?php echo $this->get_field_id('num_char'); ?>" name="<?php echo $this->get_field_name('num_char'); ?>" type="text" value="<?php echo esc_attr($num_char); ?>" /></label>
 				<br />
@@ -94,25 +88,65 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			</p>
 			<!-- URL Shortening -->
 			<p>
-				<label for="<?php echo $this->get_field_id('enable_url_shortener'); ?>"> <input  id="<?php echo $this->get_field_id('enable_url_shortener'); ?>" name="<?php echo $this->get_field_name('enable_url_shortener'); ?>" type="checkbox"<?php echo checked($enable_url_shortener); ?> />Enable URL Shortening</label>
+				<label for="<?php echo $this->get_field_id('enable_url_shortener'); ?>"> <input  id="<?php echo $this->get_field_id('enable_url_shortener'); ?>" name="<?php echo $this->get_field_name('enable_url_shortener'); ?>" type="checkbox"<?php echo checked($enable_url_shortener); ?> /> Enable URL Shortening</label>
 				<br />
 				<small>Make sure to set your Bit.ly Username and API Key in <a href="<?php echo admin_url('edit.php?post_type=pulse-cpt&page=pulse-cpt_settings'); ?>">Pulse Settings.</a></small>
 			</p>
 			<!-- Enable Tagging -->
 			<p>
-				<label for="<?php echo $this->get_field_id('enable_tagging'); ?>"> <input  id="<?php echo $this->get_field_id('enable_tagging'); ?>" name="<?php echo $this->get_field_name('enable_tagging'); ?>" type="checkbox"<?php echo checked($enable_tagging); ?> />Enable Tagging</label>
+				<label for="<?php echo $this->get_field_id('enable_tagging'); ?>"> <input  id="<?php echo $this->get_field_id('enable_tagging'); ?>" name="<?php echo $this->get_field_name('enable_tagging'); ?>" type="checkbox"<?php echo checked($enable_tagging); ?> /> Enable Tagging</label>
 				<br />
 				<small>Pulse authors can add tags to the pulse</small>
 			</p>
-			<?php if ( defined('COAUTHORS_PLUS_VERSION') ): // co authoring plugin is enabled  ?>
-				<!-- Enable Co Authoring -->
+			<?php if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // co authoring plugin is enabled  ?>
+				<!-- Enable Evaluate Rating -->
 				<p>
-					<label for="<?php echo $this->get_field_id('enable_co_authoring'); ?>"> <input  id="<?php echo $this->get_field_id('enable_co_authoring'); ?>" name="<?php echo $this->get_field_name('enable_co_authoring'); ?>" type="checkbox"<?php echo checked($enable_co_authoring); ?> />Enable Co Authoring</label>
+					<label for="<?php echo $this->get_field_id('rating_metric'); ?>">
+						Pulse Rating
+					</label>
 					<br />
-					<small>Pulse authors can add other as contributing authors</small>
+					<select id="<?php echo $this->get_field_id('rating_metric'); ?>" name="<?php echo $this->get_field_name('rating_metric'); ?>">
+						<option value="">Disabled</option>
+						<?php
+							global $wpdb;
+							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
+							
+							foreach ( $metrics as $metric ):
+								$params = unserialize( $metric->params );
+								
+								if ( ! array_key_exists( 'content_types', $params ) ):
+									continue; //metric has no association, move on..
+								endif;
+								
+								$content_types = $params['content_types'];
+								if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ): //not excluded
+									?>
+									<option value="<?php echo $metric->slug; ?>" <?php selected( $rating_metric == $metric->slug ); ?>>
+									<?php echo $metric->nicename; ?>
+									</option>
+									<?php
+								endif;
+							endforeach;
+						?>
+					</select>
+					<br />
+					<small>Viewers can rate each pulse.</small>
 				</p>
 			<?php else: // enable co-authoring plugin enable this functionality  ?>
-				Enable the Co-Authoring+ plugin enable this functionality
+				Enable the <a href="http://wordpress.org/extend/plugins/evaluate/">Evaluate plugin</a> to use this functionality.
+			<?php endif; ?>
+			<?php if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): // co authoring plugin is enabled  ?>
+				<!-- Enable Co Authoring -->
+				<p>
+					<label for="<?php echo $this->get_field_id('enable_co_authoring'); ?>">
+						<input  id="<?php echo $this->get_field_id('enable_co_authoring'); ?>" name="<?php echo $this->get_field_name('enable_co_authoring'); ?>" type="checkbox"<?php echo checked($enable_co_authoring); ?> />
+						Enable Co Authoring
+					</label>
+					<br />
+					<small>Pulse authors can add others as contributing authors</small>
+				</p>
+			<?php else: // enable co-authoring plugin enable this functionality  ?>
+				Enable the <a href="http://wordpress.org/extend/plugins/co-authors-plus/">Co-Authors Plus plugin</a> to use this functionality.
 			<?php endif; ?>
 		<?php
 	}
@@ -141,12 +175,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$id = substr( $widget_id, 10 );
 			
 			$pulse_cpt_widget_ids[$id] = array(
-				'id' => $widget_id,
+				'id'                     => $widget_id,
 				'enable_character_count' => (bool) $enable_character_count,
 				'num_char'               => (int) $num_char,
 				'enable_url_shortener'   => (bool) $enable_url_shortener,
 				'bitly_user'             => get_option('pulse_bitly_username'),
 				'bitly_api_key'          => get_option('pulse_bitly_key'),
+				'rating_metric'          => $instance['rating_metric'],
 				'enable_tagging'         => $enable_tagging,
 				'enable_co_authoring'    => $enable_co_authoring,
 				'enable_file_uploads'    => $enable_file_uploads,
@@ -164,7 +199,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						</div>
 					<?php endif; ?>
 					
-					<?php if ( $enable_tagging || ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ) || $enable_file_uploads ): ?>
+					<?php if ( $enable_tagging || ( $enable_co_authoring && Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ) || $enable_file_uploads ): ?>
 						<div class="pulse-tags-shell tagbox-display-shell"></div>
 						<div class="pulse-author-shell tagbox-display-shell"></div>
 						<div class="pulse-file-shell tagbox-display-shell"></div>
@@ -176,7 +211,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 								</div>
 							<?php endif; ?>
 							
-							<?php if ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ): ?>
+							<?php if ( $enable_co_authoring && Pulse_CPT_Settings::$options['COAUTHER_PLUGIN'] ): ?>
 								<div id="tabs-2">
 									<input type="text" placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author" />
 								</div>
@@ -193,7 +228,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 									<li><a href="#tabs-1" class="pulse-tabs-tags">tags</a></li>
 								<?php endif; ?>
 								
-								<?php if ( $enable_co_authoring && defined( 'COAUTHORS_PLUS_VERSION' ) ): ?>
+								<?php if ( $enable_co_authoring && Pulse_CPT_Settings::$options['COAUTHER_PLUGIN'] ): ?>
 									<li><a href="#tabs-2" class="pulse-tabs-author">author</a></li>
 								<?php endif; ?>
 								
@@ -225,7 +260,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<?php endif; ?>
 					
 					<?php 
-					if ( self::$evaluate_active ):
+					if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
 						wp_nonce_field( 'evaluate_pulse-meta', 'evaluate_nonce' );
 					endif;
 					?>
@@ -240,7 +275,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			// The Loop
 			while ( $the_query->have_posts() ):
 				$the_query->the_post();
-				Pulse_CPT::the_pulse();
+				Pulse_CPT::the_pulse( null, $instance['rating_metric'] );
 			endwhile;
 			
 			// Reset Post Data

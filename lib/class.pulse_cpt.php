@@ -250,7 +250,7 @@ class Pulse_CPT {
 	 * @param mixed $it (default: null)
 	 * @return void
 	 */
-	public static function the_pulse( $it = null) {
+	public static function the_pulse( $it = null, $rating_metric = null ) {
 		if ( $it == null ):
 			$it = Pulse_CPT::the_pulse_array();
 		endif;
@@ -265,9 +265,24 @@ class Pulse_CPT {
 					</a>
 				</div>
 				<div class="pulse-meta">
-					<a href="<?php echo $it['permalink']; ?>">
+					<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
 						<?php echo $it['date']; ?>
 					</a>
+					<?php
+						if ( $rating_metric != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] == true ):
+							global $wpdb;
+							$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$rating_metric."'" );
+							
+							$metric->display_name = FALSE; // Don't display a name above the metric.
+							error_log( "Metric ".print_r( $metric, TRUE ) );
+							$data = Evaluate::get_metric_data( $metric );
+							$data->width = $data->average / 5 * 100; // Don't display any averages.
+							$data->average = null; // Don't display any averages.
+							error_log( "Data ".print_r( $data, TRUE ) );
+							
+							echo Evaluate::display_metric( $data );
+						endif;
+					?>
 				</div>
 				<div class="pulse-content">
 					<?php echo $it['content']; ?>
@@ -312,7 +327,7 @@ class Pulse_CPT {
 					<span class="pulse-form-progress hide">
 						<img title="Loading..." alt="Loading..." src="<?php echo  PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
 					</span>
-				</div><!-- end of pulse-expand-content -->
+				</div> <!-- end of pulse-expand-content -->
 			</div> <!-- end of pulse wrap -->
 		</div>
 		<?php
@@ -325,7 +340,7 @@ class Pulse_CPT {
 	 * @static
 	 * @return void
 	 */
-	public static function the_pulse_json(){
+	public static function the_pulse_json() {
 		return json_encode( Pulse_CPT::the_pulse_array() );
 	}
 	
@@ -354,7 +369,7 @@ class Pulse_CPT {
 		endif;
 		
 		//  coauthors 
-		if ( defined( 'COAUTHORS_PLUS_VERSION' ) ):
+		if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ):
 			$authors = get_coauthors($post->ID);
 			
 			$coauthors = array();

@@ -11,13 +11,22 @@ class Pulse_CPT_Settings {
 	}
 	
 	public static function init() {
+		if ( ! function_exists( 'is_plugin_active' ) ):
+			// Include plugins.php to check for other plugins from the frontend
+			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		endif;
+		
+		self::$options['CTLT_STREAM'] = is_plugin_active('stream/stream.php');
+		self::$options['CTLT_EVALUATE'] = is_plugin_active('evaluate/evaluate.php');
+		self::$options['COAUTHOR_PLUGIN'] = defined('COAUTHORS_PLUS_VERSION');
+	}
+	
+	public static function load() {
 		//check if CTLT Stream plugin exists to use with node
 		if ( ! function_exists( 'is_plugin_active' ) ):
 			//include plugins.php to check for other plugins from the frontend
 			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 		endif;
-		
-		self::$options['CTLT_STREAM'] = is_plugin_active('stream/stream.php');
 		
 		//register settings
 		//these need to be in admin_init otherwise Settings API doesn't work
@@ -25,19 +34,18 @@ class Pulse_CPT_Settings {
 		register_setting( 'pulse_options', 'pulse_bitly_key' );
 		register_setting( 'pulse_options', 'pulse_favourite' );
 		
-		// Define sections
+		// Main settings
 		add_settings_section( 'pulse_settings_main', 'Pulse-CPT Settings', array( __CLASS__, 'setting_section_main' ), 'pulse-cpt_settings' );
-		add_settings_section( 'pulse_settings_plugins', 'Plugin Integration', array( __CLASS__, 'pulse_settings_plugins' ), 'pulse-cpt_settings' );
-	  
-		// Add fields
 		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 'pulse-cpt_settings', 'pulse_settings_main' );
 		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      'pulse-cpt_settings', 'pulse_settings_main' );
 	  
-		// CTLT Stream and NodeJS indicators
+		// Plugin integration
+		add_settings_section( 'pulse_settings_plugins', 'Plugin Integration Status', array( __CLASS__, 'pulse_settings_plugins' ), 'pulse-cpt_settings' );
 		add_settings_field( 'ctlt_stream_found', 'CTLT Stream plugin', array( __CLASS__, 'setting_stream_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		add_settings_field( 'nodejs_server_status', 'NodeJS Server', array( __CLASS__, 'setting_nodejs_server' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		add_settings_field( 'evaluate_found', 'Evaluate plugin', array( __CLASS__, 'setting_evaluate_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
-		add_settings_field( 'pulse_favourite', 'Enable Favourite Rating', array( __CLASS__, 'setting_favourite' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		add_settings_field( 'coauthor_found', 'Co-Author+ plugin', array( __CLASS__, 'setting_coauthor_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		//add_settings_field( 'pulse_rating', 'Enable Favourite Rating', array( __CLASS__, 'setting_rating' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 	}
 	
 	public static function setting_section_main() {
@@ -48,7 +56,7 @@ class Pulse_CPT_Settings {
 	
 	public static function pulse_settings_plugins() {
 		?>
-		Integration for the CTLT Stream, and Evaluate plugins
+		Integration for the CTLT Stream, Evaluate, and CoAuthor+ plugins
 		<?php
 	}
 	
@@ -92,23 +100,28 @@ class Pulse_CPT_Settings {
 	}
 	
 	public static function setting_evaluate_plugin() {
-		?>
-		<input id="evaluate_status" name="evaluate_status" type="checkbox" style="display: none" disabled="disabled" <?php checked( class_exists( 'Evaluate' ) ); ?>/>
-		
-		<?php if ( class_exists( 'Evaluate' ) ): ?>
+		if ( self::$options['CTLT_EVALUATE'] ): ?>
 			<div style="color: green">Enabled</div>
 		<?php else: ?>
 			<div style="color: red">Not Found</div>
 		<?php endif;
 	}
 	
-	public static function setting_favourite() {
-		if ( class_exists( 'Evaluate' ) ): ?>
-			<input id="pulse_favourite" name="pulse_favourite" type="checkbox" value="<?php echo get_option('pulse_favourite'); ?>" />
+	public static function setting_coauthor_plugin() {
+		if ( self::$options['COAUTHOR_PLUGIN'] ): ?>
+			<div style="color: green">Enabled</div>
 		<?php else: ?>
-			<div style="color: red">Enable the Evaluate Plugin to use this option.</div>
+			<div style="color: red">Not Found</div>
 		<?php endif;
 	}
+	
+	/*
+	public static function setting_rating() {
+		?>
+		<input id="pulse_rating" name="pulse_rating" type="checkbox" <?php hidden( self::$options['CTLT_EVALUATE'] ); ?> value="<?php echo get_option('pulse_rating'); ?>" />
+		<?php
+	}
+	*/
 	
 	public static function admin_page() {
 		?>

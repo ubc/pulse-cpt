@@ -13,6 +13,10 @@
     word-wrap: break-word;
 }
 
+.widget .pulse-content .evaluate-metrics-wrapper {
+    display: none;
+}
+
 .pulse-list .pulse:hover {
 	cursor: pointer;
 	background: #EEE;
@@ -40,10 +44,23 @@
 }
 
 .pulse-meta {
+    width: 50%;
 	position: absolute;
 	top: 5px;
 	right: 5px;
 	font-size: 11px;
+}
+
+.pulse-meta .evaluate-shell {
+    margin-right: 10px;
+}
+
+.pulse-meta > * {
+    float: right;
+}
+
+.pulse-meta .rate-range {
+    margin: 0;
 }
 
 .pulse-meta a,

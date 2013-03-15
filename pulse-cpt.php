@@ -39,7 +39,8 @@ add_filter( 'manage_pulse-cpt_posts_columns', array( 'Pulse_CPT', 'add_new_colum
 
 add_action( 'manage_pulse-cpt_posts_custom_column', array( 'Pulse_CPT','manage_columns'), 10, 2 );
 
-add_action( 'admin_init', array( 'Pulse_CPT_Settings', 'init' ) );
+add_action( 'init',       array( 'Pulse_CPT_Settings', 'init' ) );
+add_action( 'admin_init', array( 'Pulse_CPT_Settings', 'load' ) );
 add_action( 'admin_menu', array( 'Pulse_CPT_Settings', 'admin_menu' ) );
 
 add_action( 'publish_pulse-cpt', array( 'Pulse_CPT_Form', 'admin_publish' ) );
