@@ -48,19 +48,17 @@ var Pulse_CPT_Form = {
 			} );
 		}
 		
-		if ( meta.enable_tabs ) {
-			parent.find( '.pulse-tabs' ).tabs( {
-				selected: -1,
-				collapsible: true,
-			} );
-			
-			if ( meta.enable_tagging ) {
-				Pulse_CPT_Form.tag_it( parent, 'tags', Pulse_CPT_Form_global.tags);
-			}
-			
-			if ( meta.enable_co_authoring ) {
-				Pulse_CPT_Form.tag_it( parent, 'author', Pulse_CPT_Form_global.authors );
-			}
+		parent.find( '.pulse-tabs' ).tabs( {
+			selected: -1,
+			collapsible: true,
+		} );
+		
+		if ( meta.tabs.tagging ) {
+			Pulse_CPT_Form.tag_it( parent, 'tags', Pulse_CPT_Form_global.tags);
+		}
+		
+		if ( meta.tabs.co_authoring ) {
+			Pulse_CPT_Form.tag_it( parent, 'author', Pulse_CPT_Form_global.authors );
 		}
 	},
 	

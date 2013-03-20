@@ -4,7 +4,6 @@
  * Pulse_CPT class.
  */
 class Pulse_CPT {
-
 	static $add_form_script;
 	
 	/**
@@ -110,9 +109,9 @@ class Pulse_CPT {
     	wp_register_script( 'doT',           PULSE_CPT_DIR_URL.'/js/doT.js',                  array( 'jquery' ), '1.0', true );
     	wp_register_script( 'charCount',     PULSE_CPT_DIR_URL.'/js/charCount.js',            array( 'jquery' ), '1.0', true );
     	
-    	wp_register_script( 'jquery-ui-position',          PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js' ,          array( 'jquery' ), '1.0', true );
-    	wp_register_script( 'jquery-ui-autocomplete',      PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js' ,      array( 'jquery', 'jquery-ui-position', 'jquery-ui-widget', 'jquery-ui-core' ), '1.0', true );
-    	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js' , array( 'jquery-ui-autocomplete' ), '1.0', true );
+    	wp_register_script( 'jquery-ui-position',          PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js',          array( 'jquery' ), '1.0', true );
+    	wp_register_script( 'jquery-ui-autocomplete',      PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js',      array( 'jquery', 'jquery-ui-position', 'jquery-ui-widget', 'jquery-ui-core' ), '1.0', true );
+    	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js', array( 'jquery-ui-autocomplete' ), '1.0', true );
     	
 		$cachebuster = filemtime( PULSE_CPT_DIR_PATH.'/js/form.js' );
 		wp_register_script( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/js/form.js?t='.$cachebuster , array( 'jquery', 'autogrow', 'tagbox', 'doT',  'jquery-ui-tabs', 'charCount', 'jquery-ui-autocomplete-html'), '1.0', true );
@@ -187,8 +186,9 @@ class Pulse_CPT {
      * @return void
      */
     public static function print_form_script() {
-		$global_args = array();
-		$global_args['ajaxUrl'] = admin_url('admin-ajax.php');
+		$global_args = array(
+			'ajaxUrl' => admin_url('admin-ajax.php'),
+		);
 		
 		if ( ! self::$add_form_script ): // We still need the ajax url even if user isnt logged in
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
@@ -213,17 +213,6 @@ class Pulse_CPT {
     public static function print_pulse_script() { 
     	wp_print_scripts( 'pulse-cpt' );
     }
-    
-    /**
-     * widgets_init function.
-     * 
-     * @access public
-     * @static
-     * @return void
-     */
-    public static function widgets_init() {
-  		register_widget( 'Pulse_CPT_Form_Widget' );
-  	}
   	
   	/**
   	 * footer function.
