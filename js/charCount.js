@@ -14,7 +14,6 @@
  */
  
 (function($) {
-
 	$.fn.charCount = function(options){
 	  
 		// default configuration properties
@@ -24,26 +23,25 @@
 			counterElement: '.pulse-form-counter',
 			cssWarning: 'warning',
 			cssExceeded: 'exceeded',
-			counterText: ''
+			counterText: '',
 		}; 
-			
-		var options = $.extend(defaults, options); 
 		
-		function calculate(obj){
+		var options = $.extend( defaults, options ); 
+		
+		function calculate(obj) {
 			var count = $(obj).val().length;
 			var available = options.allowed - count;
 			
-			if(available <= options.warning && available >= 0){
+			if ( available <= options.warning && available >= 0 ) {
 				$(options.counterElement).addClass(options.cssWarning);
 			} else {
 				$(options.counterElement).removeClass(options.cssWarning);
 			}
-			if( available < 0){
+			if ( available < 0 ) {
 				/* todo: disable the form if elements are exceded */
 				options.counterElement.parent().find('#submit-pulse').attr("disabled", "disabled").addClass( 'disabled' ); // .attr("disabled", "disabled");
 				// console.log(options.counterElement.parent().find('input[type=submit]'));
 				$(options.counterElement).addClass(options.cssExceeded);
-				
 			} else {
 				$(options.counterElement).removeClass(options.cssExceeded);
 				options.counterElement.parent().find('#submit-pulse').removeAttr("disabled").removeClass( 'disabled' );
@@ -51,12 +49,11 @@
 			}
 			$(options.counterElement).html(options.counterText + available);
 		};
-				
+		
 		this.each(function() {  			
-			
 			calculate(this);
-			$(this).keyup(function(){calculate(this)});
-			$(this).change(function(){calculate(this)});
+			$(this).keyup( function() { calculate(this) } );
+			$(this).change( function() { calculate(this) } );
 		});
 	  
 	};

@@ -15,7 +15,7 @@ var Pulse_CPT_Form = {
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
 		
 		if ( typeof Pulse_CPT_Form_local != 'undefined' ) {
-			jQuery.each( Pulse_CPT_Form_local, function( i, v ) { Pulse_CPT_Form.init( i, v, jQuery('.pulse-form') ) }); 
+			jQuery.each( Pulse_CPT_Form_local, function( index, value ) { Pulse_CPT_Form.init( index, value, jQuery('.pulse-form') ) } ); 
 		}
 		
 		Pulse_CPT_Form.single_pulse_template = doT.template( document.getElementById('pulse-cpt-single').text );
@@ -26,8 +26,8 @@ var Pulse_CPT_Form = {
 		var location = { type: null, ID: null };
 		location.type = jQuery('.postbox input[name="location[type]"]').val();
 		location.ID = jQuery('.postbox input[name="location[ID]"]').val();
-		Pulse_CPT_Form.original_location.type = (typeof location.type == 'undefined') ? null : location.type;
-		Pulse_CPT_Form.original_location.ID = (typeof location.ID == 'undefined') ? null : location.ID;
+		Pulse_CPT_Form.original_location.type = ( typeof location.type == 'undefined' ) ? null : location.type;
+		Pulse_CPT_Form.original_location.ID = ( typeof location.ID == 'undefined' ) ? null : location.ID;
 		
 		//reply form reset from placeholder hook
 		jQuery('.postbox-placeholder').on( 'click', function(e) { Pulse_CPT_Form.reply(null); } );
@@ -38,8 +38,7 @@ var Pulse_CPT_Form = {
 	 */
 	init: function( index, meta, parent ) {
 		if ( meta.enable_character_count ) {
-			var num_char = (meta.num_char ? meta.num_char: 140 )
-			
+			var num_char = ( meta.num_char ? meta.num_char : 140 )
 			var counter_shell = parent.find( '.pulse-form-counter' );
 			
 			counter_shell.data( 'num_char', num_char );
@@ -91,15 +90,15 @@ var Pulse_CPT_Form = {
 		if ( orig_loc_null ) {
 			// Add new elements to track parent on the fly
 			jQuery('<input>').attr( {
-				name: 'location[type]',
+				name:  'location[type]',
 				value: 'singular',
-				type: 'hidden'
+				type:  'hidden',
 			} ).appendTo('.pulse-form');
 			
 			jQuery('<input>').attr( {
-				name: 'location[ID]',
+				name:  'location[ID]',
 				value: parent_pulse.data('pulse-id'),
-				type: 'hidden'
+				type:  'hidden',
 			} ).appendTo('.pulse-form');
 		} else {
 			// Change values of existing elements
@@ -150,6 +149,7 @@ var Pulse_CPT_Form = {
 				
 				var html = Pulse_CPT_Form.single_pulse_template( response );
 				var parent_pulse = jQuery('.postbox').closest('.pulse').find('.pulse-replies:first');
+				
 				if ( parent_pulse.length <= 0 ) {
 					parent_pulse = jQuery('.pulse-list');
 				}
@@ -171,7 +171,7 @@ var Pulse_CPT_Form = {
 		var tags_input = element.parent().find('.input input');
 		jQuery( parent ).find( '.pulse-tabs-'+el_class ).click( function() { Pulse_CPT_Form.focusInput( tags_input ); } );
 		
-		var arg = { 
+		tags_input.autocomplete( { 
 			source: source_autocomplete,
 			minLength: 2,
 			html: 'html',
@@ -184,9 +184,7 @@ var Pulse_CPT_Form = {
 				noResults: '',
 				results: function() { }
 			},
-	    }
-        
-		tags_input.autocomplete( arg );
+	    } );
 	},
 	
 	focusInput: function(el){
@@ -204,7 +202,7 @@ var Pulse_CPT_Form = {
 		
 		switch (options.single_input) {
 		case "tags":
-			if ( tags ){
+			if ( tags ) {
 				while ( tags_array[i] ) {
 					html_tags.push('<a href="?tag='+tags_array[i]+'">'+tags_array[i]+'</a>');
 					i++;		   	  	
@@ -299,7 +297,7 @@ var Pulse_CPT_Form = {
 		var id = parent.attr('id').substring(10);
 		
 		// get the c
-		if( !Pulse_CPT_Form_local[id].enable_url_shortener ){ return ; }
+		if ( ! Pulse_CPT_Form_local[id].enable_url_shortener ) { return; }
 		
 		var textarea = el.siblings('textarea');
 		var words = textarea.val().split(" ");
@@ -363,4 +361,3 @@ var Pulse_CPT_Form = {
 
 var Pulse_CPT_url_shortener_cache = {}
 jQuery('document').ready(Pulse_CPT_Form.onReady);
-

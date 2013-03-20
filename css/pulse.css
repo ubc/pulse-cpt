@@ -51,12 +51,17 @@
 	font-size: 11px;
 }
 
+.pulse-meta > * {
+    float: right;
+}
+
 .pulse-meta .evaluate-shell {
     margin-right: 10px;
 }
 
-.pulse-meta > * {
-    float: right;
+.pulse-meta .evaluate-shell .rating-text,
+.pulse-meta .evaluate-shell .rate-name {
+    display: none;
 }
 
 .pulse-meta .rate-range {
@@ -64,6 +69,7 @@
 }
 
 .pulse-meta a,
+.pulse-actions a,
 .pulse-author-meta a {
 	text-decoration: none;
 }

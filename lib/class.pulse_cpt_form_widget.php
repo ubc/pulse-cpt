@@ -1,8 +1,7 @@
 <?php
 
-global $pulse_cpt_widget_ids;
-
 class Pulse_CPT_Form_Widget extends WP_Widget {
+	public static $widgets = array();
 	
 	public function __construct() {
 		parent::__construct(
@@ -174,7 +173,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			Pulse_CPT::$add_form_script = true;
 			$id = substr( $widget_id, 10 );
 			
-			$pulse_cpt_widget_ids[$id] = array(
+			self::$widgets[$id] = array(
 				'id'                     => $widget_id,
 				'enable_character_count' => (bool) $enable_character_count,
 				'num_char'               => (int) $num_char,
@@ -223,7 +222,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 								</div>
 							<?php endif; ?>
 							
-							<ul>
+							<ul role="tablist">
 								<?php if ( $enable_tagging ): ?>
 									<li><a href="#tabs-1" class="pulse-tabs-tags">tags</a></li>
 								<?php endif; ?>
@@ -268,20 +267,20 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<div class="clear"></div>
 			</div>
 		<?php endif; ?>
-		<div class="pulse-list">
-			<?php 
-			$the_query = new WP_Query( Pulse_CPT::query_arguments() );
-			
-			// The Loop
-			while ( $the_query->have_posts() ):
-				$the_query->the_post();
-				Pulse_CPT::the_pulse( null, $instance['rating_metric'] );
-			endwhile;
-			
-			// Reset Post Data
-			wp_reset_postdata();
-			?>
-		</div>
+			<div class="pulse-list">
+				<?php 
+				$the_query = new WP_Query( Pulse_CPT::query_arguments() );
+				
+				// The Loop
+				while ( $the_query->have_posts() ):
+					$the_query->the_post();
+					Pulse_CPT::the_pulse( null, $instance['rating_metric'] );
+				endwhile;
+				
+				// Reset Post Data
+				wp_reset_postdata();
+				?>
+			</div>
 		<?php
 		
 		echo $after_widget;

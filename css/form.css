@@ -246,13 +246,12 @@
 }
 
 .pulse-form .ui-tabs {
-	position: relative;
+	position: relative; /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
 	padding: 0;
 	zoom: 1;
 }
 
-/* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
-.pulse-form .ui-tabs .ui-tabs-nav {
+.pulse-form .pulse-tabs ul[role=tablist] {
 	margin: 0 !important;
 	padding: 0;
 	background: #EEE;

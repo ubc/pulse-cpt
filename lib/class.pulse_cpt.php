@@ -186,7 +186,7 @@ class Pulse_CPT {
      * @static
      * @return void
      */
-    public static function print_form_script(){
+    public static function print_form_script() {
 		$global_args = array();
 		$global_args['ajaxUrl'] = admin_url('admin-ajax.php');
 		
@@ -196,10 +196,8 @@ class Pulse_CPT {
 			$global_args['tags'] = Pulse_CPT_Form::get_tags();
 			$global_args['authors'] = Pulse_CPT_Form::get_authors();
 			
-			global $pulse_cpt_widget_ids;
-			
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
-			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local', $pulse_cpt_widget_ids );
+			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local',  Pulse_CPT_Form_Widget::$widgets );
 		endif;
 		
 		wp_print_scripts( 'pulse-cpt-form' );
@@ -271,16 +269,8 @@ class Pulse_CPT {
 					<?php
 						if ( $rating_metric != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] == true ):
 							global $wpdb;
-							$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$rating_metric."'" );
-							
-							$metric->display_name = FALSE; // Don't display a name above the metric.
-							error_log( "Metric ".print_r( $metric, TRUE ) );
-							$data = Evaluate::get_metric_data( $metric );
-							$data->width = $data->average / 5 * 100; // Don't display any averages.
-							$data->average = null; // Don't display any averages.
-							error_log( "Data ".print_r( $data, TRUE ) );
-							
-							echo Evaluate::display_metric( $data );
+							$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$rating_metric."'" );	
+							echo Evaluate::display_metric( Evaluate::get_metric_data( $metric ) );
 						endif;
 					?>
 				</div>
@@ -292,7 +282,6 @@ class Pulse_CPT {
 						<li><a href="#expand-url" class="expand-action">Expand</a></li>
 						<?php if ( is_user_logged_in() ): //display reply and favorite only if user is logged in ?>
 							<li><a href="#reply-url" class="reply-action">Reply</a></li>
-							<li><a href="#favorite">Favorite</a></li>
 						<?php endif; ?>
 						<li><span class="reply-count"><?php echo $it['num_replies']; ?></span> Replies</li>
 					</ul>
@@ -438,7 +427,7 @@ class Pulse_CPT {
 				"user_login"    => '{{=it.author.user_login}}',
 				"display_name"  => '{{=it.author.display_name}}',
 				"post_url"      => '{{=it.author.post_url}}',
-				),
+			),
 			"tags"        => '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
 			'authors'     => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
 			'num_replies' => '{{=it.num_replies}}',
@@ -564,7 +553,7 @@ class Pulse_CPT {
 			$query = new WP_Query($query_args);
 			while ( $query->have_posts() ):
 				$query->the_post();
-				echo self::the_pulse(self::the_pulse_array());
+				echo self::the_pulse( self::the_pulse_array() );
 			endwhile;
 		endif;
 		
