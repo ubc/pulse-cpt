@@ -223,13 +223,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<div class="pulse-tabs">
 							<?php if ( $instance['tabs']['tagging'] ): ?>
 								<div id="tabs-1">
-									<input type="text" placeholder="Seperate tags by commas" class="pulse-textarea-tags pulse-meta-textarea" name="tags" />
+									<input type="hidden" placeholder="Seperate tags by commas" class="pulse-textarea-tags pulse-meta-textarea" name="tags" />
 								</div>
 							<?php endif; ?>
 							
 							<?php if ( $instance['tabs']['co_authoring'] && Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): ?>
 								<div id="tabs-2">
-									<input type="text" placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author" />
+									<input type="hidden" placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author" />
 								</div>
 							<?php endif; ?>
 							
@@ -239,7 +239,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 								</div>
 							<?php endif; ?>
 							
-							<ul role="tablist">
+							<ul role="tablist" class="pulse-tablist">
 								<?php if ( $instance['tabs']['tagging'] ): ?>
 									<li><a href="#tabs-1" class="pulse-tabs-tags">tags</a></li>
 								<?php endif; ?>
@@ -284,20 +284,20 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<div class="clear"></div>
 			</div>
 		<?php endif; ?>
-			<div class="pulse-list">
-				<?php 
-					$the_query = new WP_Query( Pulse_CPT::query_arguments() );
-					
-					// The Loop
-					while ( $the_query->have_posts() ):
-						$the_query->the_post();
-						Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance['rating_metric'] ) );
-					endwhile;
-					
-					// Reset Post Data
-					wp_reset_postdata();
-				?>
-			</div>
+		<div class="pulse-list">
+			<?php 
+				$the_query = new WP_Query( Pulse_CPT::query_arguments() );
+				
+				// The Loop
+				while ( $the_query->have_posts() ):
+					$the_query->the_post();
+					Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance['rating_metric'] ) );
+				endwhile;
+				
+				// Reset Post Data
+				wp_reset_postdata();
+			?>
+		</div>
 		<?php
 		
 		echo $args['after_widget'];
