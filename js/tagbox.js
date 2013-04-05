@@ -12,7 +12,7 @@
 */
 (function($) {
 	
-    function TagBox(input, options) {
+    function TagBox( input, options ) {
         var self = this;
         
         self.options = options;
@@ -29,7 +29,7 @@
         var val = input.val();
         var tags = [];
         if ( val ) {
-            tags = input.val().split(self.delimit_expr);
+            tags = input.val().split( self.delimit_expr );
         }
 		
         self.input = input;
@@ -54,7 +54,7 @@
             self.addTag($(this).val());
             $(this).val("");
         });
-        
+		
         self.tagbox = $('<ul>', {
             'class': "tagbox",
             'click': function(e) {
@@ -62,9 +62,15 @@
             }
         });
 		
+        self.tagbox.bind( "clear", function() {
+            self.clear();
+			$(this).children('.tag').remove();
+            $(this).val("");
+        });
+		
         self.tags = {}
         
-        input.after(self.tagbox).hide();
+        input.after( self.tagbox ).hide();
 		
         self.inputHolder = $('<li class="input">');
         self.tagbox.append(self.inputHolder);
@@ -74,6 +80,10 @@
         for ( tag in tags ) {
             self.addTag(tags[tag]);
         }
+		
+		self.tagInput.css("display", "block");
+		self.tagInput.css("outline", "1px solid blue");
+		
     }
     
     TagBox.prototype = {
@@ -122,13 +132,18 @@
 		getTags: function() {
 			var tags = [];
 			for ( var tag in this.tags ) {
-				if (this.tags.hasOwnProperty(tag)) { //to be safe
+				if ( this.tags.hasOwnProperty(tag) ) { //to be safe
 					tags.push(tag);
 				}
 			}
 			
 			return tags;
-		}
+		},
+		
+		clear: function() {
+			this.tags = {};
+			this.updateInput();
+		},
     }
     
     $.fn.tagBox = function( options ) {

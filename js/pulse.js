@@ -1,5 +1,3 @@
-/* js that is required by the pulse */
-
 var Pulse_CPT = {
     onReady: function() {
         Pulse_CPT.listen();
@@ -72,7 +70,7 @@ var Pulse_CPT = {
         }
     },
     
-    expandPulse: function(element) {
+    expandPulse: function( element ) {
         var args = {};
         args['pulse_id'] = element.data('pulse-id');
         

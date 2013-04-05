@@ -154,6 +154,8 @@ var Pulse_CPT_Form = {
 					parent_pulse = jQuery('.pulse-list');
 				}
 			}
+			
+			jQuery('.tagbox').trigger('clear'); // A custom event defined in tagbox.js
 		}, "json" );
 		
 		return false;

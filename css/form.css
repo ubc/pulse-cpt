@@ -247,15 +247,12 @@
 /* Tabs: from jquery ui tabs */
 .pulse-tabs {
 	border-top: 1px dotted #CCC;
-}
-
-.pulse-form .ui-tabs {
 	position: relative; /* position: relative prevents IE scroll bug (element with position: relative inside container with overflow: auto appear as "fixed") */
 	padding: 0;
 	zoom: 1;
 }
 
-.pulse-form .pulse-tabs ul[role=tablist] {
+.pulse-tabs .pulse-tablist {
 	margin: 0 !important;
 	padding: 0;
 	background: #EEE;
@@ -303,10 +300,9 @@
 	cursor: pointer;
 }
 
-/* first selector in group seems obsolete, but required to overcome bug in Opera applying cursor: text overall if defined elsewhere... */
 .pulse-tabs .ui-tabs-panel {
 	display: block;
-	border-width: 0;
+	border: none;
 	padding: 0;
 	background: none;
 }
