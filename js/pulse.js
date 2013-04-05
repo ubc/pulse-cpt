@@ -18,16 +18,16 @@ var Pulse_CPT = {
     },
     
     listen: function() {
-        if ( typeof CTLT_Stream != 'undefined' ) { //check for stream activity
-            CTLT_Stream.on( 'server-push', function (data) { //catch server push
-                if ( data.type == 'pulse' ) { //we are interested
-                    var new_pulse_data = jQuery.parseJSON(data.data); //extract pulse data from the event
+        if ( typeof CTLT_Stream != 'undefined' ) { // Check for stream activity
+            CTLT_Stream.on( 'server-push', function (data) { // Catch server push
+                if ( data.type == 'pulse' ) { // We are interested
+                    var new_pulse_data = jQuery.parseJSON(data.data); // Extract pulse data from the event
                     
-                    if ( new_pulse_data.parent == 0 ) { //no parent -> show on front page
+                    if ( new_pulse_data.parent == 0 ) { // No parent -> show on front page
                         var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
                         
                         jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
-                    } else { //check to see if the parent of the pulse is visible to current user
+                    } else { // Check to see if the parent of the pulse is visible to current user
                         var all_visible_parents = jQuery('.pulse.expand'); //all visible parents
                         var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
                         var parent_found = false;
@@ -62,10 +62,10 @@ var Pulse_CPT = {
         el.find('.pulse-expand-content').toggle(); //toggle visibility of expand-content
         
         if ( el.hasClass('expand') ) {
-            el.find('.expand-action').text( 'Collapse' );
+            el.find('.expand-action').first().text( 'Collapse' );
             Pulse_CPT.expandPulse(el); //ajax call to fetch replies
         } else {
-            el.find('.expand-action').text( 'Expand' );
+            el.find('.expand-action').first().text( 'Expand' );
             Pulse_CPT_Form.reply(); //reset form location if collapsed
         }
     },
@@ -74,8 +74,8 @@ var Pulse_CPT = {
         var args = {};
         args['pulse_id'] = element.data('pulse-id');
         
-        //show loading spinner
-        element.find( '.pulse-form-progress' ).show();
+        // Show loading spinner
+        element.find( '.pulse-form-progress' ).first().show();
         jQuery.ajax( {
             url: Pulse_CPT_Form_global.ajaxUrl,
             data: {
@@ -84,8 +84,8 @@ var Pulse_CPT = {
             },
             type: 'post',
             success: function(data) {
-                //hide spinner again and show content
-                element.find( '.pulse-form-progress' ).hide();
+                // Hide spinner again and show content
+                element.find( '.pulse-form-progress' ).first().hide();
                 jQuery(element).find('.pulse-replies').html(data);
             }
         } );

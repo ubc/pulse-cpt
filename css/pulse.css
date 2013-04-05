@@ -26,12 +26,16 @@
 .pulse-list .pulse.expand {
 	background: #FFF;
 	cursor: default;
-	border: 1px solid #ECECEC;
+	border: 1px solid #EFEFEF;
 	margin: 5px;
 }
 
+.pulse-list .pulse.expand:hover {
+	border-color: #E0E0E0;
+}
+
 .pulse-wrap {
-	margin-left: 40px;
+	margin-left: 36px;
 }
 
 .widget_pulse_cpt .pulse-wrap ul {
@@ -40,7 +44,17 @@
 
 .pulse .avatar {
 	float: left;
-	margin-left: -40px;
+}
+
+.pulse .avatar,
+.pulse-actions,
+.pulse-expand-content {
+    margin-left: -36px;
+}
+
+.pulse-replies {
+    margin-left: 5px;
+    margin-top: 5px;
 }
 
 .pulse-meta {
@@ -137,12 +151,25 @@
 	color: #999;
 }
 
+.pulse-form-progress {
+	position: relative;
+    top: 2px;
+}
+
+.pulse-form-progress.hide {
+	display: none;
+}
+
 /* Pulse Actions */
 .pulse-actions {
 	display: none;
 }
 
-.pulse-list .expand .pulse-actions,
+.pulse-list .pulse:not(.expand) .pulse-actions {
+    margin-top: -20px;
+}
+
+.pulse-list .pulse.expand .pulse-actions,
 .pulse-list .pulse:hover .pulse-actions {
 	display: block;
 }

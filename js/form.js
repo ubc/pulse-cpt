@@ -64,8 +64,8 @@ var Pulse_CPT_Form = {
 		}
 	},
 	
-	/*
-	 * move form to desired pulse and change location data / reset location
+	/**
+	 * Move form to desired pulse and change location data / reset location
 	 */
 	reply: function( parent_pulse ) {
 		var orig_loc_null = Pulse_CPT_Form.original_location.type == null || Pulse_CPT_Form.original_location.ID == null;
@@ -356,10 +356,11 @@ var Pulse_CPT_Form = {
 				} else {
 					alert( "Error with the URL Shortner:<br /> "+result.data.errorMessage);
 				}
-			}); // end of 
+			});
 		}
 	}
 }
 
 var Pulse_CPT_url_shortener_cache = {}
+
 jQuery('document').ready(Pulse_CPT_Form.onReady);

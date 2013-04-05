@@ -80,10 +80,6 @@
         for ( tag in tags ) {
             self.addTag(tags[tag]);
         }
-		
-		self.tagInput.css("display", "block");
-		self.tagInput.css("outline", "1px solid blue");
-		
     }
     
     TagBox.prototype = {

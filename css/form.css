@@ -49,14 +49,6 @@
 	color: #666;
 }
 
-.pulse-form-progress {
-	margin: 3px 5px 0 0;
-}
-
-.pulse-form-progress.hide {
-	display: none;
-}
-
 .pulse-form-counter {
 	font: bold 16px sans-serif;
 	color: #AAA;
