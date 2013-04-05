@@ -36,7 +36,7 @@
         self.tagInput = $('<input>', {
             'type': 'text',
 			'placeholder': input.attr('placeholder'),
-			'width': 240,
+			'width': 140,
             'keydown': function(e) {
                 if ( e.keyCode == 13 || e.keyCode == self.delimit_key ) {
                     $(this).trigger("selectTag");
@@ -79,31 +79,31 @@
     TagBox.prototype = {
         addTag: function(label) {
 			if ( ! this.tags.hasOwnProperty(label) ) {
-				console.debug(label);
 				var self = this;
 				var tag = $('<li class="tag">' + $('<div>').text(label).remove().html() + '</li>');
 				
 				this.tags[label] = true;
 				
-				tag.append($('<a>', {
+				tag.append( $( '<a>', {
 					"href" : "#",
 					"class": "close",
 					"text": "close",
-					click: function(e) {
+					click: function( e ) {
 						e.preventDefault();
-						var index = self.tagbox.find("li").index($(this).parent());
-						self.removeTag(index);
+						var index = self.tagbox.find("li").index( $(this).parent() );
+						self.removeTag( index );
 					},
-				}));
+				} ) );
 				
 				this.inputHolder.before(tag);
 				this.updateInput();
 			}
         },
 		
-        removeTag: function(index) {
-            this.tagbox.find("li").eq(index).remove();
-            delete this.tags[index];
+        removeTag: function( index ) {
+			this.tagbox.find("li").eq(index).remove();
+			var key = Object.keys(this.tags)[index];
+            delete this.tags[key];
             this.updateInput();
         },
 		

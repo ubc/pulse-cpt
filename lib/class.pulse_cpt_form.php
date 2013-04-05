@@ -73,7 +73,7 @@ class Pulse_CPT_Form {
 			die();
 		endif;
 		
-		if ( empty($_POST) || ! wp_verify_nonce( $_POST['_wpnonce_pulse_form'], 'wpnonce_pulse_form' ) || empty($user) ):
+		if ( empty( $_POST ) || ! wp_verify_nonce( $_POST['_wpnonce_pulse_form'], 'wpnonce_pulse_form' ) || empty($user) ):
 			echo json_encode( array( 'error' => 'Sorry, your nonce did not verify.' ) );
 			die();
 		endif;
@@ -154,7 +154,7 @@ class Pulse_CPT_Form {
 	 * @return void
 	 */
 	public static function edit_post_data( $data, $postarr ) {
-		// change the post title into something more meaning full 
+		// Change the post title into something more meaning full 
 		if ( $data['post_type'] == 'pulse-cpt' && $data['post_status'] != 'auto-draft' ):
 			$data['post_title'] = Pulse_CPT_Form::title_from_content( $data['post_content'] );
 		endif;

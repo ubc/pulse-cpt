@@ -96,6 +96,11 @@
 	color: #AAA;
 }
 
+.pulse-form textarea:focus,
+.pulse-form input:focus {
+    outline: none;
+}
+
 .pulse-form .pulse-tags-shell {
     margin-left: 2px;
     padding-left: 20px;

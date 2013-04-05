@@ -209,7 +209,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			<div class="postbox">
 				<form action="" method="post" name="new-post" class="pulse-form">
 					<textarea cols="60" rows="4" tabindex="1" class="pulse-form-textarea autogrow" name="posttext" placeholder="<?php echo $instance['placeholder']; ?>"></textarea>
-					<?php if ( $instance['enable_url_shortener'] ): ?>
+					<?php if ( $instance['enable_url_shortener'] && Pulse_CPT_Settings::$bitly_username && Pulse_CPT_Settings::$bitly_key ): ?>
 						<div class="pulse-shorten-url">
 							<a href="#shorten-url">shorten url</a>
 						</div>
