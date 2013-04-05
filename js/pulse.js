@@ -4,14 +4,14 @@ var Pulse_CPT = {
     onReady: function() {
         Pulse_CPT.listen();
         
-        //these are delegated to .pulse-list to attach to dynamic elements too
+        // These are delegated to .pulse-list to attach to dynamic elements too
         jQuery('.pulse-list').on( 'click', '.pulse', Pulse_CPT.expand );
         jQuery('.pulse-list').on( 'click', '.expand-action', Pulse_CPT.expand );
         
-        //Prevent collapse if any of these within a pulse are clicked
+        // Prevent collapse if any of these within a pulse are clicked
         jQuery('.pulse-list').on( 'click', '.pulse-replies .pulse, .pulse a, .pulse .postbox', function(e) { e.stopPropagation(); } );
         
-        //Reply
+        // Reply
         jQuery('.pulse-list').on( 'click', '.reply-action', function(e) {
             // We want to know the caller
             Pulse_CPT.reply.apply(this);

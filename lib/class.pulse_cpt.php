@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Pulse_CPT class.
  */
@@ -14,13 +13,29 @@ class Pulse_CPT {
 	 * @return void
 	 */
 	public static function init() {
+		add_action( 'init',              array( __CLASS__, 'load' ) );
+		add_action( 'admin_menu',        array( __CLASS__, 'remove_submenus' ) );
+		add_action( 'wp_footer',         array( __CLASS__, 'print_form_script' ) );
+		add_action( 'wp_footer',         array( __CLASS__, 'print_pulse_script' ) );
+		add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
+		// add_action( 'pre_get_posts', array( __CLASS__, 'include_pulse_cpt') );
+		add_filter( 'carry_content_template', array( __CLASS__, 'load_pulse_template' ) );
+		
+		// Ajax request handler for getting pulse replies
+		add_action( 'wp_ajax_pulse_cpt_replies',        array( __CLASS__, 'ajax_replies' ) );
+		add_action( 'wp_ajax_nopriv_pulse_cpt_replies', array( __CLASS__, 'ajax_replies' ) );
+		
+		// Add new columns
+		add_filter( 'manage_pulse-cpt_posts_columns',       array( __CLASS__, 'add_new_column' ) );
+		add_action( 'manage_pulse-cpt_posts_custom_column', array( __CLASS__,'manage_columns'), 10, 2 );
+	}
+	
+	public static function load() {
 		Pulse_CPT::register_pulse();
 	  
 		if ( ! is_admin() ):
 			Pulse_CPT::register_script_and_style();
 		endif;
-		
-		add_action( 'admin_menu', array( __CLASS__, 'remove_submenus' ) );
 	}
 	
 	public static function remove_submenus() {
@@ -148,17 +163,23 @@ class Pulse_CPT {
     	if ( 'reply-to' == $column_name ):
     		if ( $post->post_parent ):
     			$reply_to = get_post( $post->post_parent );
-    			if( 'pulse-cpt' == $reply_to->post_type ):
-    				echo "Pulse";
+				
+    			if ( 'pulse-cpt' == $reply_to->post_type ):
+    				$title = "Pulse";
     			else:
-    				echo ucfirst( $reply_to->post_type ) ;
+    				$title = ucfirst( $reply_to->post_type ) ;
     			endif;
+				$title .= " #".$reply_to->ID;
+				
+				$edit_url = admin_url( 'post.php?post='.$post->post_parent.'&action=edit' );
+				$visit_url = site_url().'/?p='.$post->post_parent;
     			?>
+				<a href="<?php echo $edit_url; ?>"><?php echo $title; ?></a>
 				<div class="row-actions">
 					<span>
-						<a href="'.admin_url('post.php?post='.$post->post_parent.'&action=edit').'">Edit</a>
+						<a href="<?php echo $edit_url; ?>">Edit</a>
 					</span> | <span>
-						<a href="'.site_url().'/?p='.$post->post_parent.'">View</a>
+						<a href="<?php echo $visit_url; ?>">View</a>
 					</span>
 				</div>
 				<?php
@@ -213,21 +234,6 @@ class Pulse_CPT {
     public static function print_pulse_script() { 
     	wp_print_scripts( 'pulse-cpt' );
     }
-  	
-  	/**
-  	 * footer function.
-  	 * 
-  	 * @access public
-  	 * @static
-  	 * @return void
-  	 */
-  	public static function footer() {
-  		$it = Pulse_CPT::the_pulse_array_js();
-  		
-  		?>
-  		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it ); ?></script>
-  		<?php 
-  	}
 	
 	/**
 	 * the_pulse function.
@@ -237,9 +243,9 @@ class Pulse_CPT {
 	 * @param mixed $it (default: null)
 	 * @return void
 	 */
-	public static function the_pulse( $it = null, $rating_metric = null ) {
+	public static function the_pulse( $it = null ) {
 		if ( $it == null ):
-			$it = Pulse_CPT::the_pulse_array();
+			$it = self::the_pulse_array();
 		endif;
 		
 		?>
@@ -256,10 +262,14 @@ class Pulse_CPT {
 						<?php echo $it['date']; ?>
 					</a>
 					<?php
-						if ( $rating_metric != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] == true ):
+						if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] == true ):
 							global $wpdb;
-							$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$rating_metric."'" );	
-							echo Evaluate::display_metric( Evaluate::get_metric_data( $metric ) );
+							$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
+							$data = Evaluate::get_metric_data( $metric );
+							if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
+							if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
+							
+							echo Evaluate::display_metric( $data );
 						endif;
 					?>
 				</div>
@@ -269,7 +279,7 @@ class Pulse_CPT {
 				<div class="pulse-actions">
 					<ul>
 						<li><a href="#expand-url" class="expand-action">Expand</a></li>
-						<?php if ( is_user_logged_in() ): //display reply and favorite only if user is logged in ?>
+						<?php if ( is_user_logged_in() ): // Display reply and favorite only if user is logged in ?>
 							<li><a href="#reply-url" class="reply-action">Reply</a></li>
 						<?php endif; ?>
 						<li><span class="reply-count"><?php echo $it['num_replies']; ?></span> Replies</li>
@@ -329,7 +339,7 @@ class Pulse_CPT {
 	 * @static
 	 * @return void
 	 */
-	public static function the_pulse_array() {
+	public static function the_pulse_array( $rating_metric = null ) {
 		global $post;
 		
 		// tags
@@ -346,7 +356,7 @@ class Pulse_CPT {
 			$tags = false;
 		endif;
 		
-		//  coauthors 
+		// Coauthors 
 		if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ):
 			$authors = get_coauthors($post->ID);
 			
@@ -364,7 +374,7 @@ class Pulse_CPT {
 						'url'  => get_author_posts_url( $author->ID, $author->user_nicename ),
 						'ID'   =>  $author->ID
 					);
-				elseif ( $post->post_author != $author->ID && !is_author()):
+				elseif ( $post->post_author != $author->ID && ! is_author() ):
 					$coauthors[] = array(
 						'name' => $author->user_nicename,
 						'url'  => get_author_posts_url( $author->ID, $author->user_nicename ),
@@ -378,22 +388,37 @@ class Pulse_CPT {
 			$coauthors = false;
 		endif;
 		
+		$counter_up = 0;
+		$counter_down = 0;
+		
+		if ( $rating_metric != null ):
+			global $wpdb;
+			$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$rating_metric."'" );
+			$counter_up = $metric->counter_up;
+			$counter_down = $metric->counter_down;
+		endif;
+		
 		return array(  
-			"ID"        => get_the_ID(),
-			"date"      => Pulse_CPT::get_the_date(),
-			"content"   => apply_filters( 'the_content', make_clickable( get_the_content() ) ),
-			"permalink" => get_permalink(),
-			"author"    => array( 
-				"ID"           => get_the_author_meta( 'ID' ),
-				"avatar_30"    => get_avatar( get_the_author_meta( 'ID' ) , '30'),
-				"user_login"   => get_the_author_meta( 'user_login' ),
-				"display_name" => get_the_author(),
-				"post_url"     => get_author_posts_url( get_the_author_meta('ID') ),
+			'ID'        => get_the_ID(),
+			'date'      => Pulse_CPT::get_the_date(),
+			'content'   => apply_filters( 'the_content', make_clickable( get_the_content() ) ),
+			'permalink' => get_permalink(),
+			'author'    => array( 
+				'ID'           => get_the_author_meta( 'ID' ),
+				'avatar_30'    => get_avatar( get_the_author_meta( 'ID' ), '30' ),
+				'user_login'   => get_the_author_meta( 'user_login' ),
+				'display_name' => get_the_author(),
+				'post_url'     => get_author_posts_url( get_the_author_meta('ID') ),
 			),
-			"tags"	      => $tags,
-			"authors"     => $coauthors,
+			'tags'	      => $tags,
+			'authors'     => $coauthors,
 			'num_replies' => self::get_num_replies(),
 			'parent'      => $post->post_parent,
+			'rating'      => array(
+				'slug'         => $rating_metric,
+				'counter_up'   => $counter_up,
+				'counter_down' => $counter_down,
+			),
 		);
 	}
 	
@@ -404,22 +429,27 @@ class Pulse_CPT {
 	 * @static
 	 * @return void
 	 */
-	public static function the_pulse_array_js() {
+	public static function the_pulse_array_js( $rating_metric = null ) {
 		return array(  
 			"ID"        => '{{=it.ID}}',
 			"date"      => '{{=it.date}}',
 			"content"   => '{{=it.content}}',
 			"permalink" => '{{=it.permalink}}',
 			"author"    => array( 
-				"ID"            => '{{it.author.ID}}',
+				"ID"            => '{{=it.author.ID}}',
 				"avatar_30"     => '{{=it.author.avatar_30}}',
 				"user_login"    => '{{=it.author.user_login}}',
 				"display_name"  => '{{=it.author.display_name}}',
 				"post_url"      => '{{=it.author.post_url}}',
 			),
-			"tags"        => '{{ if( it.tags ) {  }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
-			'authors'     => '{{ if( it.authors ) {  }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
+			"tags"        => '{{ if ( it.tags ) { }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
+			'authors'     => '{{ if ( it.authors ) { }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
 			'num_replies' => '{{=it.num_replies}}',
+			'rating'      => array(
+				'slug'         => $rating_metric,
+				'counter_up'   => '{{=it.rating.counter_up}}',
+				'counter_down' => '{{=it.rating.counter_down}}',
+			),
 		);
 	}
 	
@@ -489,9 +519,8 @@ class Pulse_CPT {
 		elseif ( ! ( is_single() || is_page() ) ):
 			$arg['post_parent'] = 0;
 		elseif( is_404() ):
-			return false; // don't display anything
+			return false; // Don't display anything
 		endif;
-		// what
 		
 		if ( is_paged() ):
 			$arg['paged'] = $wp_query->query_vars['paged'];
@@ -534,12 +563,12 @@ class Pulse_CPT {
 	
 	/* function to handle regular and nopriv ajax requests */
 	public static function ajax_replies() {
-		$data = ( isset($_POST['data']) ? $_POST['data'] : false );
+		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
 		if ( $data ):
 			$query_args = self::query_arguments();
 			$query_args['post_parent'] = $data['pulse_id'];
 			
-			$query = new WP_Query($query_args);
+			$query = new WP_Query( $query_args );
 			while ( $query->have_posts() ):
 				$query->the_post();
 				echo self::the_pulse( self::the_pulse_array() );
@@ -552,7 +581,7 @@ class Pulse_CPT {
 	/* return the number of replies for a given pulse */
 	public static function get_num_replies() {
 		global $post;
-		return count(get_children($post->ID));
+		return count( get_children( $post->ID ) );
 	}
 }
 
@@ -565,3 +594,5 @@ class Pulse_CPT {
 function the_pulse() {
 	Pulse_CPT::the_pulse();
 }
+
+Pulse_CPT::init();

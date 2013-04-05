@@ -53,12 +53,14 @@ var Pulse_CPT_Form = {
 			collapsible: true,
 		} );
 		
-		if ( meta.tabs.tagging ) {
-			Pulse_CPT_Form.tag_it( parent, 'tags', Pulse_CPT_Form_global.tags);
-		}
-		
-		if ( meta.tabs.co_authoring ) {
-			Pulse_CPT_Form.tag_it( parent, 'author', Pulse_CPT_Form_global.authors );
+		if ( meta.tabs != null ) {
+			if ( meta.tabs.tagging ) {
+				Pulse_CPT_Form.tag_it( parent, 'tags', Pulse_CPT_Form_global.tags);
+			}
+			
+			if ( meta.tabs.co_authoring ) {
+				Pulse_CPT_Form.tag_it( parent, 'author', Pulse_CPT_Form_global.authors );
+			}
 		}
 	},
 	

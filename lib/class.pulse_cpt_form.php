@@ -1,12 +1,14 @@
 <?php
-
 /**
- *  Hadles form submition, ajax, regular, though wordpress, interface fun stuff, basically the creation of the pulse content type as well as. 
+ * Handles form submition, ajax, regular, though wordpress, interface fun stuff, basically the creation of the pulse content type as well as. 
  */
 class Pulse_CPT_Form {
 	
 	public static function init() {
 		add_action( 'wp_ajax_pulse_get_user_image', array( __CLASS__, 'get_user_image' ) );
+		add_action( 'wp_ajax_pulse_cpt_insert',     array( __CLASS__, 'insert' ) );
+		add_action( 'publish_pulse-cpt',            array( __CLASS__, 'admin_publish' ) );
+		add_filter( 'wp_insert_post_data',          array( __CLASS__, 'edit_post_data' ), 10, 2 );
 	}
 	
 	public static function get_user_image() {

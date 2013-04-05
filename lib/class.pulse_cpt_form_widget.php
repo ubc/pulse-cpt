@@ -3,12 +3,16 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	public static $widgets = array();
 	
 	public static function init() {
+		add_action( 'widgets_init', array( __CLASS__, 'load' ) );
+	}
+	
+	public static function load() {
 		register_widget( __CLASS__ );
 	}
 	
 	public function __construct() {
 		parent::__construct( 'pulse_cpt', 'Pulse Form', array(
-			'description' => __( 'A way to simply add new pulses', 'pulse_cpt' ),
+			'description' => __( 'A simple way to add new pulses', 'pulse_cpt' ),
 		) );
 	}
 	
@@ -86,53 +90,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			<!-- Character Count -->
 			<p>
 				<label for="<?php echo $this->get_field_id('enable_character_count'); ?>">
-					<input  id="<?php echo $this->get_field_id('enable_character_count'); ?>" name="<?php echo $this->get_field_name('enable_character_count'); ?>" type="checkbox"<?php echo checked($instance['enable_character_count']); ?> /> Character Count
+					<input  id="<?php echo $this->get_field_id('enable_character_count'); ?>" name="<?php echo $this->get_field_name('enable_character_count'); ?>" type="checkbox"<?php echo checked($instance['enable_character_count']); ?> /> Limit Character Count
 				</label>
 				<br />
-				<label for="<?php echo $this->get_field_id('num_char'); ?>">
-					Number of Characters: <input  id="<?php echo $this->get_field_id('num_char'); ?>" name="<?php echo $this->get_field_name('num_char'); ?>" type="text" value="<?php echo esc_attr($instance['num_char']); ?>" />
-				</label>
+				<input  id="<?php echo $this->get_field_id('num_char'); ?>" name="<?php echo $this->get_field_name('num_char'); ?>" type="text" value="<?php echo esc_attr($instance['num_char']); ?>" />
 				<br />
 				<small class="clear">A counter restricting the number of characters a person can enter.</small>
 				<br />
 			</p>
-			<!-- Enable Evaluate Rating -->
-			<?php if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // co authoring plugin is enabled  ?>
-				<p>
-					<label for="<?php echo $this->get_field_id('rating_metric'); ?>">
-						Pulse Rating
-					</label>
-					<br />
-					<select id="<?php echo $this->get_field_id('rating_metric'); ?>" name="<?php echo $this->get_field_name('rating_metric'); ?>">
-						<option value="">Disabled</option>
-						<?php
-							global $wpdb;
-							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
-							
-							foreach ( $metrics as $metric ):
-								$params = unserialize( $metric->params );
-								
-								if ( ! array_key_exists( 'content_types', $params ) ):
-									continue; //metric has no association, move on..
-								endif;
-								
-								$content_types = $params['content_types'];
-								if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ): //not excluded
-									?>
-									<option value="<?php echo $metric->slug; ?>" <?php selected( $rating_metric == $metric->slug ); ?>>
-									<?php echo $metric->nicename; ?>
-									</option>
-									<?php
-								endif;
-							endforeach;
-						?>
-					</select>
-					<br />
-					<small>Viewers can rate each pulse.</small>
-				</p>
-			<?php else: // enable co-authoring plugin enable this functionality  ?>
-				Enable the <a href="http://wordpress.org/extend/plugins/evaluate/">Evaluate plugin</a> to use this functionality.
-			<?php endif; ?>
 			<!-- URL Shortening -->
 			<p>
 				<label for="<?php echo $this->get_field_id('enable_url_shortener'); ?>">
@@ -149,19 +114,60 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<br />
 				<small>Pulse authors can add tags to the pulse</small>
 			</p>
-			<!-- Enable Co Authoring -->
-			<?php if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): // co authoring plugin is enabled  ?>
-				<p>
-					<label for="<?php echo $this->get_field_id('enable_co_authoring'); ?>">
-						<input  id="<?php echo $this->get_field_id('enable_co_authoring'); ?>" name="<?php echo $this->get_field_name('enable_co_authoring'); ?>" type="checkbox"<?php echo checked($instance['tabs']['co_authoring']); ?> />
-						Enable Co Authoring
-					</label>
+			<!-- Enable Evaluate Rating -->
+			<p>
+				<label for="<?php echo $this->get_field_id('rating_metric'); ?>">
+					Pulse Rating
+				</label>
+				<?php if ( ! Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // evaluate plugin is not enabled  ?>
 					<br />
-					<small>Pulse authors can add others as contributing authors</small>
-				</p>
-			<?php else: ?>
-				Enable the <a href="http://wordpress.org/extend/plugins/co-authors-plus/">Co-Authors Plus plugin</a> to use this functionality.
-			<?php endif; ?>
+					<small style="color: darkred;">
+						Install <a href="http://wordpress.org/extend/plugins/evaluate/">Evaluate</a> to use this functionality.
+					</small>
+				<?php endif; ?>
+				<br />
+				<select id="<?php echo $this->get_field_id('rating_metric'); ?>" name="<?php echo $this->get_field_name('rating_metric'); ?>" <?php disabled( ! Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ); ?>>
+					<option value="">Disabled</option>
+					<?php
+						global $wpdb;
+						$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
+						
+						foreach ( $metrics as $metric ):
+							$params = unserialize( $metric->params );
+							
+							if ( ! array_key_exists( 'content_types', $params ) ):
+								continue; //metric has no association, move on..
+							endif;
+							
+							$content_types = $params['content_types'];
+							if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ): //not excluded
+								?>
+								<option value="<?php echo $metric->slug; ?>" <?php selected( $instance['rating_metric'] == $metric->slug ); ?>>
+								<?php echo $metric->nicename; ?>
+								</option>
+								<?php
+							endif;
+						endforeach;
+					?>
+				</select>
+				<br />
+				<small>Viewers can rate each pulse.</small>
+			</p>
+			<!-- Enable Co Authoring -->
+			<p>
+				<label for="<?php echo $this->get_field_id('enable_co_authoring'); ?>">
+					<input  id="<?php echo $this->get_field_id('enable_co_authoring'); ?>" name="<?php echo $this->get_field_name('enable_co_authoring'); ?>" type="checkbox" <?php checked( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] && $instance['tabs']['co_authoring'] ); ?> <?php disabled( ! Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ); ?> />
+					Enable Co Authoring
+				</label>
+				<?php if ( ! Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): // co authoring plugin is not enabled  ?>
+					<br />
+					<small style="color: darkred;">
+						Install <a href="http://wordpress.org/extend/plugins/co-authors-plus/">Co-Authors Plus</a> to use this functionality.
+					</small>
+				<?php endif; ?>
+				<br />
+				<small>Pulse authors can add others as contributing authors</small>
+			</p>
 		<?php
 	}
 	
@@ -285,7 +291,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					// The Loop
 					while ( $the_query->have_posts() ):
 						$the_query->the_post();
-						Pulse_CPT::the_pulse( null, $instance['rating_metric'] );
+						Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance['rating_metric'] ) );
 					endwhile;
 					
 					// Reset Post Data
@@ -295,7 +301,23 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<?php
 		
 		echo $args['after_widget'];
+		self::footer( $instance );
 	}
+  	
+  	/**
+  	 * footer function.
+  	 * 
+  	 * @access public
+  	 * @static
+  	 * @return void
+  	 */
+  	public static function footer( $instance ) {
+  		$it = Pulse_CPT::the_pulse_array_js( $instance['rating_metric'] );
+		
+  		?>
+  		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it ); ?></script>
+  		<?php 
+  	}
 	
 	/**
 	 * get_location function.
@@ -321,3 +343,5 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		return false;
 	}
 }
+
+Pulse_CPT_Form_Widget::init();

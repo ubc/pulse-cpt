@@ -2,12 +2,12 @@
 /**
   Plugin Name: Pulse CPT
   Plugin URI: https://github.com/ubc/pulse-cpt
-  Version: 0.1
+  Version: 0.5
   Description: 
   Author: Enej Bajgoric, Devindra Payment, CTLT, UBC
   Author URI: http://ctlt.ubc.ca
   Text Domain: pulse_cpt
-  License: GPLv2 or later.
+  License: GPLv2
  */
 
 if ( ! defined('ABSPATH') )
@@ -23,34 +23,5 @@ require_once( 'lib/class.pulse_cpt_form.php' );
 require_once( 'lib/class.pulse_cpt_form_widget.php' );
 require_once( 'lib/class.pulse_cpt_settings.php' );
 
-add_action( 'init',                     array( 'Pulse_CPT', 'init' ) );
-add_action( 'wp_footer',                array( 'Pulse_CPT', 'print_form_script' ) );
-add_action( 'wp_footer',                array( 'Pulse_CPT', 'print_pulse_script' ) );
-add_action( 'template_redirect',        array( 'Pulse_CPT', 'template_redirect' ) );
-add_action( 'wp_footer',                array( 'Pulse_CPT', 'footer' ), 1 ); // templates should be generated before calling the js
-add_action( 'wp_ajax_pulse_cpt_insert', array( 'Pulse_CPT_Form', 'insert' ) );
-add_action( 'widgets_init',             array( 'Pulse_CPT_Form_Widget', 'init' ) );
-
-//ajax request handler for getting pulse replies
-add_action( 'wp_ajax_pulse_cpt_replies', array( 'Pulse_CPT', 'ajax_replies' ) );
-add_action( 'wp_ajax_nopriv_pulse_cpt_replies', array( 'Pulse_CPT', 'ajax_replies' ) );
-
-// add column 
-add_filter( 'manage_pulse-cpt_posts_columns', array( 'Pulse_CPT', 'add_new_column' ) );
-
-add_action( 'manage_pulse-cpt_posts_custom_column', array( 'Pulse_CPT','manage_columns'), 10, 2 );
-
-add_action( 'init',       array( 'Pulse_CPT_Settings', 'init' ) );
-add_action( 'admin_init', array( 'Pulse_CPT_Settings', 'load' ) );
-add_action( 'admin_menu', array( 'Pulse_CPT_Settings', 'admin_menu' ) );
-
-add_action( 'publish_pulse-cpt', array( 'Pulse_CPT_Form', 'admin_publish' ) );
-
-// filters
-add_filter( 'wp_insert_post_data', array( 'Pulse_CPT_Form', 'edit_post_data' ), 10, 2 );
-
-// add_action( 'pre_get_posts', array( 'Pulse_CPT', 'include_pulse_cpt') );
-add_filter( 'carry_content_template', array( 'Pulse_CPT', 'load_pulse_template' ) );
-
-// install and uninstall
+// Register the activation hooks for the plugin
 register_activation_hook( __FILE__, array( 'Pulse_CPT', 'install' ) );

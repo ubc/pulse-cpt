@@ -1,9 +1,8 @@
 <?php
 /**
- * Settings Screen for the Pulse Custo Post Type
+ * Settings Screen for the Pulse Custom Post Type
  */
 class Pulse_CPT_Settings {
-	
 	static $options = array();
 	
 	public static function admin_menu() {
@@ -13,21 +12,18 @@ class Pulse_CPT_Settings {
 	public static function init() {
 		if ( ! function_exists( 'is_plugin_active' ) ):
 			// Include plugins.php to check for other plugins from the frontend
-			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+			include_once( ABSPATH.'wp-admin/includes/plugin.php' );
 		endif;
 		
 		self::$options['CTLT_STREAM'] = is_plugin_active('stream/stream.php');
 		self::$options['CTLT_EVALUATE'] = is_plugin_active('evaluate/evaluate.php');
 		self::$options['COAUTHOR_PLUGIN'] = defined('COAUTHORS_PLUS_VERSION');
+		
+		add_action( 'admin_init', array( __CLASS__, 'load' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 	}
 	
 	public static function load() {
-		//check if CTLT Stream plugin exists to use with node
-		if ( ! function_exists( 'is_plugin_active' ) ):
-			//include plugins.php to check for other plugins from the frontend
-			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		endif;
-		
 		//register settings
 		//these need to be in admin_init otherwise Settings API doesn't work
 		register_setting( 'pulse_options', 'pulse_bitly_username' );
@@ -35,14 +31,21 @@ class Pulse_CPT_Settings {
 		register_setting( 'pulse_options', 'pulse_favourite' );
 		
 		// Main settings
-		add_settings_section( 'pulse_settings_main', 'Pulse-CPT Settings', array( __CLASS__, 'setting_section_main' ), 'pulse-cpt_settings' );
+		add_settings_section( 'pulse_settings_main', 'Pulse CPT Settings', array( __CLASS__, 'setting_section_main' ), 'pulse-cpt_settings' );
 		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 'pulse-cpt_settings', 'pulse_settings_main' );
 		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      'pulse-cpt_settings', 'pulse_settings_main' );
-	  
+		
 		// Plugin integration
-		add_settings_section( 'pulse_settings_plugins', 'Plugin Integration Status', array( __CLASS__, 'pulse_settings_plugins' ), 'pulse-cpt_settings' );
+		add_settings_section( 'pulse_settings_plugins', 'Plugin Integration Status', array( __CLASS__, 'setting_section_plugins' ), 'pulse-cpt_settings' );
 		add_settings_field( 'ctlt_stream_found', 'CTLT Stream plugin', array( __CLASS__, 'setting_stream_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
-		add_settings_field( 'nodejs_server_status', 'NodeJS Server', array( __CLASS__, 'setting_nodejs_server' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		
+		if ( self::$options['CTLT_STREAM'] == true && class_exists( 'CTLT_Stream' ) ):
+			$callback = array( 'CTLT_Stream', 'setting_server_status' );
+		else:
+			$callback = array( __CLASS__, 'setting_stream_plugin_not_found' );
+		endif;
+		add_settings_field( 'nodejs_server_status', 'NodeJS Server', $callback, 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		
 		add_settings_field( 'evaluate_found', 'Evaluate plugin', array( __CLASS__, 'setting_evaluate_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		add_settings_field( 'coauthor_found', 'Co-Author+ plugin', array( __CLASS__, 'setting_coauthor_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		//add_settings_field( 'pulse_rating', 'Enable Favourite Rating', array( __CLASS__, 'setting_rating' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
@@ -54,7 +57,7 @@ class Pulse_CPT_Settings {
 		<?php
 	}
 	
-	public static function pulse_settings_plugins() {
+	public static function setting_section_plugins() {
 		?>
 		Integration for the CTLT Stream, Evaluate, and CoAuthor+ plugins
 		<?php
@@ -99,6 +102,12 @@ class Pulse_CPT_Settings {
 		<?php endif;
 	}
 	
+	public static function setting_stream_plugin_not_found() {
+		?>
+		<div style="color: red">Stream Plugin Not Found</div>
+		<?php
+	}
+	
 	public static function setting_evaluate_plugin() {
 		if ( self::$options['CTLT_EVALUATE'] ): ?>
 			<div style="color: green">Enabled</div>
@@ -136,3 +145,5 @@ class Pulse_CPT_Settings {
 		<?php
 	}
 }
+
+Pulse_CPT_Settings::init();
