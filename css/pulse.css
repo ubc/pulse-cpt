@@ -97,7 +97,7 @@
 	font-weight: normal;
 }
 
-.expand .pulse-expand-content {
+.pulse.expand > .pulse-wrap > .pulse-expand-content {
 	display: block;
 }
 
@@ -167,9 +167,11 @@
 
 .pulse-list .pulse:not(.expand) .pulse-actions {
     margin-top: -20px;
+    position: relative;
+    top: 5px;
 }
 
-.pulse-list .pulse.expand .pulse-actions,
-.pulse-list .pulse:hover .pulse-actions {
+.pulse-list .pulse.expand > .pulse-wrap > .pulse-actions,
+.pulse-list .pulse:hover > .pulse-wrap > .pulse-actions {
 	display: block;
 }

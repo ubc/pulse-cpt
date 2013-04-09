@@ -262,7 +262,7 @@ class Pulse_CPT {
 						<?php echo $it['date']; ?>
 					</a>
 					<?php
-						if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] == true ):
+						if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
 							global $wpdb;
 							$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
 							$data = Evaluate::get_metric_data( $metric );
@@ -391,7 +391,7 @@ class Pulse_CPT {
 		$counter_up = 0;
 		$counter_down = 0;
 		
-		if ( $rating_metric != null ):
+		if ( $rating_metric != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
 			global $wpdb;
 			$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$rating_metric."'" );
 			$counter_up = $metric->counter_up;

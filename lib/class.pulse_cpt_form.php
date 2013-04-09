@@ -47,13 +47,13 @@ class Pulse_CPT_Form {
 		global $current_user;
 		$users = get_users($args);
 		foreach ( $users as $user ):
-			if ( $user != $current_user ) {
+			if ( $user != $current_user ):
 				$avatar = get_avatar( $user->user_email, 20 );
 				$simple_user[] = array(
 					'value' => $user->display_name,
 					'label' => $avatar.' '.$user->display_name,
 				);
-			}
+			endif;
 		endforeach;
 	  
 		return $simple_user;

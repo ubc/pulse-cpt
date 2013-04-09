@@ -55,17 +55,16 @@ var Pulse_CPT = {
     },
     
     expand: function() {
-        var el = jQuery(this).closest('.pulse');
-        el.data('pulse');
+        var element = jQuery(this).closest('.pulse');
+        element.data('pulse');
         
-        el.toggleClass('expand');
-        el.find('.pulse-expand-content').toggle(); //toggle visibility of expand-content
+        element.toggleClass('expand');
         
-        if ( el.hasClass('expand') ) {
-            el.find('.expand-action').first().text( 'Collapse' );
-            Pulse_CPT.expandPulse(el); //ajax call to fetch replies
+        if ( element.hasClass('expand') ) {
+            element.find('.expand-action').first().text( 'Collapse' );
+            Pulse_CPT.expandPulse(element); //ajax call to fetch replies
         } else {
-            el.find('.expand-action').first().text( 'Expand' );
+            element.find('.expand-action').first().text( 'Expand' );
             Pulse_CPT_Form.reply(); //reset form location if collapsed
         }
     },
