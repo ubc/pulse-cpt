@@ -36,7 +36,6 @@
         self.tagInput = $('<input>', {
             'type': 'text',
 			'placeholder': input.attr('placeholder'),
-			'width': 140,
             'keydown': function(e) {
                 if ( e.keyCode == 13 || e.keyCode == self.delimit_key ) {
                     $(this).trigger("selectTag");

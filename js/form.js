@@ -202,7 +202,7 @@ var Pulse_CPT_Form = {
 	    var html_tags = new Array();
 		var tags_array = tags.split(',');
 		
-		switch (options.single_input) {
+		switch ( options.single_input ) {
 		case "tags":
 			if ( tags ) {
 				while ( tags_array[i] ) {
@@ -214,7 +214,6 @@ var Pulse_CPT_Form = {
 			} else {
 				parent.find( '.pulse-tags-shell').html('');
 			}
-			
 			break;
 		case "author":
 			if ( tags ) {
@@ -254,10 +253,8 @@ var Pulse_CPT_Form = {
 			} else {
 				parent.find('.pulse-author-shell').html('');
 			}
-			
 			break;
 		}
-		
 	},
 	
 	display_msg: function ( msg ) {

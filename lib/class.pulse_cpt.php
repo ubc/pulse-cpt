@@ -243,9 +243,13 @@ class Pulse_CPT {
 	 * @param mixed $it (default: null)
 	 * @return void
 	 */
-	public static function the_pulse( $it = null ) {
+	public static function the_pulse( $it = null, $template = false ) {
 		if ( $it == null ):
-			$it = self::the_pulse_array();
+			if ( $template ):
+				$it = self::the_pulse_array_js();
+			else:
+				$it = self::the_pulse_array();
+			endif;
 		endif;
 		
 		?>
@@ -289,30 +293,53 @@ class Pulse_CPT {
 					</ul>
 				</div>
 				<div class="pulse-expand-content">
-					<?php if ( isset( $it['tags'] )  && is_array( $it['tags'] ) ): ?>
-						<ul class="pulse-tags">
-							<?php foreach( $it['tags'] as $tag ): ?>
-								<li><a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a></li>
-							<?php endforeach; ?>
-						</ul>
-					<?php
-						elseif ( isset( $it['tags'] ) && is_string( $it['tags'] )): 
-							echo $it['tags'];
-						endif;
-					?>
+					<?php if ( $template ): ?>
+						{{ if ( it.tags ) { }}
+							<ul class="pulse-tags">
+								{{~it.tags :value:index}}
+								<li>
+									<a href="{{=value.url}}">{{=value.name}}</a>
+								</li>
+								{{~}}
+							</ul>
+						{{ } }}
+					<?php else: ?>
+						<?php if ( ! empty( $it['tags'] ) ): ?>
+							<ul class="pulse-tags">
+								<?php foreach( $it['tags'] as $tag ): ?>
+									<li>
+										<a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						<?php endif; ?>
+					<?php endif; ?>
 					
-					<?php if ( isset( $it['authors'] ) && is_array( $it['authors'] ) ): ?>
-						<span class="posted-with">posted with</span>
-						<ul class="pulse-co-authors">
-							<?php foreach( $it['authors'] as $author ): ?>
-								<li><a href="<?php echo $author['url']; ?>"><?php echo $author['name']; ?></a></li>
-							<?php endforeach; ?>
-						</ul>
-					<?php 
-						elseif ( isset( $it['authors'] ) && is_string( $it['authors'] )): 
-							echo $it['authors'];
-						endif; 
-					?>
+					<?php if ( $template ): ?>
+						{{ if ( it.authors ) { }}
+							<span class="posted-with">with </span>
+							<ul class="pulse-co-authors">
+								{{~it.authors :value:index}}
+								<li>
+									<a href="{{=value.url}}">{{=value.name}}</a>
+								</li>
+								{{~}}
+							</ul>
+						{{ } }}
+					<?php else: ?>
+						<?php if ( ! empty( $it['authors'] ) ): ?>
+							<span class="posted-with">with </span>
+							<ul class="pulse-co-authors">
+								<?php foreach( $it['authors'] as $author ): ?>
+									<li>
+										<?php echo $author['avatar']; ?>
+										<a href="<?php echo $author['url']; ?>"><?php echo $author['name']; ?></a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						<?php endif; ?>
+					<?php endif; ?>
+					
 					<div class="pulse-pivot"></div>
 					<div class="pulse-replies"></div>
 				</div> <!-- end of pulse-expand-content -->
@@ -362,23 +389,14 @@ class Pulse_CPT {
 			
 			$coauthors = array();
 			foreach ( $authors as $author ):
-				if ( $post->post_author != $author->ID && is_author( $post->post_author ) ):
+				if ( $post->post_author != $author->ID && is_author( $post->post_author )
+					|| is_author() && $author->ID != get_the_author_meta( "ID" )
+					|| $post->post_author != $author->ID && ! is_author() ):
 					$coauthors[] = array(
-						'name' => $author->user_nicename,
-						'url'  => get_author_posts_url( $author->ID, $author->user_nicename ),
-						'ID'   =>  $author->ID
-					);
-				elseif ( is_author() && $author->ID != get_the_author_meta( "ID" ) ):
-					$coauthors[] = array(
-						'name' => $author->user_nicename,
-						'url'  => get_author_posts_url( $author->ID, $author->user_nicename ),
-						'ID'   =>  $author->ID
-					);
-				elseif ( $post->post_author != $author->ID && ! is_author() ):
-					$coauthors[] = array(
-						'name' => $author->user_nicename,
-						'url'  => get_author_posts_url( $author->ID, $author->user_nicename ),
-						'ID'   =>  $author->ID
+						'name'   => $author->user_nicename,
+						'url'    => get_author_posts_url( $author->ID, $author->user_nicename ),
+						'ID'     => $author->ID,
+						'avatar' => Pulse_CPT_Form::get_user_image( $author, 12, FALSE ),
 					);
 				endif;
 			endforeach;
@@ -431,19 +449,19 @@ class Pulse_CPT {
 	 */
 	public static function the_pulse_array_js( $rating_metric = null ) {
 		return array(  
-			"ID"        => '{{=it.ID}}',
-			"date"      => '{{=it.date}}',
-			"content"   => '{{=it.content}}',
-			"permalink" => '{{=it.permalink}}',
-			"author"    => array( 
-				"ID"            => '{{=it.author.ID}}',
-				"avatar_30"     => '{{=it.author.avatar_30}}',
-				"user_login"    => '{{=it.author.user_login}}',
-				"display_name"  => '{{=it.author.display_name}}',
-				"post_url"      => '{{=it.author.post_url}}',
+			'ID'        => '{{=it.ID}}',
+			'date'      => '{{=it.date}}',
+			'content'   => '{{=it.content}}',
+			'permalink' => '{{=it.permalink}}',
+			'author'    => array( 
+				'ID'           => '{{=it.author.ID}}',
+				'avatar_30'    => '{{=it.author.avatar_30}}',
+				'user_login'   => '{{=it.author.user_login}}',
+				'display_name' => '{{=it.author.display_name}}',
+				'post_url'     => '{{=it.author.post_url}}',
 			),
-			"tags"        => '{{ if ( it.tags ) { }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
-			'authors'     => '{{ if ( it.authors ) { }} <span class="posted-with">posted with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
+			//'tags'        => '{{ if ( it.tags ) { }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
+			//'authors'     => '{{ if ( it.authors ) { }} <span class="posted-with">with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
 			'num_replies' => '{{=it.num_replies}}',
 			'rating'      => array(
 				'slug'         => $rating_metric,
@@ -575,7 +593,7 @@ class Pulse_CPT {
 			endwhile;
 		endif;
 		
-		die(); //prevent wp appending 0 to output
+		die();
 	}
 	
 	/* return the number of replies for a given pulse */

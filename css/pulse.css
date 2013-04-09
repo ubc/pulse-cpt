@@ -42,11 +42,11 @@
 	margin: 0;
 }
 
-.pulse .avatar {
+.pulse .pulse-wrap > .avatar {
 	float: left;
 }
 
-.pulse .avatar,
+.pulse .pulse-wrap > .avatar,
 .pulse-actions,
 .pulse-expand-content {
     margin-left: -36px;

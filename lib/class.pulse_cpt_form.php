@@ -11,10 +11,23 @@ class Pulse_CPT_Form {
 		add_filter( 'wp_insert_post_data',          array( __CLASS__, 'edit_post_data' ), 10, 2 );
 	}
 	
-	public static function get_user_image() {
-		$user = get_user_by( 'login', $_POST['user'] );
-		echo get_avatar( $user->user_email, $_POST['size'] );
-		die();
+	public static function get_user_image( $user = null, $size = 30, $ajax = TRUE ) {
+		if ( ! empty( $_POST['user'] ) ):
+			$user = get_user_by( 'login', $_POST['user'] );
+		elseif ( $user == null ):
+			$user = wp_get_current_user();
+		endif;
+		
+		if ( ! empty( $_POST['size'] ) ):
+			$size = $_POST['size'];
+		endif;
+		
+		if ( $ajax ):
+			echo get_avatar( $user->user_email, $size );
+			die();
+		else:
+			return get_avatar( $user->user_email, $size );
+		endif;
 	}
 	
 	/**

@@ -245,7 +245,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 								<?php endif; ?>
 								
 								<?php if ( $instance['tabs']['co_authoring'] && Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): ?>
-									<li><a href="#tabs-2" class="pulse-tabs-author">author</a></li>
+									<li><a href="#tabs-2" class="pulse-tabs-author">authors</a></li>
 								<?php endif; ?>
 								
 								<?php if ( $instance['tabs']['file_uploads'] ): ?>
@@ -315,7 +315,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
   		$it = Pulse_CPT::the_pulse_array_js( $instance['rating_metric'] );
 		
   		?>
-  		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it ); ?></script>
+  		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it, TRUE ); ?></script>
   		<?php 
   	}
 	
