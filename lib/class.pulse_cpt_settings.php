@@ -165,14 +165,6 @@ class Pulse_CPT_Settings {
 		<?php endif;
 	}
 	
-	/*
-	public static function setting_rating() {
-		?>
-		<input id="pulse_rating" name="pulse_rating" type="checkbox" <?php hidden( self::$options['CTLT_EVALUATE'] ); ?> value="<?php echo get_option('pulse_rating'); ?>" />
-		<?php
-	}
-	*/
-	
 	public static function admin_page() {
 		?>
 		<form id="pulse_options" method="post" action="options.php">

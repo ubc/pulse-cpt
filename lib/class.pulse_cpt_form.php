@@ -139,19 +139,22 @@ class Pulse_CPT_Form {
 		endif;
 		
 		if ( is_object( $coauthors_plus ) ):
-			@$coauthors_plus->add_coauthors( $id, $authors_array ); //suppress warnings from Co-Authors plugin
+			@$coauthors_plus->add_coauthors( $id, $authors_array ); // The @ symbol suppresses warnings from Co-Authors plugin.
 		endif;
 		
 		// The Query
-		$args = array( 'post_type' => 'pulse-cpt', 'p' => (int) $id );
-		$the_query = new WP_Query( $args );
-	  
+		$the_query = new WP_Query( array(
+			'post_type' => 'pulse-cpt',
+			'p'         => (int) $id,
+		) );
+		
 		// The Loop
 		while ( $the_query->have_posts() ):
 			$the_query->the_post();
-			echo Pulse_CPT::the_pulse_json();
+			$widgets = get_option( 'widget_pulse_cpt' );
+			echo Pulse_CPT::the_pulse_json( $widgets[$_POST['widget_id']]['rating_metric'] );
 		endwhile;
-	  
+		
 		// Reset Post Data
 		wp_reset_postdata();
 		die();
@@ -208,23 +211,23 @@ class Pulse_CPT_Form {
 	}
 	
 	public static function admin_publish( $pulse_id ) {
-		//check autosave
+		// Check autosave
 		if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
-		//we're only interested in the parent post
+		// We're only interested in the parent post
 		if ( wp_is_post_revision( $pulse_id ) ) return;
-		
-		//check if CTLT Stream plugin exists to use with node
-		if ( ! function_exists('is_plugin_active')):
-			include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		endif;
 		
 		if ( CTLT_Stream::is_node_active() ):
 			// The Query
-			$args = array( 'post_type' => 'pulse-cpt', 'p' => (int) $pulse_id );
-			$the_query = new WP_Query($args);
+			$query = new WP_Query( array(
+				'post_type' => 'pulse-cpt',
+				'p'         => (int) $pulse_id,
+			) );
 			
-			$the_query->the_post();
-			CTLT_Stream::send( 'pulse', Pulse_CPT::the_pulse_json(), 'new-pulse' );
+			$query->the_post();
+			$widgets = get_option( 'widget_pulse_cpt' );
+			$data = Pulse_CPT::the_pulse_json( $widgets[$_POST['widget_id']]['rating_metric'] );
+			
+			CTLT_Stream::send( 'pulse', $data, 'new-pulse' );
 			
 			// Reset Post Data
 			wp_reset_postdata();

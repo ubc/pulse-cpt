@@ -98,14 +98,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<small class="clear">A counter restricting the number of characters a person can enter.</small>
 				<br />
 			</p>
-			<!-- URL Shortening -->
-			<p>
-				<label for="<?php echo $this->get_field_id('enable_url_shortener'); ?>">
-					<input  id="<?php echo $this->get_field_id('enable_url_shortener'); ?>" name="<?php echo $this->get_field_name('enable_url_shortener'); ?>" type="checkbox"<?php echo checked($instance['enable_url_shortener']); ?> /> Enable URL Shortening
-				</label>
-				<br />
-				<small>Make sure to set your Bit.ly Username and API Key in <a href="<?php echo admin_url('edit.php?post_type=pulse-cpt&page=pulse-cpt_settings'); ?>">Pulse Settings.</a></small>
-			</p>
 			<!-- Enable Tagging -->
 			<p>
 				<label for="<?php echo $this->get_field_id('enable_tagging'); ?>">
@@ -113,6 +105,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				</label>
 				<br />
 				<small>Pulse authors can add tags to the pulse</small>
+			</p>
+			<!-- URL Shortening -->
+			<p>
+				<label for="<?php echo $this->get_field_id('enable_url_shortener'); ?>">
+					<input  id="<?php echo $this->get_field_id('enable_url_shortener'); ?>" name="<?php echo $this->get_field_name('enable_url_shortener'); ?>" type="checkbox"<?php echo checked($instance['enable_url_shortener']); ?> /> Enable URL Shortening
+				</label>
+				<br />
+				<small>Make sure to set your Bit.ly Username and API Key in <a href="<?php echo admin_url('edit.php?post_type=pulse-cpt&page=pulse-cpt_settings'); ?>">Pulse Settings.</a></small>
 			</p>
 			<!-- Enable Evaluate Rating -->
 			<p>
@@ -136,25 +136,27 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						Default (<?php echo ( empty( $default ) ? "no metric" : $default ); ?>)
 					</option>
 					<?php
-						global $wpdb;
-						$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
-						
-						foreach ( $metrics as $metric ):
-							$params = unserialize( $metric->params );
+						if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // Evaluate plugin is enabled
+							global $wpdb;
+							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
 							
-							if ( ! array_key_exists( 'content_types', $params ) ):
-								continue; // Metric has no association, move on..
-							endif;
-							
-							$content_types = $params['content_types'];
-							if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ):
-								?>
-								<option value="<?php echo $metric->slug; ?>" <?php selected( $instance['rating_metric'] == $metric->slug ); ?>>
-									<?php echo $metric->nicename; ?>
-								</option>
-								<?php
-							endif;
-						endforeach;
+							foreach ( $metrics as $metric ):
+								$params = unserialize( $metric->params );
+								
+								if ( ! array_key_exists( 'content_types', $params ) ):
+									continue; // Metric has no association, move on..
+								endif;
+								
+								$content_types = $params['content_types'];
+								if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ):
+									?>
+									<option value="<?php echo $metric->slug; ?>" <?php selected( $instance['rating_metric'] == $metric->slug ); ?>>
+										<?php echo $metric->nicename; ?>
+									</option>
+									<?php
+								endif;
+							endforeach;
+						endif;
 					?>
 				</select>
 				<br />
@@ -212,7 +214,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			);
 			
 			?>
-			<input class="widget-id" type="hidden" value="<?php echo $id; ?>"></input>
 			<div class="postbox-placeholder">Reply to Current</div>
 			<div class="postbox">
 				<form action="" method="post" name="new-post" class="pulse-form">
@@ -288,6 +289,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 							wp_nonce_field( 'evaluate_pulse-meta', 'evaluate_nonce' );
 						endif;
 					?>
+					<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
 				</form>
 				<div class="clear"></div>
 			</div>
@@ -321,7 +323,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
   	 */
   	public static function footer( $instance ) {
   		$it = Pulse_CPT::the_pulse_array_js( $instance['rating_metric'] );
-		
   		?>
   		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it, TRUE ); ?></script>
   		<?php 

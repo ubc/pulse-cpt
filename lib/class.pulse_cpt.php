@@ -266,23 +266,23 @@ class Pulse_CPT {
 						<?php echo $it['date']; ?>
 					</a>
 					<span class="pulse-rating">
-						<?php if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-							if ( $template ):
+						<?php
+							if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
 								global $wpdb;
 								$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
-								$data = Evaluate::get_metric_data_js( $metric );
 								
-								echo Evaluate::display_metric( $data, TRUE );
-							else:
-								global $wpdb;
-								$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
-								$data = Evaluate::get_metric_data( $metric );
-								if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
-								if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
+								if ( $template ):
+									$data = Evaluate::get_metric_data_js();
+									$data->type = $metric->type;
+								else:
+									$data = Evaluate::get_metric_data( $metric );
+									if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
+									if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
+								endif;
 								
-								echo Evaluate::display_metric( $data );
+								echo Evaluate::display_metric( $data, $template );
 							endif;
-						endif; ?>
+						?>
 					</span>
 				</div>
 				<div class="pulse-content">
@@ -363,8 +363,8 @@ class Pulse_CPT {
 	 * @static
 	 * @return void
 	 */
-	public static function the_pulse_json() {
-		return json_encode( Pulse_CPT::the_pulse_array() );
+	public static function the_pulse_json( $rating_metric = null ) {
+		return json_encode( Pulse_CPT::the_pulse_array( $rating_metric ) );
 	}
 	
 	/**
@@ -422,7 +422,7 @@ class Pulse_CPT {
 		endif;
 		
 		if ( ! empty( $rating_metric ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-			$rating_data = (array) Evaluate::get_data_by_id( $rating_metric, get_the_ID() );
+			$rating_data = (array) Evaluate::get_data_by_slug( $rating_metric, get_the_ID() );
 		else:
 			$rating_data = array();
 		endif;
@@ -459,6 +459,10 @@ class Pulse_CPT {
 	 * @return void
 	 */
 	public static function the_pulse_array_js( $rating_metric = null ) {
+		if ( $rating_metric == 'default' ):
+			$rating_metric = get_option( 'pulse_default_metric' );
+		endif;
+		
 		return array(  
 			'ID'        => '{{=it.ID}}',
 			'date'      => '{{=it.date}}',
@@ -471,8 +475,6 @@ class Pulse_CPT {
 				'display_name' => '{{=it.author.display_name}}',
 				'post_url'     => '{{=it.author.post_url}}',
 			),
-			//'tags'        => '{{ if ( it.tags ) { }} <ul class="pulse-tags"> {{~it.tags :value:index}} <li><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
-			//'authors'     => '{{ if ( it.authors ) { }} <span class="posted-with">with</span><ul class="pulse-co-authors"> {{~it.authors :value:index}} <li ><a href="{{=value.url}}">{{=value.name}}</a></li> {{~}} </ul> {{ } }}',
 			'num_replies' => '{{=it.num_replies}}',
 			'rating'      => array(
 				'slug'         => $rating_metric,
