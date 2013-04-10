@@ -70,22 +70,22 @@ var Pulse_CPT = {
     },
     
     expandPulse: function( element ) {
-        var args = {};
-        args['pulse_id'] = element.data('pulse-id');
-        
         // Show loading spinner
         element.find( '.pulse-form-progress' ).first().show();
         jQuery.ajax( {
             url: Pulse_CPT_Form_global.ajaxUrl,
             data: {
                 action: 'pulse_cpt_replies',
-                data: args,
+                data: {
+                    'pulse_id' : element.data('pulse-id'),
+                    'widget_id': element.closest('.widget').find('.widget-id').val(),
+                },
             },
             type: 'post',
-            success: function(data) {
+            success: function( data ) {
                 // Hide spinner again and show content
-                element.find( '.pulse-form-progress' ).first().hide();
                 jQuery(element).find('.pulse-replies').html(data);
+                element.find( '.pulse-form-progress' ).first().hide();
             }
         } );
     },

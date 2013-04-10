@@ -265,17 +265,25 @@ class Pulse_CPT {
 					<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
 						<?php echo $it['date']; ?>
 					</a>
-					<?php
-						if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-							global $wpdb;
-							$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
-							$data = Evaluate::get_metric_data( $metric );
-							if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
-							if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
-							
-							echo Evaluate::display_metric( $data );
-						endif;
-					?>
+					<span class="pulse-rating">
+						<?php if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+							if ( $template ):
+								global $wpdb;
+								$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
+								$data = Evaluate::get_metric_data_js( $metric );
+								
+								echo Evaluate::display_metric( $data, TRUE );
+							else:
+								global $wpdb;
+								$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
+								$data = Evaluate::get_metric_data( $metric );
+								if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
+								if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
+								
+								echo Evaluate::display_metric( $data );
+							endif;
+						endif; ?>
+					</span>
 				</div>
 				<div class="pulse-content">
 					<?php echo $it['content']; ?>
@@ -409,14 +417,17 @@ class Pulse_CPT {
 		$counter_up = 0;
 		$counter_down = 0;
 		
-		if ( $rating_metric != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-			global $wpdb;
-			$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$rating_metric."'" );
-			$counter_up = $metric->counter_up;
-			$counter_down = $metric->counter_down;
+		if ( $rating_metric == 'default' ):
+			$rating_metric = get_option( 'pulse_default_metric' );
 		endif;
 		
-		return array(  
+		if ( ! empty( $rating_metric ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+			$rating_data = (array) Evaluate::get_data_by_id( $rating_metric, get_the_ID() );
+		else:
+			$rating_data = array();
+		endif;
+		
+		return array_merge( $rating_data, array(  
 			'ID'        => get_the_ID(),
 			'date'      => Pulse_CPT::get_the_date(),
 			'content'   => apply_filters( 'the_content', make_clickable( get_the_content() ) ),
@@ -437,7 +448,7 @@ class Pulse_CPT {
 				'counter_up'   => $counter_up,
 				'counter_down' => $counter_down,
 			),
-		);
+		) );
 	}
 	
 	/**
@@ -583,13 +594,14 @@ class Pulse_CPT {
 	public static function ajax_replies() {
 		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
 		if ( $data ):
+			$widgets = get_option('widget_pulse_cpt');
 			$query_args = self::query_arguments();
 			$query_args['post_parent'] = $data['pulse_id'];
 			
 			$query = new WP_Query( $query_args );
 			while ( $query->have_posts() ):
-				$query->the_post();
-				echo self::the_pulse( self::the_pulse_array() );
+				$post = $query->the_post();
+				echo self::the_pulse( self::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] ) );
 			endwhile;
 		endif;
 		

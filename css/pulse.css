@@ -58,7 +58,7 @@
 }
 
 .pulse-meta {
-    width: 50%;
+    width: 215px;
 	position: absolute;
 	top: 5px;
 	right: 5px;
@@ -69,8 +69,13 @@
     float: right;
 }
 
+.pulse-meta .pulse-rating {
+    float: left;
+    width: 165px;
+}
+
 .pulse-meta .evaluate-shell {
-    margin-right: 10px;
+    float: right;
 }
 
 .pulse-meta .evaluate-shell .rating-text,

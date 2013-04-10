@@ -119,7 +119,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<label for="<?php echo $this->get_field_id('rating_metric'); ?>">
 					Pulse Rating
 				</label>
-				<?php if ( ! Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // evaluate plugin is not enabled  ?>
+				<?php if ( ! Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // Evaluate plugin is not enabled  ?>
 					<br />
 					<small style="color: darkred;">
 						Install <a href="http://wordpress.org/extend/plugins/evaluate/">Evaluate</a> to use this functionality.
@@ -127,7 +127,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<?php endif; ?>
 				<br />
 				<select id="<?php echo $this->get_field_id('rating_metric'); ?>" name="<?php echo $this->get_field_name('rating_metric'); ?>" <?php disabled( ! Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ); ?>>
-					<option value="">Disabled</option>
+					<option value="">None</option>
+					<?php
+						$selected = ( $instance['rating_metric'] == "default" || ! isset( $instance['rating_metric'] ) ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] == true;
+						$default = get_option( 'pulse_default_metric' );
+					?>
+					<option value="default" <?php selected( $selected ); ?>>
+						Default (<?php echo ( empty( $default ) ? "no metric" : $default ); ?>)
+					</option>
 					<?php
 						global $wpdb;
 						$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
@@ -136,14 +143,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 							$params = unserialize( $metric->params );
 							
 							if ( ! array_key_exists( 'content_types', $params ) ):
-								continue; //metric has no association, move on..
+								continue; // Metric has no association, move on..
 							endif;
 							
 							$content_types = $params['content_types'];
-							if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ): //not excluded
+							if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ):
 								?>
 								<option value="<?php echo $metric->slug; ?>" <?php selected( $instance['rating_metric'] == $metric->slug ); ?>>
-								<?php echo $metric->nicename; ?>
+									<?php echo $metric->nicename; ?>
 								</option>
 								<?php
 							endif;
@@ -205,6 +212,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			);
 			
 			?>
+			<input class="widget-id" type="hidden" value="<?php echo $id; ?>"></input>
 			<div class="postbox-placeholder">Reply to Current</div>
 			<div class="postbox">
 				<form action="" method="post" name="new-post" class="pulse-form">

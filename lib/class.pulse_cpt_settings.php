@@ -30,12 +30,16 @@ class Pulse_CPT_Settings {
 		//these need to be in admin_init otherwise Settings API doesn't work
 		register_setting( 'pulse_options', 'pulse_bitly_username' );
 		register_setting( 'pulse_options', 'pulse_bitly_key' );
-		register_setting( 'pulse_options', 'pulse_favourite' );
+		register_setting( 'pulse_options', 'pulse_default_metric' );
 		
 		// Main settings
 		add_settings_section( 'pulse_settings_main', 'Pulse CPT Settings', array( __CLASS__, 'setting_section_main' ), 'pulse-cpt_settings' );
 		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 'pulse-cpt_settings', 'pulse_settings_main' );
 		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      'pulse-cpt_settings', 'pulse_settings_main' );
+		
+		if ( self::$options['CTLT_EVALUATE'] == TRUE ):
+			add_settings_field( 'pulse_default_metric', 'Default Pulse Metric', array( __CLASS__, 'setting_default_metric' ), 'pulse-cpt_settings', 'pulse_settings_main' );
+		endif;
 		
 		// Plugin integration
 		add_settings_section( 'pulse_settings_plugins', 'Plugin Integration Status', array( __CLASS__, 'setting_section_plugins' ), 'pulse-cpt_settings' );
@@ -50,7 +54,6 @@ class Pulse_CPT_Settings {
 		
 		add_settings_field( 'evaluate_found', 'Evaluate plugin', array( __CLASS__, 'setting_evaluate_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		add_settings_field( 'coauthor_found', 'Co-Author+ plugin', array( __CLASS__, 'setting_coauthor_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
-		//add_settings_field( 'pulse_rating', 'Enable Favourite Rating', array( __CLASS__, 'setting_rating' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		
 		self::$bitly_username = get_option( 'pulse_bitly_username' );
 		self::$bitly_key = get_option( 'pulse_bitly_key' );
@@ -80,6 +83,53 @@ class Pulse_CPT_Settings {
 		<br />
 		<small class="clear">
 			To get your <a href="http://bit.ly" target="_blank">Bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API key.</a>
+		</small>
+		<?php
+	}
+	
+	public static function setting_default_metric() {
+		?>
+		<select id="pulse_default_metric" name="pulse_default_metric">
+			<option value="">None</option>
+			<?php
+				global $wpdb;
+				$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
+				$value = get_option( 'pulse_default_metric' );
+				$has_valid_metrics = false;
+				
+				foreach ( $metrics as $metric ):
+					$params = unserialize( $metric->params );
+					
+					if ( ! array_key_exists( 'content_types', $params ) ):
+						continue; // Metric has no association, move on..
+					endif;
+					
+					$content_types = $params['content_types'];
+					if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ):
+						$selected = ( $value == $metric->slug );
+						
+						if ( $metric->slug == "pulse_rating" ): // The metric with this slug is the default default.
+							$selected = $selected || ! isset( $value );
+						endif;
+						?>
+						<option value="<?php echo $metric->slug; ?>" <?php selected( $selected ); ?>>
+							<?php echo $metric->nicename; ?>
+						</option>
+						<?php
+						$has_valid_metrics = true;
+					endif;
+				endforeach;
+			?>
+		</select>
+		<?php if ( ! $has_valid_metrics ): ?>
+			<br />
+			<small class="clear" style="color: darkred;">
+				No valid metrics were found. <a href="admin.php?page=evaluate-new">Add a new</a> non-poll metric, to use the Evaluate integration.
+			</small>
+		<?php endif; ?>
+		<br />
+		<small class="clear">
+			Any Pulse widget that leaves their Pulse Rating as Default, will use the metric chosen above.
 		</small>
 		<?php
 	}
