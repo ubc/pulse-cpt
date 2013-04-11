@@ -9,6 +9,10 @@
 	margin: 0 5px;
 }
 
+.pulse .postbox {
+    margin-top: 8px !important;
+}
+
 .pulse-content {
     word-wrap: break-word;
 }
@@ -54,7 +58,10 @@
 
 .pulse-replies {
     margin-left: 5px;
-    margin-top: 5px;
+}
+
+.pulse-expand-content .pulse:first-child {
+    margin-top: 8px;
 }
 
 .pulse-meta {
@@ -170,7 +177,7 @@
 	display: none;
 }
 
-.pulse-list .pulse:not(.expand) .pulse-actions {
+.pulse-list .pulse-actions {
     margin-top: -20px;
     position: relative;
     top: 5px;

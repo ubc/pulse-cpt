@@ -2,8 +2,8 @@
 /**
   Plugin Name: Pulse CPT
   Plugin URI: https://github.com/ubc/pulse-cpt
-  Version: 0.5
-  Description: 
+  Version: 1.0
+  Description: Enables a widget that allows comments (called pulses) to be posted on any page of the site. Integrates with Stream, Evaluate, and Co Author+ to bring additional functionality to the comment stream.
   Author: Enej Bajgoric, Devindra Payment, CTLT, UBC
   Author URI: http://ctlt.ubc.ca
   Text Domain: pulse_cpt

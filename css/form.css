@@ -35,6 +35,9 @@
 .pulse-shorten-url {
 	text-align: right;
     padding: 0 5px;
+    height: 5px;
+    position: relative;
+    bottom: 12px;
 }
 
 .pulse-shorten-url a,

@@ -21,6 +21,9 @@ class Pulse_CPT_Settings {
 		self::$options['CTLT_EVALUATE'] = is_plugin_active('evaluate/evaluate.php');
 		self::$options['COAUTHOR_PLUGIN'] = defined('COAUTHORS_PLUS_VERSION');
 		
+		self::$bitly_username = get_option( 'pulse_bitly_username' );
+		self::$bitly_key = get_option( 'pulse_bitly_key' );
+		
 		add_action( 'admin_init', array( __CLASS__, 'load' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 	}
@@ -54,9 +57,6 @@ class Pulse_CPT_Settings {
 		
 		add_settings_field( 'evaluate_found', 'Evaluate plugin', array( __CLASS__, 'setting_evaluate_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		add_settings_field( 'coauthor_found', 'Co-Author+ plugin', array( __CLASS__, 'setting_coauthor_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
-		
-		self::$bitly_username = get_option( 'pulse_bitly_username' );
-		self::$bitly_key = get_option( 'pulse_bitly_key' );
 	}
 	
 	public static function setting_section_main() {
@@ -73,13 +73,13 @@ class Pulse_CPT_Settings {
 	
 	public static function setting_bitly_username() {
 		?>
-		<input id="pulse_bitly_username" name="pulse_bitly_username" value="<?php get_option( 'pulse_bitly_username' ); ?>" type="text" />
+		<input id="pulse_bitly_username" name="pulse_bitly_username" value="<?php echo self::$bitly_username; ?>" type="text" />
 		<?php
 	}
 	
 	public static function setting_bitly_key() {
 		?>
-		<input id="pulse_bitly_key" name="pulse_bitly_key" value="<?php echo get_option('pulse_bitly_key'); ?>" type="text" />
+		<input id="pulse_bitly_key" name="pulse_bitly_key" value="<?php echo self::$bitly_key; ?>" type="text" />
 		<br />
 		<small class="clear">
 			To get your <a href="http://bit.ly" target="_blank">Bit.ly</a> API key - <a href="http://bit.ly/a/sign_up" target="_blank">sign up</a> and view your <a href="http://bit.ly/a/your_api_key/" target="_blank">API key.</a>

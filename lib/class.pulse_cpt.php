@@ -18,7 +18,6 @@ class Pulse_CPT {
 		add_action( 'wp_footer',         array( __CLASS__, 'print_form_script' ) );
 		add_action( 'wp_footer',         array( __CLASS__, 'print_pulse_script' ) );
 		add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
-		// add_action( 'pre_get_posts', array( __CLASS__, 'include_pulse_cpt') );
 		add_filter( 'carry_content_template', array( __CLASS__, 'load_pulse_template' ) );
 		
 		// Ajax request handler for getting pulse replies
@@ -558,20 +557,6 @@ class Pulse_CPT {
 		endif;
 		
 		return $arg;
-	}
-	
-	/**
-	 * include_pulse_cpt function.
-	 * 
-	 * @access public
-	 * @static
-	 * @param mixed $query
-	 * @return void
-	 */
-	public static function include_pulse_cpt( $query ) {
-		if ( ! is_admin() && $query->is_main_query() && ! $query->is_singular() ):
-			$query->set( 'post_type', array( 'post', 'pulse-cpt') );
-		endif;
 	}
 	
 	/**
