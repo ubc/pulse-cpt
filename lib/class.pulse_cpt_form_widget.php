@@ -1,6 +1,7 @@
 <?php
 class Pulse_CPT_Form_Widget extends WP_Widget {
 	public static $widgets = array();
+	public static $quantity = 0;
 	
 	public static function init() {
 		add_action( 'widgets_init', array( __CLASS__, 'load' ) );
@@ -190,6 +191,32 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	 */
 	function widget( $args, $instance ) {
 		global $current_user;
+		
+		if ( self::$quantity > 0 ):
+			if ( current_user_can( 'administrator' ) ):
+				echo $args['before_widget']; 
+				echo $args['before_title'];
+				echo $instance['title'];
+				echo $args['after_title'];
+				?>
+					<div class="pulse-widget-warning">
+						<div class="error">
+							Pulse CPT only supports one pulse form per page.
+						</div>
+						<small>
+							This message is only displayed to administrators.
+							<br />
+							Please go to the <a href="wp-admin/widgets.php">Widgets menu</a>, and remove the excess pulse form widgets.
+						</small>
+					</div>
+				<?php
+				echo $args['after_widget']; 
+			endif;
+			
+			return;
+		else:
+			self::$quantity++;
+		endif;
 		
 		echo $args['before_widget']; 
 		if ( ! empty( $instance['title'] ) && $instance['display_title'] ):

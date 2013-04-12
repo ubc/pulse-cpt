@@ -305,7 +305,7 @@ class Pulse_CPT {
 							<ul class="pulse-tags">
 								{{~it.tags :value:index}}
 								<li>
-									<a href="{{=value.url}}">{{=value.name}}</a>
+									<a href="{{=value.url}}">{{=value.name}}</a> 
 								</li>
 								{{~}}
 							</ul>
@@ -383,7 +383,7 @@ class Pulse_CPT {
 			foreach( $posttags as $tag ):
 				$tags[] = array(
 					'name' => $tag->name,
-					'url'  => get_tag_link($tag->term_id),
+					'url'  => get_tag_link( $tag->term_id ),
 				);
 			endforeach;
 		else:
@@ -392,7 +392,7 @@ class Pulse_CPT {
 		
 		// Coauthors 
 		if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ):
-			$authors = get_coauthors($post->ID);
+			$authors = get_coauthors( $post->ID );
 			
 			$coauthors = array();
 			foreach ( $authors as $author ):
@@ -405,6 +405,9 @@ class Pulse_CPT {
 						'ID'     => $author->ID,
 						'avatar' => Pulse_CPT_Form::get_user_image( $author, 12, FALSE ),
 					);
+					error_log("Accepted CoAuthor: ".print_r($author->data->user_login, TRUE));
+				else:
+					error_log("Rejected CoAuthor: ".print_r($author->data->user_login, TRUE));
 				endif;
 			endforeach;
 		endif;

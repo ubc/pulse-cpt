@@ -7,7 +7,7 @@ class Pulse_CPT_Form {
 	public static function init() {
 		add_action( 'wp_ajax_pulse_get_user_image', array( __CLASS__, 'get_user_image' ) );
 		add_action( 'wp_ajax_pulse_cpt_insert',     array( __CLASS__, 'insert' ) );
-		add_action( 'publish_pulse-cpt',            array( __CLASS__, 'admin_publish' ) );
+		add_action( 'publish_pulse-cpt',            array( __CLASS__, 'send_to_stream' ), 20 );
 		add_filter( 'wp_insert_post_data',          array( __CLASS__, 'edit_post_data' ), 10, 2 );
 	}
 	
@@ -213,7 +213,15 @@ class Pulse_CPT_Form {
 		return $title;
 	}
 	
-	public static function admin_publish( $pulse_id ) {
+	public static function insert_pulse_cpt( $pulse_id ) {
+		error_log("Inserting post; ".print_r($_POST, true));
+		if ( 'pulse_cpt_insert' == $_POST['action'] ):
+			error_log("Sending to stream");
+			self::send_to_stream( $pulse_id );
+		endif;
+	}
+	
+	public static function send_to_stream( $pulse_id ) {
 		// Check autosave
 		if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) return;
 		// We're only interested in the parent post
@@ -228,7 +236,9 @@ class Pulse_CPT_Form {
 			
 			$query->the_post();
 			$widgets = get_option( 'widget_pulse_cpt' );
+			error_log("--- data ---");
 			$data = Pulse_CPT::the_pulse_json( $widgets[$_POST['widget_id']]['rating_metric'] );
+			error_log("------");
 			
 			CTLT_Stream::send( 'pulse', $data, 'new-pulse' );
 			

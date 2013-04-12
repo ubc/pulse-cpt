@@ -32,10 +32,10 @@ var Pulse_CPT = {
                         var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
                         var parent_found = false;
                         
-                        jQuery.each( all_visible_parents, function( i, val ) { //loop through and try to match the ids
+                        jQuery.each( all_visible_parents, function( i, val ) { // Loop through and try to match the ids
                             parent_element = jQuery(val)
-                            if ( parent_element.data('pulse-id') == new_pulse_data.parent ) { //if so, put it to its replies section
-                                jQuery(new_pulse).prependTo(parent_element.find('.pulse-expand-content .pulse-replies')).hide().slideDown('slow');
+                            if ( parent_element.data('pulse-id') == new_pulse_data.parent ) { // If so, put it to its replies section
+                                jQuery(new_pulse).prependTo( parent_element.find('.pulse-expand-content .pulse-replies') ).hide().slideDown('slow');
                                 
                                 var reply_count = parent_element.find(' > .pulse-wrap > .pulse-actions .reply-count');
                                 reply_count.text( parseInt( reply_count.text() ) + 1 );

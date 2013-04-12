@@ -187,3 +187,11 @@
 .pulse-list .pulse:hover > .pulse-wrap > .pulse-actions {
 	display: block;
 }
+
+.pulse-widget-warning {
+    padding: 5px;
+}
+
+.error {
+    color: darkred;
+}
