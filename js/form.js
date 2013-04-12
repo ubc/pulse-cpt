@@ -42,9 +42,13 @@ var Pulse_CPT_Form = {
 			var counter_shell = parent.find( '.pulse-form-counter' );
 			
 			counter_shell.data( 'num_char', num_char );
-			parent.find('.pulse-form-textarea').charCount( {
+			parent.find('.pulse-form-input textarea').charCount( {
 				allowed: num_char,
 				counterElement: counter_shell,
+			} );
+			
+			parent.find('.pulse-form-input textarea').keypress( function() {
+				
 			} );
 		}
 		
@@ -83,7 +87,7 @@ var Pulse_CPT_Form = {
 			// Hide placeholder and move the form back to its original location
 			jQuery('.postbox-placeholder').hide();
 			jQuery('.postbox').insertAfter( jQuery('.postbox-placeholder') );
-			jQuery('.pulse-form-textarea').focus();
+			jQuery('.pulse-form-input textarea').focus();
 			return;
 		}
 		
@@ -109,7 +113,7 @@ var Pulse_CPT_Form = {
 		// Show placeholder and insert the form inside the pivot element in the parent pulse
 		jQuery('.postbox-placeholder').show();
 		jQuery('.postbox').insertBefore( parent_pulse.find('.pulse-pivot:first') );
-		jQuery('.pulse-form-textarea').focus();
+		jQuery('.pulse-form-input textarea').focus();
 	},
 	
 	submitForm: function () {
@@ -122,11 +126,9 @@ var Pulse_CPT_Form = {
 			form_data += '&tags='+tags;
 		}
 		
-		// return false;
 		jQuery( '.postbox .pulse-form-progress' ).show();
 		
 		jQuery.post( Pulse_CPT_Form_global.ajaxUrl, form_data, function( response ) {
-			// we need to remove tags and authors
 			jQuery( '.postbox .pulse-form-progress' ).hide();
 			
 			if ( response == -1 ) {
@@ -136,7 +138,7 @@ var Pulse_CPT_Form = {
 			if ( response.hasOwnProperty('error') ) {
 				Pulse_CPT_Form.display_msg( response.error );
 			} else {
-				// clear the forms
+				// Clear the forms
 				form.each( function() { this.reset(); } );
 				
 				// counter goes back to what ever it used to be
@@ -258,24 +260,25 @@ var Pulse_CPT_Form = {
 	},
 	
 	display_msg: function ( msg ) {
-	    if ( jQuery( "#"+Pulse_CPT_Form.msg_id ) ) {
-	    	jQuery( "#"+Pulse_CPT_Form.msg_id ).html(msg);
+		alert_box = jQuery( "#"+Pulse_CPT_Form.msg_id );
+	    if ( alert_box.length > 0 ) {
+	    	alert_box.html(msg);
 	    } else {
-	    	jQuery( 'body' ).prepend( '<div class="pulse-alert" id="'+Pulse_CPT_Form.msg_id+'">'+msg+'</div>' );
+	    	jQuery( '.postbox' ).prepend( '<div class="pulse-alert" id="'+Pulse_CPT_Form.msg_id+'">'+msg+'</div>' );
 	    }
 		
 		// Watch for mouse & keyboard in .7s
-		Pulse_CPT_Form.msg_t1 = setTimeout( "Pulse_CPT_Form.bind_msg_events()", 700 );
+		Pulse_CPT_Form.msg_t1 = setTimeout( "Pulse_CPT_Form.bind_msg_events()", 500 );
 		// Remove message after 5s
 		Pulse_CPT_Form.msg_t2 = setTimeout( "Pulse_CPT_Form.remove_msg()", 5000 );
 	},
 
 	bind_msg_events: function() {
-	// Remove message if mouse is moved or key is pressed
+		// Remove message if mouse is moved or key is pressed
 		jQuery(window)
 			.mousemove(Pulse_CPT_Form.remove_msg)
 			.click(Pulse_CPT_Form.remove_msg)
-			.keypress(Pulse_CPT_Form.remove_msg)
+			.keypress(Pulse_CPT_Form.remove_msg);
 	},
 
 	remove_msg: function() {
@@ -283,10 +286,10 @@ var Pulse_CPT_Form = {
 		jQuery(window)
 			.unbind('mousemove', Pulse_CPT_Form.remove_msg)
 			.unbind('click', Pulse_CPT_Form.remove_msg)
-			.unbind('keypress', Pulse_CPT_Form.remove_msg)
+			.unbind('keypress', Pulse_CPT_Form.remove_msg);
 		
 		// If message is fully transparent, fade it out
-		jQuery('#'+Pulse_CPT_Form.msg_id).animate({ opacity: 0 }, 1000, function() { jQuery(this).hide() })
+		jQuery('#'+Pulse_CPT_Form.msg_id).animate( { opacity: 0 }, 500, function() { jQuery(this).remove() } );
 	},
 	
 	shorten_url_action: function(e) {
@@ -296,29 +299,33 @@ var Pulse_CPT_Form = {
 		
 		if ( Pulse_CPT_Form_local[id].enable_url_shortener ) {
 			var textarea = element.parent().siblings('textarea');
-			var words = textarea.val().split(" ");
-			var num_of_words = words.length;
+			var value = textarea.val();
 			
-			for ( var i = 0; i < num_of_words; i++ ) {
-				if ( words[i].substring(4, 0)  == "http" && 
-					words[i].substring(13, 0) != "http://bit.ly" && // ignore bitly as well 
-					words[i].substring(11, 0) != "http://j.mp" &&
-					words[i].substring(13, 0) != "http://goo.gl" &&
-					words[i].substring(14, 0) != "http://yhoo.it" ) {
-					
-					Pulse_CPT_Form.shorten_url( words[i], Pulse_CPT_Form_local[id].bitly_user, Pulse_CPT_Form_local[id].bitly_api_key, function( short_url, long_url ) {
-						// how do I replace the string with the proper 
-						var i = 0;
-						for ( i = 0; i < num_of_words; i++ ) {
-							if ( words[i] == long_url ){
-								words[i] = short_url;
-							}
-						}
+			if (value != undefined) {
+				var words = value.split(" ");
+				var num_of_words = words.length;
+				
+				for ( var i = 0; i < num_of_words; i++ ) {
+					if ( words[i].substring(4, 0)  == "http" && 
+						words[i].substring(13, 0) != "http://bit.ly" && // ignore bitly as well 
+						words[i].substring(11, 0) != "http://j.mp" &&
+						words[i].substring(13, 0) != "http://goo.gl" &&
+						words[i].substring(14, 0) != "http://yhoo.it" ) {
 						
-						textarea.val( words.join(" ") ); // replace the right stuff back
-					}); // end of call back
-				} // end of if statment 
-			} // end of for loop
+						Pulse_CPT_Form.shorten_url( words[i], Pulse_CPT_Form_local[id].bitly_user, Pulse_CPT_Form_local[id].bitly_api_key, function( short_url, long_url ) {
+							// How do I replace the string with the proper 
+							var i = 0;
+							for ( i = 0; i < num_of_words; i++ ) {
+								if ( words[i] == long_url ) {
+									words[i] = short_url;
+								}
+							}
+							
+							textarea.val( words.join(" ") ); // replace the right stuff back
+						} ); // end of call back
+					} // end of if statment 
+				} // end of for loop
+			}
 		}
 	},
 	

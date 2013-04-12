@@ -81,13 +81,16 @@ class Pulse_CPT_Form {
 	 */
 	public static function insert() {
 		$user = wp_get_current_user();
+		$widgets = get_option('widget_pulse_cpt');
+		
 		if ( ! isset( $user->ID ) ):
 			echo json_encode( array( 'error' => 'Your login has expired, please login again.' ) );
 			die();
-		endif;
-		
-		if ( empty( $_POST ) || ! wp_verify_nonce( $_POST['_wpnonce_pulse_form'], 'wpnonce_pulse_form' ) || empty($user) ):
+		elseif ( empty( $_POST ) || ! wp_verify_nonce( $_POST['_wpnonce_pulse_form'], 'wpnonce_pulse_form' ) || empty( $user ) ):
 			echo json_encode( array( 'error' => 'Sorry, your nonce did not verify.' ) );
+			die();
+		elseif ( strlen( $_POST['posttext'] ) > $widgets[$_POST['widget_id']]['num_char'] ):
+			echo json_encode( array( 'error' => 'Too many characters.' ) );
 			die();
 		endif;
 		
@@ -105,8 +108,8 @@ class Pulse_CPT_Form {
 			$location = false;
 		endif;
 		
-		$tags = trim($_POST['tags']);
-		$authors = trim($_POST['author']);
+		$tags = trim( $_POST['tags'] );
+		$authors = trim( $_POST['author'] );
 		
 		$post = array(
 			'post_author'  => $user_id,

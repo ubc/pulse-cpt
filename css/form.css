@@ -1,5 +1,5 @@
-.postbox {
-	border:1px solid #CCC;
+.postbox form {
+	border: 1px solid #CCC;
 }
 
 .postbox-placeholder {
@@ -22,14 +22,14 @@
 
 .postbox textarea {
 	border: none;
-	height: 25px;
+	height: 30px;
 	resize: none;
-	width: 98%;
 	background: #FFF;
+	margin: 0 0 5px;
 }
 
-.pulse-form-textarea {
-	margin: 0 0 5px;
+.postbox.no-tabs .pulse-form-input {
+    padding-right: 65px;
 }
 
 .pulse-shorten-url {
@@ -38,6 +38,11 @@
     height: 5px;
     position: relative;
     bottom: 12px;
+}
+
+.postbox.no-tabs  .pulse-shorten-url {
+    bottom: 38px;
+    right: 2px;
 }
 
 .pulse-shorten-url a,
@@ -73,7 +78,7 @@
 	z-index: 1;
 }
 
-#submit-pulse.disabled {
+.pulse-form-submit.disabled {
 	color: #CCC;
 	cursor: not-allowed;
 }
@@ -116,7 +121,7 @@
 	
 /* Sticky Notification */
 
-.pulse-form .pulse-alert {
+.postbox .pulse-alert {
 	background: rgba(0, 0, 0, 0.75);
 	color: #FFF;
 	font-size: 16px;

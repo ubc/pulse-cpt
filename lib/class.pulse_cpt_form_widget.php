@@ -213,11 +213,17 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				'tabs'                   => $instance['tabs'],
 			);
 			
+			$has_tabs_bar = ! empty( $instance['tabs'] ) || $instance['enable_character_count'];
+			$tabs_class = ( $has_tabs_bar ? "tabs" : "no-tabs" );
 			?>
 			<div class="postbox-placeholder">Reply to Current</div>
-			<div class="postbox">
+			<div class="postbox <?php echo $tabs_class; ?>">
+				<!--<div id="pulse_msg_wrap" class="pulse-alert"></div>-->
 				<form action="" method="post" name="new-post" class="pulse-form">
-					<textarea cols="60" rows="4" tabindex="1" class="pulse-form-textarea autogrow" name="posttext" placeholder="<?php echo $instance['placeholder']; ?>"></textarea>
+					<div class="pulse-form-input">
+						<textarea rows="4" tabindex="1" class="autogrow" name="posttext" placeholder="<?php echo $instance['placeholder']; ?>"></textarea>
+					</div>
+					
 					<?php if ( $instance['enable_url_shortener'] && ! empty( Pulse_CPT_Settings::$bitly_username ) && ! empty( Pulse_CPT_Settings::$bitly_key ) ): ?>
 						<div class="pulse-shorten-url">
 							<a href="#shorten-url">shorten url</a>
@@ -228,7 +234,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<div class="pulse-tags-shell tagbox-display-shell"></div>
 						<div class="pulse-author-shell tagbox-display-shell"></div>
 						<div class="pulse-file-shell tagbox-display-shell"></div>
+					<?php endif; ?>
 						
+					<?php if ( $has_tabs_bar ): ?>
 						<div class="pulse-tabs">
 							<?php if ( $instance['tabs']['tagging'] ): ?>
 								<div id="tabs-1">
@@ -271,7 +279,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<span class="pulse-form-progress hide">
 							<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
 						</span>					
-						<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" id="submit-pulse" />
+						<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" />
 					</div>
 					<input type="hidden" value="<?php echo $instance['enable_location_sensitive']; ?>" name="location_sensitive" />
 					<input type="hidden" value="<?php echo $instance['enable_comments']; ?>" name="enable_comments" />
@@ -291,7 +299,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					?>
 					<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
 				</form>
-				<div class="clear"></div>
 			</div>
 		<?php endif; ?>
 		<div class="pulse-list">
