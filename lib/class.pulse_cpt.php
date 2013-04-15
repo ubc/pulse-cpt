@@ -207,8 +207,12 @@ class Pulse_CPT {
      */
     public static function print_form_script() {
 		$global_args = array(
-			'ajaxUrl' => admin_url('admin-ajax.php'),
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		);
+		
+		if ( is_single() ):
+			$global_args['id'] = get_the_ID();
+		endif;
 		
 		if ( ! self::$add_form_script ): // We still need the ajax url even if user isnt logged in
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
@@ -405,9 +409,9 @@ class Pulse_CPT {
 						'ID'     => $author->ID,
 						'avatar' => Pulse_CPT_Form::get_user_image( $author, 12, FALSE ),
 					);
-					error_log("Accepted CoAuthor: ".print_r($author->data->user_login, TRUE));
+					//error_log("Accepted CoAuthor: ".print_r($author->data->user_login, TRUE));
 				else:
-					error_log("Rejected CoAuthor: ".print_r($author->data->user_login, TRUE));
+					//error_log("Rejected CoAuthor: ".print_r($author->data->user_login, TRUE));
 				endif;
 			endforeach;
 		endif;
@@ -528,7 +532,7 @@ class Pulse_CPT {
 	 */
 	public static function query_arguments() {
 		global $wp_query;
-	
+		
 		$arg = array( 'post_type' => 'pulse-cpt' );
 		
 		if ( is_date() ):
@@ -580,18 +584,61 @@ class Pulse_CPT {
 		endif;
 	}
 	
-	/* function to handle regular and nopriv ajax requests */
+	/* Function to handle regular and nopriv ajax requests */
 	public static function ajax_replies() {
 		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
+		
+		error_log(print_r($data, TRUE));
+		
 		if ( $data ):
 			$widgets = get_option('widget_pulse_cpt');
 			$query_args = self::query_arguments();
-			$query_args['post_parent'] = $data['pulse_id'];
+			
+			if ( ! empty( $data['parent_id'] ) ):
+				$query_args['post_parent'] = $data['parent_id'];
+			endif;
+			
+			if ( ! empty( $data['sort'] ) ):
+				$rating_metric = $widgets[$data['widget_id']]['rating_metric'];
+				if ( $rating_metric == 'default' ):
+					$rating_metric = get_option( 'pulse_default_metric' );
+				endif;
+				
+				if ( ! empty( $rating_metric ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+					$rating_data = (array) Evaluate::get_data_by_slug( $rating_metric, get_the_ID() );
+				else:
+					$rating_data = array();
+				endif;
+				
+				$query_args['order'] = "DESC";
+				$query_args['orderby'] = "meta_value_num";
+				error_log( 'metric-'.$rating_data['metric_id'].'-'.$data['sort'] );
+				$query_args['meta_key'] = 'metric-'.$rating_data['metric_id'].'-'.$data['sort'];
+			endif;
 			
 			$query = new WP_Query( $query_args );
 			while ( $query->have_posts() ):
 				$post = $query->the_post();
-				echo self::the_pulse( self::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] ) );
+				$pulse_data = self::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] );
+				
+				switch ( $data['show'] ):
+				case 'user':
+					$valid = $data['user'] == get_the_author_meta( 'user_login' );
+					break;
+				case 'vote':
+					$valid = $pulse_data['user_vote'];
+					break;
+				case 'admin':
+					$valid = user_can( $pulse_data['author']['ID'], 'administer' );
+					break;
+				default:
+					$valid = true;
+					break;
+				endswitch;
+				
+				if ( $valid ):
+					self::the_pulse( $pulse_data );
+				endif;
 			endwhile;
 		endif;
 		

@@ -245,7 +245,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			?>
 			<div class="postbox-placeholder">Reply to Current</div>
 			<div class="postbox <?php echo $tabs_class; ?>">
-				<!--<div id="pulse_msg_wrap" class="pulse-alert"></div>-->
 				<form action="" method="post" name="new-post" class="pulse-form">
 					<div class="pulse-form-input">
 						<textarea rows="4" tabindex="1" class="autogrow" name="posttext" placeholder="<?php echo $instance['placeholder']; ?>"></textarea>
@@ -328,6 +327,32 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				</form>
 			</div>
 		<?php endif; ?>
+		<div class="pulse-list-actions">
+			<span class="pulse-list-filter show">
+				<label>
+					show:
+				</label>
+				<select dir="rtl">
+					<option value="">all</option>
+					<option value="user_<?php echo wp_get_current_user()->user_login;?>">mine</option>
+					<option value="vote">voted</option>
+					<?php if ( is_single() ): ?> 
+						<option value="user_<?php the_author_meta( 'user_login' ); ?>">author's</option>
+					<?php endif; ?>
+					<option value="admin">admin's</option>
+				</select>
+			</span>
+			<span class="pulse-list-filter sort">
+				<label>
+					sort:
+				</label>
+				<select dir="rtl">
+					<option value="">chronological</option>
+					<option value="score">popular</option>
+					<option value="votes">controversial</option>
+				</select>
+			</span>
+		</div>
 		<div class="pulse-list">
 			<?php 
 				$the_query = new WP_Query( Pulse_CPT::query_arguments() );

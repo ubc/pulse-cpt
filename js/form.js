@@ -87,7 +87,6 @@ var Pulse_CPT_Form = {
 			// Hide placeholder and move the form back to its original location
 			jQuery('.postbox-placeholder').hide();
 			jQuery('.postbox').insertAfter( jQuery('.postbox-placeholder') );
-			jQuery('.pulse-form-input textarea').focus();
 			return;
 		}
 		

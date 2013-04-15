@@ -15,6 +15,13 @@ var Pulse_CPT = {
             Pulse_CPT.reply.apply(this);
             e.stopPropagation(); //stop so we dont collapse parent pulse
         } );
+        
+        jQuery('.pulse-list-filter.show select').on( 'change', function() {
+            Pulse_CPT.filter( jQuery(this).closest('.widget') );
+        } );
+        jQuery('.pulse-list-filter.sort select').on( 'change', function() {
+            Pulse_CPT.filter( jQuery(this).closest('.widget') );
+        } );
     },
     
     listen: function() {
@@ -77,7 +84,7 @@ var Pulse_CPT = {
             data: {
                 action: 'pulse_cpt_replies',
                 data: {
-                    'pulse_id' : element.data('pulse-id'),
+                    'parent_id': element.data('pulse-id'),
                     'widget_id': element.closest('.widget').find('.widget-id').val(),
                 },
             },
@@ -98,7 +105,38 @@ var Pulse_CPT = {
         
         //reply form, pass caller element along with parent pulse ID
         Pulse_CPT_Form.reply.apply( this, [ parent_pulse ] );
-    }	
+    },
+    
+    filter: function( widget ) {
+        var widget_id = widget.find('.widget-id').val();
+        var show = jQuery('.pulse-list-filter.show select').val();
+        var sort = jQuery('.pulse-list-filter.sort select').val();
+        var user;
+        
+        var prefix = "user_";
+        if ( show.slice(0, prefix.length) == prefix ) {
+            user = show.slice(prefix.length);
+            show = 'user';
+        }
+        
+        jQuery.ajax( {
+            url: Pulse_CPT_Form_global.ajaxUrl,
+            data: {
+                action: 'pulse_cpt_replies',
+                data: {
+                    'parent_id': Pulse_CPT_Form_global.id,
+                    'widget_id': widget_id,
+                    'sort'     : sort,
+                    'show'     : show,
+                    'user'     : user,
+                },
+            },
+            type: 'post',
+            success: function( data ) {
+                jQuery('#pulse_cpt-'+widget_id+' .pulse-list').html(data);
+            }
+        } );
+    },
 }
 
 jQuery('document').ready(Pulse_CPT.onReady);

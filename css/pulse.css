@@ -1,24 +1,62 @@
+/* Widget */
+.widget_pulse_cpt h1 {
+    margin-bottom: 0;
+}
+
+.widget_pulse_cpt .postbox-placeholder,
+.widget_pulse_cpt .postbox {
+    margin-top: 10px !important;
+}
+
+/* Pulse List Actions */
+
+.pulse-list-actions {
+    margin-top: 3px;
+    height: 20px;
+    float: right;
+}
+
+.pulse-list-filter {
+    margin-right: 7px;
+}
+
+.pulse-list-filter select {
+    border: none;
+    background: none;
+}
+
+.pulse-list-filter select:focus {
+    outline: none;
+}
+
+/**
+ * This is a hack to only target webkit browsers (Safari and Chrome)
+ */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .pulse-list-filter select {
+        -webkit-appearance: none;
+        background-image: url(../img/dropdown.png);
+        background-repeat: no-repeat;
+        background-position: right;
+        padding-right: 13px;
+    }
+    
+    .pulse-list-filter.show select {
+        width: 60px;
+    }
+    
+    .pulse-list-filter.sort select {
+        width: 90px;
+    }
+}
+
+.pulse-list-filter label {
+    color: lightgray;
+}
+
+/* Pulse List */
 .pulse-list {
-	margin-top: 10px;
-}
-
-.pulse {
-	padding: 5px;
-	border: 1px solid #FFF;
-	border-bottom: 1px solid #ECECEC;
-	margin: 0 5px;
-}
-
-.pulse .postbox {
-    margin-top: 8px !important;
-}
-
-.pulse-content {
-    word-wrap: break-word;
-}
-
-.widget .pulse-content .evaluate-metrics-wrapper {
-    display: none;
+	margin-top: 23px;
 }
 
 .pulse-list .pulse:hover {
@@ -36,6 +74,26 @@
 
 .pulse-list .pulse.expand:hover {
 	border-color: #E0E0E0;
+}
+
+/* Pulse */
+.pulse {
+	padding: 5px;
+	border: 1px solid #FFF;
+	border-bottom: 1px solid #ECECEC;
+	margin: 0 5px;
+}
+
+.pulse .postbox {
+    margin-top: 8px !important;
+}
+
+.pulse-content {
+    word-wrap: break-word;
+}
+
+.widget .pulse-content .evaluate-metrics-wrapper {
+    display: none;
 }
 
 .pulse-wrap {
