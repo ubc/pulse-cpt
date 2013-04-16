@@ -119,6 +119,14 @@ var Pulse_CPT = {
             show = 'user';
         }
         
+        split = sort.split('/')
+        sort = split[0]
+        if ( split[1] == 'DESC' ) {
+            order = 'DESC';
+        } else {
+            order = 'ASC';
+        }
+        
         jQuery.ajax( {
             url: Pulse_CPT_Form_global.ajaxUrl,
             data: {
@@ -129,6 +137,7 @@ var Pulse_CPT = {
                     'sort'     : sort,
                     'show'     : show,
                     'user'     : user,
+                    'order'    : order,
                 },
             },
             type: 'post',

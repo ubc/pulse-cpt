@@ -257,6 +257,11 @@ class Pulse_CPT {
 		
 		?>
 		<div class="pulse" data-pulse-id="<?php echo $it['ID']; ?>">
+			<?php
+				//print_r( get_post_meta( get_the_ID(), 'metric-'.$it['metric_id'].'-score' )[0] );
+				//echo '<br />';
+				//print_r( get_post_meta( get_the_ID(), 'metric-'.$it['metric_id'].'-controversy' )[0] );
+			?>
 			<div class="pulse-wrap">
 				<?php echo $it['author']['avatar_30']; ?>
 				<div class="pulse-author-meta">
@@ -420,9 +425,6 @@ class Pulse_CPT {
 			$coauthors = false;
 		endif;
 		
-		$counter_up = 0;
-		$counter_down = 0;
-		
 		if ( $rating_metric == 'default' ):
 			$rating_metric = get_option( 'pulse_default_metric' );
 		endif;
@@ -451,8 +453,8 @@ class Pulse_CPT {
 			'parent'      => $post->post_parent,
 			'rating'      => array(
 				'slug'         => $rating_metric,
-				'counter_up'   => $counter_up,
-				'counter_down' => $counter_down,
+				'counter_up'   => 0,
+				'counter_down' => 0,
 			),
 		) );
 	}
@@ -598,6 +600,8 @@ class Pulse_CPT {
 				$query_args['post_parent'] = $data['parent_id'];
 			endif;
 			
+			$query_args['order'] = $data['order'];
+			
 			if ( ! empty( $data['sort'] ) ):
 				$rating_metric = $widgets[$data['widget_id']]['rating_metric'];
 				if ( $rating_metric == 'default' ):
@@ -610,7 +614,6 @@ class Pulse_CPT {
 					$rating_data = array();
 				endif;
 				
-				$query_args['order'] = "DESC";
 				$query_args['orderby'] = "meta_value_num";
 				error_log( 'metric-'.$rating_data['metric_id'].'-'.$data['sort'] );
 				$query_args['meta_key'] = 'metric-'.$rating_data['metric_id'].'-'.$data['sort'];

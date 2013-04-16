@@ -329,12 +329,12 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<?php endif; ?>
 		<div class="pulse-list-actions">
 			<span class="pulse-list-filter show">
-				<label>
-					show:
-				</label>
+				<label>show:</label>
 				<select dir="rtl">
 					<option value="">all</option>
+					<?php if ( is_user_logged_in() ): ?> 
 					<option value="user_<?php echo wp_get_current_user()->user_login;?>">mine</option>
+					<?php endif; ?>
 					<option value="vote">voted</option>
 					<?php if ( is_single() ): ?> 
 						<option value="user_<?php the_author_meta( 'user_login' ); ?>">author's</option>
@@ -343,13 +343,25 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				</select>
 			</span>
 			<span class="pulse-list-filter sort">
-				<label>
-					sort:
-				</label>
+				<label>sort:</label>
 				<select dir="rtl">
-					<option value="">chronological</option>
-					<option value="score">popular</option>
-					<option value="votes">controversial</option>
+					<option value="/DESC">newest</option>
+					<option value="/ASC">oldest</option>
+					<?php if ( ! empty( $instance['rating_metric'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): ?>
+						<?php
+							$data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
+							
+							if ( $data->type == 'two-way' ):
+								$order = 'ASC';
+							else:
+								$order = 'DESC';
+							endif;
+						?>
+						<option value="score/<?php echo $order; ?>">popular</option>
+						<?php if ( $data->type != 'one-way' ): ?>
+							<option value="controversy">controversial</option>
+						<?php endif; ?>
+					<?php endif; ?>
 				</select>
 			</span>
 		</div>
