@@ -225,9 +225,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			echo $args['after_title'];
 		endif;
 		
+		$id = substr( $args['widget_id'], 10 );
+		$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
+		
 		if ( $current_user->ID > 0 ):
 			Pulse_CPT::$add_form_script = true;
-			$id = substr( $args['widget_id'], 10 );
 			
 			self::$widgets[$id] = array(
 				'id'                     => $args['widget_id'],
@@ -326,6 +328,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
 				</form>
 			</div>
+		<?php else: ?>
+			<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
 		<?php endif; ?>
 		<div class="pulse-list-actions">
 			<span class="pulse-list-filter show">
@@ -333,10 +337,12 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<select dir="rtl">
 					<option value="">all</option>
 					<?php if ( is_user_logged_in() ): ?> 
-					<option value="user_<?php echo wp_get_current_user()->user_login;?>">mine</option>
+						<option value="user_<?php echo wp_get_current_user()->user_login;?>">mine</option>
 					<?php endif; ?>
-					<option value="vote">voted</option>
-					<?php if ( is_single() ): ?> 
+					<?php if ( ! $metric_data->require_login ): ?>
+						<option value="vote">voted</option>
+					<?php endif; ?>
+					<?php if ( is_single() ): ?>
 						<option value="user_<?php the_author_meta( 'user_login' ); ?>">author's</option>
 					<?php endif; ?>
 					<option value="admin">admin's</option>
@@ -349,16 +355,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<option value="/ASC">oldest</option>
 					<?php if ( ! empty( $instance['rating_metric'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): ?>
 						<?php
-							$data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
-							
-							if ( $data->type == 'two-way' ):
+							if ( $metric_data->type == 'two-way' ):
 								$order = 'ASC';
 							else:
 								$order = 'DESC';
 							endif;
 						?>
 						<option value="score/<?php echo $order; ?>">popular</option>
-						<?php if ( $data->type != 'one-way' ): ?>
+						<?php if ( $metric_data->type != 'one-way' ): ?>
 							<option value="controversy">controversial</option>
 						<?php endif; ?>
 					<?php endif; ?>
