@@ -119,6 +119,10 @@
     margin-left: -36px;
 }
 
+.pulse .pulse .reply-to {
+    display: none;
+}
+
 .pulse-replies {
     margin-left: 5px;
 }

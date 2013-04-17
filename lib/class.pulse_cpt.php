@@ -315,6 +315,9 @@ class Pulse_CPT {
 							<li><a href="#reply-url" class="reply-action">Reply</a></li>
 						<?php endif; ?>
 						<li><span class="reply-count"><?php echo $it['num_replies']; ?></span> Replies</li>
+						<?php if ( ! $template && ! empty( $it['parent'] ) ): ?>
+							<li class="reply-to">in reply to <a href="<?php echo get_permalink( $it['parent'] ); ?>"><?php echo get_the_title( $it['parent'] ); ?></a></li>
+						<?php endif; ?>
 						<span class="pulse-form-progress hide">
 							<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL; ?>/img/spinner.gif" />
 						</span>
