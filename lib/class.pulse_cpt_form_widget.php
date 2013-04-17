@@ -246,7 +246,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					break;
 				endswitch;
 				
-				echo ': <span style="color: darkgrey;"> '.$suffix.'</span>';
+				echo ': <span class="pulse-widget-title-suffix"> '.$suffix.'</span>';
 			endif;
 			
 			echo $args['after_title'];
@@ -397,12 +397,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			</span>
 		</div>
 		<div class="pulse-list">
-			<?php 
-				$the_query = new WP_Query( Pulse_CPT::query_arguments() );
+			<?php
+				$arguments = Pulse_CPT::query_arguments();
+				$pulse_query = new WP_Query( $arguments );
 				
 				// The Loop
-				while ( $the_query->have_posts() ):
-					$the_query->the_post();
+				while ( $pulse_query->have_posts() ):
+					$pulse_query->the_post();
 					Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance['rating_metric'] ) );
 				endwhile;
 				
@@ -410,7 +411,22 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				wp_reset_postdata();
 			?>
 		</div>
-		<?php
+		<?php if ( $pulse_query->max_num_pages > 1 ): ?>
+			<div class="pagination pagination-small pagination-centered">
+				<ul>
+					<li class="pulse-page-prev disabled"><span><</span></li>
+					<?php for ( $i = 1; $i <= $pulse_query->max_num_pages; $i++ ): ?>
+						<li class="pulse-page-<?php echo $i; ?><?php echo ( $i == 1 ? ' active' : '' ); ?>">
+							<label>
+								<?php echo $i; ?>
+								<input type="radio" name="pulse-list-page" value="<?php echo $i; ?>" <?php checked( $i == 1 ); ?>/>
+							</label>
+						</li>
+					<?php endfor; ?>
+					<li class="pulse-page-next"><span>></span></li>
+				</ul>
+			</div>
+		<?php endif;
 		
 		echo $args['after_widget'];
 		self::footer( $instance );

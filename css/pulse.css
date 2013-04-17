@@ -13,6 +13,10 @@
     display: none !important;
 }
 
+.pulse-widget-title-suffix {
+    color: darkgrey;
+}
+
 /* Pulse List Actions */
 
 .pulse-list-actions {
@@ -59,6 +63,7 @@
     color: lightgray;
 }
 
+
 /* Pulse List */
 .pulse-list {
 	margin-top: 23px;
@@ -80,6 +85,49 @@
 .pulse-list .pulse.expand:hover {
 	border-color: #E0E0E0;
 }
+
+
+/* Pulse List Pagination */
+
+.pagination > ul {
+    display: inline-block;
+    margin: 0;
+}
+
+.pagination > ul > li {
+    display: inline;
+}
+
+.pagination > ul > li > * {
+    float: left;
+    padding: 4px 5px;
+    line-height: 14px;
+    text-decoration: none;
+    border: 1px solid #DDD;
+    margin: 2px;
+    cursor: pointer;
+}
+
+.pagination > ul > li.active > *,
+.pagination > ul > li.disabled > * {
+    color: #DDD;
+    cursor: default;
+}
+
+.pagination > ul > li.active > *,
+.pagination > ul > li:not(.disabled) > *:hover {
+    color: #348AB2;
+    border-color: #348AB2;
+}
+
+.pagination.pagination-centered {
+    text-align: center;
+}
+
+.pagination input {
+    display: none;
+}
+
 
 /* Pulse */
 .pulse {

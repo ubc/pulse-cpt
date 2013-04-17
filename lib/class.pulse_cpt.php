@@ -576,9 +576,11 @@ class Pulse_CPT {
 			return false; // Don't display anything
 		endif;
 		
+		/*
 		if ( is_paged() ):
 			$arg['paged'] = $wp_query->query_vars['paged'];
 		endif;
+		*/
 		
 		return $arg;
 	}
@@ -611,6 +613,10 @@ class Pulse_CPT {
 			
 			if ( ! empty( $data['parent_id'] ) ):
 				$query_args['post_parent'] = $data['parent_id'];
+			endif;
+			
+			if ( ! empty( $data['paged'] ) ):
+				$query_args['paged'] = $data['paged'];
 			endif;
 			
 			if ( ! empty( $data['order'] ) ):

@@ -19,8 +19,39 @@ var Pulse_CPT = {
         jQuery('.pulse-list-filter.show select').on( 'change', function() {
             Pulse_CPT.filter( jQuery(this).closest('.widget') );
         } );
+        
         jQuery('.pulse-list-filter.sort select').on( 'change', function() {
             Pulse_CPT.filter( jQuery(this).closest('.widget') );
+        } );
+        
+        jQuery('input[name="pulse-list-page"]').on( 'change', function() {
+            element = jQuery(this);
+            Pulse_CPT.filter( jQuery(this).closest('.widget'), function() {
+                var value = element.val();
+                var list = element.closest('ul');
+                list.children('.active').removeClass('active');
+                element.closest('li').addClass('active');
+                
+                if ( value == 1 ) {
+                    list.children(":first").addClass('disabled');
+                } else {
+                    list.children(":first").removeClass('disabled');
+                }
+                
+                if ( value == list.children().length - 2 ) {
+                    list.children(":last").addClass('disabled');
+                } else {
+                    list.children(":last").removeClass('disabled');
+                }
+            } );
+        } );
+        
+        jQuery('.pulse-page-prev').on( 'click', function() {
+            jQuery(this).closest('.widget').find('.pagination li.active').prev().children().click();
+        } );
+        
+        jQuery('.pulse-page-next').on( 'click', function() {
+            jQuery(this).closest('.widget').find('.pagination li.active').next().children().click();
         } );
     },
     
@@ -80,38 +111,6 @@ var Pulse_CPT = {
                         default:
                             break;
                     }
-                    
-                    /*
-                    if ( new_pulse_data.parent == Pulse_CPT_Form_global.page ) { // No parent -> show on front page
-                        var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
-                        jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
-                    } else { // Check to see if the parent of the pulse is visible to current user
-                        var all_visible_parents = jQuery('.pulse.expand');
-                        var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
-                        var parent_found = false;
-                        
-                        jQuery.each( all_visible_parents, function( i, val ) { // Loop through and try to match the ids
-                            parent_element = jQuery(val)
-                            if ( parent_element.data('pulse-id') == new_pulse_data.parent ) { // If the ids match,
-                                // Put the new pulse in it's reply section.
-                                jQuery(new_pulse).prependTo( parent_element.find('.pulse-expand-content .pulse-replies') ).hide().slideDown('slow');
-                                
-                                var reply_count = parent_element.find(' > .pulse-wrap > .pulse-actions .reply-count');
-                                reply_count.text( parseInt( reply_count.text() ) + 1 );
-                                
-                                parent_found = true;
-                                return false; // break from the loop.
-                            } else {
-                                return true;
-                            }
-                        } );
-                        
-                        // If no appropriate place is found for the new pulse, put it in the main pulse-list
-                        if ( ! parent_found && Pulse_CPT_Form_global.page == new_pulse_data.parent ) {
-                            jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
-                        }
-                    }
-                    */
                 }
             } );
         }
@@ -163,10 +162,11 @@ var Pulse_CPT = {
         Pulse_CPT_Form.reply.apply( this, [ parent_pulse ] );
     },
     
-    filter: function( widget ) {
+    filter: function( widget, callback ) {
         var widget_id = widget.find('.widget-id').val();
         var show = jQuery('.pulse-list-filter.show select').val();
         var sort = jQuery('.pulse-list-filter.sort select').val();
+        var page = jQuery('input[name="pulse-list-page"]:checked').val();
         var user;
         
         var prefix = "user_";
@@ -194,11 +194,16 @@ var Pulse_CPT = {
                     'show'     : show,
                     'user'     : user,
                     'order'    : order,
+                    'paged'    : page,
                 },
             },
             type: 'post',
             success: function( data ) {
                 jQuery('#pulse_cpt-'+widget_id+' .pulse-list').html(data);
+                
+                if ( callback != undefined ) {
+                    callback();
+                }
             }
         } );
     },
