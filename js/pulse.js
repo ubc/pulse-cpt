@@ -26,36 +26,92 @@ var Pulse_CPT = {
     
     listen: function() {
         if ( typeof CTLT_Stream != 'undefined' ) { // Check for stream activity
-            CTLT_Stream.on( 'server-push', function (data) { // Catch server push
+            CTLT_Stream.on( 'server-push', function ( data ) { // Catch server push
                 if ( data.type == 'pulse' ) { // We are interested
                     var new_pulse_data = jQuery.parseJSON(data.data); // Extract pulse data from the event
+                    console.debug(new_pulse_data);
                     
-                    if ( new_pulse_data.parent == 0 ) { // No parent -> show on front page
+                    var all_visible_parents = jQuery('.pulse.expand');
+                    var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
+                    var parent_found = false;
+                    
+                    jQuery.each( all_visible_parents, function( i, val ) { // Loop through and try to match the ids
+                        parent_element = jQuery(val)
+                        if ( parent_element.data('pulse-id') == new_pulse_data.parent ) { // If the ids match,
+                            // Put the new pulse in it's reply section.
+                            jQuery(new_pulse).prependTo( parent_element.find('.pulse-expand-content .pulse-replies') ).hide().slideDown('slow');
+                            
+                            var reply_count = parent_element.find(' > .pulse-wrap > .pulse-actions .reply-count');
+                            reply_count.text( parseInt( reply_count.text() ) + 1 );
+                            
+                            parent_found = true;
+                            return false; // break out of the loop.
+                        } else {
+                            return true;
+                        }
+                    } );
+                    
+                    // If no appropriate place is found for the new pulse, put it in the main pulse-list
+                    if ( ! parent_found && new_pulse_data.content_type == Pulse_CPT_Form_global.content_type ) {
+                        jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+                    }
+                    
+                    var split = Pulse_CPT_Form_global.content_type.split("/");
+                    var type = split[0];
+                    var value = split[1];
+                    switch ( type ) {
+                        case 'tag':
+                            if ( new_pulse_data.tags != false ) {
+                                jQuery.each( new_pulse_data.tags, function( index, tag ) {
+                                    if ( tag.name == value ) {
+                                        jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+                                        return false; // Break out of the loop.
+                                    } else {
+                                        return true;
+                                    }
+                                } );
+                            }
+                            break;
+                        case 'author':
+                            if ( new_pulse_data.author.user_login == value ) {
+                                jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    
+                    /*
+                    if ( new_pulse_data.parent == Pulse_CPT_Form_global.page ) { // No parent -> show on front page
                         var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
-                        
                         jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
                     } else { // Check to see if the parent of the pulse is visible to current user
-                        var all_visible_parents = jQuery('.pulse.expand'); //all visible parents
+                        var all_visible_parents = jQuery('.pulse.expand');
                         var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
                         var parent_found = false;
                         
                         jQuery.each( all_visible_parents, function( i, val ) { // Loop through and try to match the ids
                             parent_element = jQuery(val)
-                            if ( parent_element.data('pulse-id') == new_pulse_data.parent ) { // If so, put it to its replies section
+                            if ( parent_element.data('pulse-id') == new_pulse_data.parent ) { // If the ids match,
+                                // Put the new pulse in it's reply section.
                                 jQuery(new_pulse).prependTo( parent_element.find('.pulse-expand-content .pulse-replies') ).hide().slideDown('slow');
                                 
                                 var reply_count = parent_element.find(' > .pulse-wrap > .pulse-actions .reply-count');
                                 reply_count.text( parseInt( reply_count.text() ) + 1 );
                                 
                                 parent_found = true;
+                                return false; // break from the loop.
+                            } else {
+                                return true;
                             }
                         } );
                         
                         // If no appropriate place is found for the new pulse, put it in the main pulse-list
-                        if ( ! parent_found ) {
+                        if ( ! parent_found && Pulse_CPT_Form_global.page == new_pulse_data.parent ) {
                             jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
                         }
                     }
+                    */
                 }
             } );
         }

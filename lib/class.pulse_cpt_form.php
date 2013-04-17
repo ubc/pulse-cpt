@@ -214,9 +214,7 @@ class Pulse_CPT_Form {
 	}
 	
 	public static function insert_pulse_cpt( $pulse_id ) {
-		error_log("Inserting post; ".print_r($_POST, true));
 		if ( 'pulse_cpt_insert' == $_POST['action'] ):
-			error_log("Sending to stream");
 			self::send_to_stream( $pulse_id );
 		endif;
 	}
@@ -236,9 +234,9 @@ class Pulse_CPT_Form {
 			
 			$query->the_post();
 			$widgets = get_option( 'widget_pulse_cpt' );
-			error_log("--- data ---");
-			$data = Pulse_CPT::the_pulse_json( $widgets[$_POST['widget_id']]['rating_metric'] );
-			error_log("------");
+			$data = Pulse_CPT::the_pulse_array( $widgets[$_POST['widget_id']]['rating_metric'] );
+			$data['content_type'] = $_POST['content_type'];
+			$data = json_encode( $data );
 			
 			CTLT_Stream::send( 'pulse', $data, 'new-pulse' );
 			

@@ -8,6 +8,11 @@
     margin-top: 10px !important;
 }
 
+.archive .widget_pulse_cpt > .postbox-placeholder,
+.archive .widget_pulse_cpt > .postbox {
+    display: none !important;
+}
+
 /* Pulse List Actions */
 
 .pulse-list-actions {

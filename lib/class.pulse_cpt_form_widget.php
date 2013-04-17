@@ -218,15 +218,39 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			self::$quantity++;
 		endif;
 		
+		if ( $instance['rating_metric'] == 'default' ):
+			$instance['rating_metric'] = get_option( 'pulse_default_metric' );
+		endif;
+		
+		$id = substr( $args['widget_id'], 10 );
+		$content_identifier = Pulse_CPT::get_content_type_for_node();
+		$split = explode( '/', $content_identifier );
+		$content_type = $split[0];
+		$content_value = $split[1];
+		$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
+		
 		echo $args['before_widget']; 
 		if ( ! empty( $instance['title'] ) && $instance['display_title'] ):
 			echo $args['before_title'];
 			echo $instance['title'];
+			
+			if ( in_array( $content_type, array( 'author', 'tag' ) ) ):
+				switch ( $content_type ):
+				case 'author':
+					$suffix = "authored by ".get_the_author();
+					break;
+				case 'tag':
+					$suffix = "tagged with ".$content_value;
+					break;
+				default:
+					break;
+				endswitch;
+				
+				echo ': <span style="color: darkgrey;"> '.$suffix.'</span>';
+			endif;
+			
 			echo $args['after_title'];
 		endif;
-		
-		$id = substr( $args['widget_id'], 10 );
-		$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
 		
 		if ( $current_user->ID > 0 ):
 			Pulse_CPT::$add_form_script = true;
@@ -326,6 +350,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						endif;
 					?>
 					<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
+					<input type="hidden" value="<?php echo $content_identifier; ?>" name="content_type" class="content-type"></input>
 				</form>
 			</div>
 		<?php else: ?>
@@ -336,16 +361,18 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<label>show:</label>
 				<select dir="rtl">
 					<option value="">all</option>
-					<?php if ( is_user_logged_in() ): ?> 
+					<?php if ( is_user_logged_in() && $content_type != 'author' ): ?> 
 						<option value="user_<?php echo wp_get_current_user()->user_login;?>">mine</option>
 					<?php endif; ?>
-					<?php if ( ! $metric_data->require_login ): ?>
+					<?php if ( ! $metric_data->require_login || is_user_logged_in() ): ?>
 						<option value="vote">voted</option>
 					<?php endif; ?>
 					<?php if ( is_single() ): ?>
 						<option value="user_<?php the_author_meta( 'user_login' ); ?>">author's</option>
 					<?php endif; ?>
-					<option value="admin">admin's</option>
+					<?php if ( $content_type != 'author' ): ?> 
+						<option value="admin">admin's</option>
+					<?php endif; ?>
 				</select>
 			</span>
 			<span class="pulse-list-filter sort">

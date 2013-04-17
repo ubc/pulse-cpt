@@ -207,7 +207,7 @@ class Pulse_CPT {
      */
     public static function print_form_script() {
 		$global_args = array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
 		);
 		
 		if ( is_single() ):
@@ -217,15 +217,32 @@ class Pulse_CPT {
 		if ( ! self::$add_form_script ): // We still need the ajax url even if user isnt logged in
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
 		else: //localize full data for logged in user
+			$global_args['content_type'] = Pulse_CPT::get_content_type_for_node();
 			$global_args['tags'] = Pulse_CPT_Form::get_tags();
 			$global_args['authors'] = Pulse_CPT_Form::get_authors();
 			
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local',  Pulse_CPT_Form_Widget::$widgets );
+			
+			error_log( get_the_title().": ".$global_args['content_type'] );
 		endif;
 		
 		wp_print_scripts( 'pulse-cpt-form' );
     }
+	
+	public static function get_content_type_for_node() {
+		if ( is_single() ):
+			return "page/".get_the_ID();
+		elseif ( is_front_page() ):
+			return "front";
+		elseif ( is_tag() ):
+			return "tag/".single_tag_title( "", FALSE );
+		elseif ( is_author() ):
+			return "author/".get_the_author_meta( 'user_login' );
+		else:
+			error_log( "'get_content_type_for_node' was called outside the loop: ".print_r( $_POST, TRUE ) );
+		endif;
+	}
     
     /**
      * print_pulse_script function.
@@ -257,11 +274,6 @@ class Pulse_CPT {
 		
 		?>
 		<div class="pulse" data-pulse-id="<?php echo $it['ID']; ?>">
-			<?php
-				//print_r( get_post_meta( get_the_ID(), 'metric-'.$it['metric_id'].'-score' )[0] );
-				//echo '<br />';
-				//print_r( get_post_meta( get_the_ID(), 'metric-'.$it['metric_id'].'-controversy' )[0] );
-			?>
 			<div class="pulse-wrap">
 				<?php echo $it['author']['avatar_30']; ?>
 				<div class="pulse-author-meta">
@@ -590,8 +602,6 @@ class Pulse_CPT {
 	public static function ajax_replies() {
 		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
 		
-		error_log(print_r($data, TRUE));
-		
 		if ( $data ):
 			$widgets = get_option('widget_pulse_cpt');
 			$query_args = self::query_arguments();
@@ -600,7 +610,9 @@ class Pulse_CPT {
 				$query_args['post_parent'] = $data['parent_id'];
 			endif;
 			
-			$query_args['order'] = $data['order'];
+			if ( ! empty( $data['order'] ) ):
+				$query_args['order'] = $data['order'];
+			endif;
 			
 			if ( ! empty( $data['sort'] ) ):
 				$rating_metric = $widgets[$data['widget_id']]['rating_metric'];
@@ -615,7 +627,6 @@ class Pulse_CPT {
 				endif;
 				
 				$query_args['orderby'] = "meta_value_num";
-				error_log( 'metric-'.$rating_data['metric_id'].'-'.$data['sort'] );
 				$query_args['meta_key'] = 'metric-'.$rating_data['metric_id'].'-'.$data['sort'];
 			endif;
 			
@@ -627,12 +638,24 @@ class Pulse_CPT {
 				switch ( $data['show'] ):
 				case 'user':
 					$valid = $data['user'] == get_the_author_meta( 'user_login' );
+					
+					if ( isset( $pulse_data['authors'] ) ):
+						foreach ( $pulse_data['authors'] as $author ):
+							$valid |= $data['user'] == $author['name'];
+						endforeach;
+					endif;
 					break;
 				case 'vote':
 					$valid = $pulse_data['user_vote'];
 					break;
 				case 'admin':
 					$valid = user_can( $pulse_data['author']['ID'], 'administer' );
+					
+					if ( isset( $pulse_data['authors'] ) ):
+						foreach ( $pulse_data['authors'] as $author ):
+							$valid |= user_can( $author['name'], 'administer' );
+						endforeach;
+					endif;
 					break;
 				default:
 					$valid = true;
