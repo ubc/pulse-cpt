@@ -47,15 +47,20 @@
         background-image: url(../img/dropdown.png);
         background-repeat: no-repeat;
         background-position: right;
-        padding-right: 13px;
+        padding-right: 16px;
+        background-color: #EEE;
+    }
+    
+    .pulse-list-filter select:hover {
+        background-color: #DDD;
     }
     
     .pulse-list-filter.show select {
-        width: 60px;
+        width: 68px;
     }
     
     .pulse-list-filter.sort select {
-        width: 90px;
+        width: 95px;
     }
 }
 
