@@ -414,7 +414,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				wp_reset_postdata();
 			?>
 			<?php if ( $pulse_query->max_num_pages > 1 ): ?>
-				<?php self::pagination( $pulse_query->max_num_pages, 15 ); ?>
+				<?php self::pagination( $pulse_query->max_num_pages, 1 ); ?>
 			<?php endif; ?>
 		</div>
 		<?php
@@ -433,10 +433,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			
 			if ( ! empty( $data['parent_id'] ) ):
 				$query_args['post_parent'] = $data['parent_id'];
-			endif;
-			
-			if ( ! empty( $data['page'] ) ):
-				$query_args['paged'] = $data['page'];
 			endif;
 			
 			if ( ! empty( $data['order'] ) ):
@@ -459,7 +455,12 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				$query_args['meta_key'] = 'metric-'.$rating_data['metric_id'].'-'.$data['sort'];
 			endif;
 			
+			$posts_per_page = $query_args['posts_per_page'];
+			$query_args['posts_per_page'] = -1; //Show all posts, as we are using our own method for paging.
+			
 			$query = new WP_Query( $query_args );
+			$pulses = array();
+			$pulse_count = 0;
 			while ( $query->have_posts() ):
 				$post = $query->the_post();
 				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] );
@@ -492,12 +493,21 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				endswitch;
 				
 				if ( $valid ):
+					ob_start();
 					Pulse_CPT::the_pulse( $pulse_data );
+					$pulses[] = ob_get_clean();
+					$pulse_count += 1;
 				endif;
 			endwhile;
 			
-			if ( $data['pagination'] == true ):
-				self::pagination( $query->max_num_pages, $data['page'] );
+			$page_count = ceil( $pulse_count / $posts_per_page );
+			$first_pulse = pulse_count * ( $data['page'] - 1 );
+			for ( $i = $first_pulse; $i < $first_pulse + $posts_per_page; $i++ ):
+				echo $pulses[$i];
+			endfor;
+			
+			if ( $data['pagination'] == true && $pulse_count > $posts_per_page ):
+				self::pagination( $page_count, $data['page'] );
 			endif;
 		endif;
 		
@@ -638,8 +648,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			return false; // Don't display anything
 		endif;
 		
-		$arg['posts_per_page'] = 3;
-		
+		$arg['posts_per_page'] = 10;
 		
 		return $arg;
 	}
