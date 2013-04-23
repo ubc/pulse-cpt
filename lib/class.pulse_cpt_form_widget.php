@@ -5,6 +5,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	public static function init() {
 		add_action( 'widgets_init', array( __CLASS__, 'load' ) );
+		add_action( 'wp_ajax_pulse_cpt_pagination', array( __CLASS__, 'ajax_pagination' ) );
+		
+		// Ajax request handler for getting pulse replies
+		add_action( 'wp_ajax_pulse_cpt_replies',        array( __CLASS__, 'ajax_replies' ) );
+		add_action( 'wp_ajax_nopriv_pulse_cpt_replies', array( __CLASS__, 'ajax_replies' ) );
 	}
 	
 	public static function load() {
@@ -398,10 +403,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		</div>
 		<div class="pulse-list">
 			<?php
-				$arguments = Pulse_CPT::query_arguments();
-				$pulse_query = new WP_Query( $arguments );
+				$pulse_query = new WP_Query( self::query_arguments() );
 				
-				// The Loop
 				while ( $pulse_query->have_posts() ):
 					$pulse_query->the_post();
 					Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance['rating_metric'] ) );
@@ -410,26 +413,179 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				// Reset Post Data
 				wp_reset_postdata();
 			?>
+			<?php if ( $pulse_query->max_num_pages > 1 ): ?>
+				<?php self::pagination( $pulse_query->max_num_pages, 15 ); ?>
+			<?php endif; ?>
 		</div>
-		<?php if ( $pulse_query->max_num_pages > 1 ): ?>
-			<div class="pagination pagination-small pagination-centered">
-				<ul>
-					<li class="pulse-page-prev disabled"><span><</span></li>
-					<?php for ( $i = 1; $i <= $pulse_query->max_num_pages; $i++ ): ?>
-						<li class="pulse-page-<?php echo $i; ?><?php echo ( $i == 1 ? ' active' : '' ); ?>">
-							<label>
-								<?php echo $i; ?>
-								<input type="radio" name="pulse-list-page" value="<?php echo $i; ?>" <?php checked( $i == 1 ); ?>/>
-							</label>
-						</li>
-					<?php endfor; ?>
-					<li class="pulse-page-next"><span>></span></li>
-				</ul>
-			</div>
-		<?php endif;
-		
+		<?php
 		echo $args['after_widget'];
 		self::footer( $instance );
+	}
+	
+	/* Function to handle regular and nopriv ajax requests */
+	public static function ajax_replies() {
+		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
+		error_log( print_r( $data, TRUE) );
+		
+		if ( $data ):
+			$widgets = get_option('widget_pulse_cpt');
+			$query_args = self::query_arguments();
+			
+			if ( ! empty( $data['parent_id'] ) ):
+				$query_args['post_parent'] = $data['parent_id'];
+			endif;
+			
+			if ( ! empty( $data['page'] ) ):
+				$query_args['paged'] = $data['page'];
+			endif;
+			
+			if ( ! empty( $data['order'] ) ):
+				$query_args['order'] = $data['order'];
+			endif;
+			
+			if ( ! empty( $data['sort'] ) ):
+				$rating_metric = $widgets[$data['widget_id']]['rating_metric'];
+				if ( $rating_metric == 'default' ):
+					$rating_metric = get_option( 'pulse_default_metric' );
+				endif;
+				
+				if ( ! empty( $rating_metric ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+					$rating_data = (array) Evaluate::get_data_by_slug( $rating_metric, get_the_ID() );
+				else:
+					$rating_data = array();
+				endif;
+				
+				$query_args['orderby'] = "meta_value_num";
+				$query_args['meta_key'] = 'metric-'.$rating_data['metric_id'].'-'.$data['sort'];
+			endif;
+			
+			$query = new WP_Query( $query_args );
+			while ( $query->have_posts() ):
+				$post = $query->the_post();
+				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] );
+				
+				switch ( $data['show'] ):
+				case 'user':
+					$valid = $data['user'] == get_the_author_meta( 'user_login' );
+					
+					if ( isset( $pulse_data['authors'] ) ):
+						foreach ( $pulse_data['authors'] as $author ):
+							$valid |= $data['user'] == $author['name'];
+						endforeach;
+					endif;
+					break;
+				case 'vote':
+					$valid = $pulse_data['user_vote'];
+					break;
+				case 'admin':
+					$valid = user_can( $pulse_data['author']['ID'], 'administer' );
+					
+					if ( isset( $pulse_data['authors'] ) ):
+						foreach ( $pulse_data['authors'] as $author ):
+							$valid |= user_can( $author['name'], 'administer' );
+						endforeach;
+					endif;
+					break;
+				default:
+					$valid = true;
+					break;
+				endswitch;
+				
+				if ( $valid ):
+					Pulse_CPT::the_pulse( $pulse_data );
+				endif;
+			endwhile;
+			
+			if ( $data['pagination'] == true ):
+				self::pagination( $query->max_num_pages, $data['page'] );
+			endif;
+		endif;
+		
+		die();
+	}
+	
+	/**
+	 * $selected is the 1-based index of the currently selected page.
+	 */
+	public static function pagination( $page_count, $selected = 1, $length = 12 ) {
+		$length -= 4; // Reserve 4 buttons for the next/prev/first/last buttons.
+		
+		if ( $selected < 1 ):
+			$selected = 1;
+		elseif ( $selected > $page_count ):
+			$selected = $page_count;
+		endif;
+		?>
+		<div class="pulse-pagination">
+			<ul>
+				<?php self::pagination_special( "prev", "<", $selected == 1 ); ?>
+				<?php if ( $page_count > $length ): ?>
+					<?php
+					self::pagination_single( 1, $selected == 1 );
+					
+					$start = (int) max( 2, $selected - $length/2 );
+					$end = $start + $length;
+					if ( $end > $page_count - 1 ):
+						$end = $page_count - 1;
+						$start = $end - $length;
+					endif;
+					
+					if ( $start > 2 ):
+						$early_selector = true;
+						$start += 1;
+					endif;
+					
+					if ( $end < $page_count - 1 ):
+						$late_selector = true;
+						$end -= 1;
+					endif;
+					
+					if ( $early_selector ):
+						self::pagination_special( "select", "..." );
+					endif;
+					
+					for ( $i = $start; $i <= $end; $i++ ):
+						self::pagination_single( $i, $selected == $i );
+					endfor;
+					
+					if ( $late_selector ):
+						self::pagination_special( "select", "..." );
+					endif;
+					
+					self::pagination_single( $page_count, $selected == $page_count );
+					?>
+				<?php else: ?>
+					<?php
+					for ( $i = 1; $i <= $page_count; $i++ ):
+						self::pagination_single( $i, $selected == $i );
+					endfor;
+					?>
+				<?php endif; ?>
+				<?php self::pagination_special( "next", ">", $selected == $page_count ); ?>
+			</ul>
+			<input type="hidden" class="pulse-list-page" value="<?php echo $selected; ?>" />
+		</div>
+		<?php
+	}
+	
+	public static function pagination_single( $id, $selected = false ) {
+		?>
+		<li class="pulse-page-link pulse-page-<?php echo $id; ?><?php echo ( $selected ? ' active' : '' ); ?>">
+			<span onclick="Pulse_CPT.goToPage(<?php echo $id; ?>, this);">
+				<?php echo $id; ?>
+			</span>
+		</li>
+		<?php
+	}
+	
+	public static function pagination_special( $slug, $text, $disabled = false ) {
+		?>
+		<li class="pulse-page-<?php echo $slug; ?><?php echo ( $disabled ? " disabled" : "" ); ?>">
+			<span <?php echo ( $disabled ? '' : 'onclick="Pulse_CPT.goToPage(\''.$slug.'\', this);' ); ?>">
+				<?php echo $text; ?>
+			</span>
+		</li>
+		<?php
 	}
   	
   	/**
@@ -445,6 +601,48 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
   		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it, TRUE ); ?></script>
   		<?php 
   	}
+	
+	/**
+	 * query_arguments function.
+	 * 
+	 * @access public
+	 * @static
+	 * @return void
+	 */
+	public static function query_arguments() {
+		global $wp_query;
+		
+		$arg = array( 'post_type' => 'pulse-cpt' );
+		
+		if ( is_date() ):
+			$arg['year'] = $wp_query->query_vars['year'];
+			
+			if ( ! empty( $wp_query->query_vars['monthnum'] ) ):
+				$arg['monthnum'] = $wp_query->query_vars['monthnum'];
+			endif;
+			
+			if ( ! empty( $wp_query->query_vars['day'] ) ):
+				$arg['day'] = $wp_query->query_vars['day'];
+			endif;
+		elseif ( is_author() ):
+			$arg['author_name'] = $wp_query->query_vars['author_name'];
+		elseif ( is_category() ):
+			$arg['cat'] = $wp_query->query_vars['cat'];
+		elseif ( is_tag() ):
+			$arg['tag_id'] = $wp_query->query_vars['tag_id'];
+		elseif ( is_single() || is_page() ):
+			$arg['post_parent'] = get_the_ID(); 
+		elseif ( ! ( is_single() || is_page() ) ):
+			$arg['post_parent'] = 0;
+		elseif( is_404() ):
+			return false; // Don't display anything
+		endif;
+		
+		$arg['posts_per_page'] = 3;
+		
+		
+		return $arg;
+	}
 	
 	/**
 	 * get_location function.

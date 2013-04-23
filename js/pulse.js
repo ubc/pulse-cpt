@@ -10,10 +10,10 @@ var Pulse_CPT = {
         jQuery('.pulse-list').on( 'click', '.pulse-replies .pulse, .pulse a, .pulse .postbox', function(e) { e.stopPropagation(); } );
         
         // Reply
-        jQuery('.pulse-list').on( 'click', '.reply-action', function(e) {
+        jQuery('.pulse-list').on( 'click', '.reply-action', function( event ) {
             // We want to know the caller
             Pulse_CPT.reply.apply(this);
-            e.stopPropagation(); //stop so we dont collapse parent pulse
+            event.stopPropagation(); //stop so we dont collapse parent pulse
         } );
         
         jQuery('.pulse-list-filter.show select').on( 'change', function() {
@@ -22,36 +22,6 @@ var Pulse_CPT = {
         
         jQuery('.pulse-list-filter.sort select').on( 'change', function() {
             Pulse_CPT.filter( jQuery(this).closest('.widget') );
-        } );
-        
-        jQuery('input[name="pulse-list-page"]').on( 'change', function() {
-            element = jQuery(this);
-            Pulse_CPT.filter( jQuery(this).closest('.widget'), function() {
-                var value = element.val();
-                var list = element.closest('ul');
-                list.children('.active').removeClass('active');
-                element.closest('li').addClass('active');
-                
-                if ( value == 1 ) {
-                    list.children(":first").addClass('disabled');
-                } else {
-                    list.children(":first").removeClass('disabled');
-                }
-                
-                if ( value == list.children().length - 2 ) {
-                    list.children(":last").addClass('disabled');
-                } else {
-                    list.children(":last").removeClass('disabled');
-                }
-            } );
-        } );
-        
-        jQuery('.pulse-page-prev').on( 'click', function() {
-            jQuery(this).closest('.widget').find('.pagination li.active').prev().children().click();
-        } );
-        
-        jQuery('.pulse-page-next').on( 'click', function() {
-            jQuery(this).closest('.widget').find('.pagination li.active').next().children().click();
         } );
     },
     
@@ -162,11 +132,47 @@ var Pulse_CPT = {
         Pulse_CPT_Form.reply.apply( this, [ parent_pulse ] );
     },
     
-    filter: function( widget, callback ) {
+    goToPage: function( id, element ) {
+        if ( element == null ) {
+            element = jQuery(this);
+        } else {
+            element = jQuery(element);
+        }
+        
+        var list = element.closest('ul');
+        switch ( id ) {
+            case 'prev':
+                page_id = parseInt(jQuery('input.pulse-list-page').val()) - 1;
+                break;
+            case 'next':
+                page_id = parseInt(jQuery('input.pulse-list-page').val()) + 1;
+                break;
+            case 'first':
+                page_id = 1;
+                break;
+            case 'last':
+                list.children('.pulse-page-link').eq(-1).children().click();
+                break;
+            case 'select':
+                page_id = prompt("What page do you want to go to?");
+                max = parseInt( list.children('.pulse-page-link').eq(-1).children().text() );
+                if ( page_id > max ) {
+                    page_id = max;
+                }
+                break;
+            default:
+                page_id = id;
+                break;
+        }
+        
+        Pulse_CPT.filter( element.closest('.widget'), { 'page': page_id } );
+    },
+    
+    filter: function( widget, overrides ) {
         var widget_id = widget.find('.widget-id').val();
         var show = jQuery('.pulse-list-filter.show select').val();
         var sort = jQuery('.pulse-list-filter.sort select').val();
-        var page = jQuery('input[name="pulse-list-page"]:checked').val();
+        var page = jQuery('input.pulse-list-page').val();
         var user;
         
         var prefix = "user_";
@@ -187,23 +193,20 @@ var Pulse_CPT = {
             url: Pulse_CPT_Form_global.ajaxUrl,
             data: {
                 action: 'pulse_cpt_replies',
-                data: {
-                    'parent_id': Pulse_CPT_Form_global.id,
-                    'widget_id': widget_id,
-                    'sort'     : sort,
-                    'show'     : show,
-                    'user'     : user,
-                    'order'    : order,
-                    'paged'    : page,
-                },
+                data: jQuery.extend( {
+                    'parent_id' : Pulse_CPT_Form_global.id,
+                    'widget_id' : widget_id,
+                    'sort'      : sort,
+                    'show'      : show,
+                    'user'      : user,
+                    'order'     : order,
+                    'page'      : page,
+                    'pagination': true,
+                }, overrides ),
             },
             type: 'post',
             success: function( data ) {
                 jQuery('#pulse_cpt-'+widget_id+' .pulse-list').html(data);
-                
-                if ( callback != undefined ) {
-                    callback();
-                }
             }
         } );
     },

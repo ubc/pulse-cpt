@@ -20,10 +20,6 @@ class Pulse_CPT {
 		add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
 		add_filter( 'carry_content_template', array( __CLASS__, 'load_pulse_template' ) );
 		
-		// Ajax request handler for getting pulse replies
-		add_action( 'wp_ajax_pulse_cpt_replies',        array( __CLASS__, 'ajax_replies' ) );
-		add_action( 'wp_ajax_nopriv_pulse_cpt_replies', array( __CLASS__, 'ajax_replies' ) );
-		
 		// Add new columns
 		add_filter( 'manage_pulse-cpt_posts_columns',       array( __CLASS__, 'add_new_column' ) );
 		add_action( 'manage_pulse-cpt_posts_custom_column', array( __CLASS__,'manage_columns'), 10, 2 );
@@ -207,7 +203,7 @@ class Pulse_CPT {
      */
     public static function print_form_script() {
 		$global_args = array(
-			'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		);
 		
 		if ( is_single() ):
@@ -541,51 +537,6 @@ class Pulse_CPT {
 	}
 	
 	/**
-	 * query_arguments function.
-	 * 
-	 * @access public
-	 * @static
-	 * @return void
-	 */
-	public static function query_arguments() {
-		global $wp_query;
-		
-		$arg = array( 'post_type' => 'pulse-cpt' );
-		
-		if ( is_date() ):
-			$arg['year'] = $wp_query->query_vars['year'];
-			
-			if ( ! empty( $wp_query->query_vars['monthnum'] ) ):
-				$arg['monthnum'] = $wp_query->query_vars['monthnum'];
-			endif;
-			
-			if ( ! empty( $wp_query->query_vars['day'] ) ):
-				$arg['day'] = $wp_query->query_vars['day'];
-			endif;
-		elseif ( is_author() ):
-			$arg['author_name'] = $wp_query->query_vars['author_name'];
-		elseif ( is_category() ):
-			$arg['cat'] = $wp_query->query_vars['cat'];
-		elseif ( is_tag() ):
-			$arg['tag_id'] = $wp_query->query_vars['tag_id'];
-		elseif ( is_single() || is_page() ):
-			$arg['post_parent'] = get_the_ID(); 
-		elseif ( ! ( is_single() || is_page() ) ):
-			$arg['post_parent'] = 0;
-		elseif( is_404() ):
-			return false; // Don't display anything
-		endif;
-		
-		/*
-		if ( is_paged() ):
-			$arg['paged'] = $wp_query->query_vars['paged'];
-		endif;
-		*/
-		
-		return $arg;
-	}
-	
-	/**
 	 * load_pulse_template function.
 	 * 
 	 * @access public
@@ -601,83 +552,6 @@ class Pulse_CPT {
 		else:
 			return $template;
 		endif;
-	}
-	
-	/* Function to handle regular and nopriv ajax requests */
-	public static function ajax_replies() {
-		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
-		
-		if ( $data ):
-			$widgets = get_option('widget_pulse_cpt');
-			$query_args = self::query_arguments();
-			
-			if ( ! empty( $data['parent_id'] ) ):
-				$query_args['post_parent'] = $data['parent_id'];
-			endif;
-			
-			if ( ! empty( $data['paged'] ) ):
-				$query_args['paged'] = $data['paged'];
-			endif;
-			
-			if ( ! empty( $data['order'] ) ):
-				$query_args['order'] = $data['order'];
-			endif;
-			
-			if ( ! empty( $data['sort'] ) ):
-				$rating_metric = $widgets[$data['widget_id']]['rating_metric'];
-				if ( $rating_metric == 'default' ):
-					$rating_metric = get_option( 'pulse_default_metric' );
-				endif;
-				
-				if ( ! empty( $rating_metric ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-					$rating_data = (array) Evaluate::get_data_by_slug( $rating_metric, get_the_ID() );
-				else:
-					$rating_data = array();
-				endif;
-				
-				$query_args['orderby'] = "meta_value_num";
-				$query_args['meta_key'] = 'metric-'.$rating_data['metric_id'].'-'.$data['sort'];
-			endif;
-			
-			$query = new WP_Query( $query_args );
-			while ( $query->have_posts() ):
-				$post = $query->the_post();
-				$pulse_data = self::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] );
-				
-				switch ( $data['show'] ):
-				case 'user':
-					$valid = $data['user'] == get_the_author_meta( 'user_login' );
-					
-					if ( isset( $pulse_data['authors'] ) ):
-						foreach ( $pulse_data['authors'] as $author ):
-							$valid |= $data['user'] == $author['name'];
-						endforeach;
-					endif;
-					break;
-				case 'vote':
-					$valid = $pulse_data['user_vote'];
-					break;
-				case 'admin':
-					$valid = user_can( $pulse_data['author']['ID'], 'administer' );
-					
-					if ( isset( $pulse_data['authors'] ) ):
-						foreach ( $pulse_data['authors'] as $author ):
-							$valid |= user_can( $author['name'], 'administer' );
-						endforeach;
-					endif;
-					break;
-				default:
-					$valid = true;
-					break;
-				endswitch;
-				
-				if ( $valid ):
-					self::the_pulse( $pulse_data );
-				endif;
-			endwhile;
-		endif;
-		
-		die();
 	}
 	
 	/* return the number of replies for a given pulse */

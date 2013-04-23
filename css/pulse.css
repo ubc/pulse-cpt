@@ -94,42 +94,48 @@
 
 /* Pulse List Pagination */
 
-.pagination > ul {
+.pulse-pagination {
+    margin-top: 3px;
+    text-align: center;
+}
+
+.pulse-pagination > ul {
     display: inline-block;
     margin: 0;
 }
 
-.pagination > ul > li {
+.pulse-pagination > ul > li {
     display: inline;
 }
 
-.pagination > ul > li > * {
+.pulse-pagination > ul > li > * {
     float: left;
-    padding: 4px 5px;
+    width: 24px;
+    padding: 4px 0;
     line-height: 14px;
     text-decoration: none;
     border: 1px solid #DDD;
-    margin: 2px;
+    margin: 1px;
     cursor: pointer;
 }
 
-.pagination > ul > li.active > *,
-.pagination > ul > li.disabled > * {
+.pulse-pagination > ul > li.active > *,
+.pulse-pagination > ul > li.disabled > * {
     color: #DDD;
     cursor: default;
 }
 
-.pagination > ul > li.active > *,
-.pagination > ul > li:not(.disabled) > *:hover {
+.pulse-pagination > ul > li.active > * {
+    color: #5DA1C1;
+    border-color: #5DA1C1;
+}
+
+.pulse-pagination > ul > li:not(.disabled) > *:hover {
     color: #348AB2;
     border-color: #348AB2;
 }
 
-.pagination.pagination-centered {
-    text-align: center;
-}
-
-.pagination input {
+.pulse-pagination input {
     display: none;
 }
 
