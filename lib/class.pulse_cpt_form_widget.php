@@ -361,6 +361,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<?php else: ?>
 			<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
 		<?php endif; ?>
+		<?php global $wp_query; ?>
+		<input type="hidden" value="<?php echo $wp_query->query_vars['author_name']; ?>" name="filters[author_id]" class="author-id"></input>
+		<input type="hidden" value="<?php echo $wp_query->query_vars['cat']; ?>" name="filters[cat_id]" class="cat-id"></input>
+		<input type="hidden" value="<?php echo $wp_query->query_vars['tag_id']; ?>" name="filters[tag_id]" class="tag-id"></input>
+		<input type="hidden" value="<?php echo $wp_query->query_vars['year']; ?>" name="filters[date][year]" class="date-year"></input>
+		<input type="hidden" value="<?php echo $wp_query->query_vars['monthnum']; ?>" name="filters[date][monthnum]" class="date-monthnum"></input>
+		<input type="hidden" value="<?php echo $wp_query->query_vars['day']; ?>" name="filters[date][day]" class="date-day"></input>
 		<div class="pulse-list-actions">
 			<span class="pulse-list-filter show">
 				<label>show:</label>
@@ -404,6 +411,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<div class="pulse-list">
 			<?php
 				$pulse_query = new WP_Query( self::query_arguments() );
+				error_log( print_r( $pulse_query, TRUE ) );
 				
 				while ( $pulse_query->have_posts() ):
 					$pulse_query->the_post();
@@ -425,14 +433,41 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	/* Function to handle regular and nopriv ajax requests */
 	public static function ajax_replies() {
 		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
-		error_log( print_r( $data, TRUE) );
+		$data['page'] = ( empty( $data['page'] ) ? 1 : $data['page'] );
 		
 		if ( $data ):
 			$widgets = get_option('widget_pulse_cpt');
 			$query_args = self::query_arguments();
 			
-			if ( ! empty( $data['parent_id'] ) ):
-				$query_args['post_parent'] = $data['parent_id'];
+			if ( ! empty( $data['filters']['parent_id'] ) ):
+				$query_args['post_parent'] = $data['filters']['parent_id'];
+			endif;
+			
+			if ( ! empty( $data['filters']['author_id'] ) ):
+				$query_args['author_name'] = $data['filters']['author_id'];
+				unset( $query_args['post_parent'] );
+			endif;
+			
+			if ( ! empty( $data['filters']['cat_id'] ) ):
+				$query_args['cat'] = $data['filters']['cat_id'];
+			endif;
+			
+			if ( ! empty( $data['filters']['tag_id'] ) ):
+				$query_args['tag_id'] = $data['filters']['tag_id'];
+			endif;
+			
+			if ( ! empty( $data['filters']['date'] ) ):
+				if ( ! empty( $data['filters']['date']['year'] ) ):
+					$query_args['year'] = $data['filters']['date']['year'];
+				endif;
+				
+				if ( ! empty( $data['filters']['date']['monthnum'] ) ):
+					$query_args['monthnum'] = $data['filters']['date']['monthnum'];
+				endif;
+				
+				if ( ! empty( $data['filters']['date']['day'] ) ):
+					$query_args['day'] = $data['filters']['date']['day'];
+				endif;
 			endif;
 			
 			if ( ! empty( $data['order'] ) ):
@@ -459,6 +494,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$query_args['posts_per_page'] = -1; //Show all posts, as we are using our own method for paging.
 			
 			$query = new WP_Query( $query_args );
+			error_log( print_r( $query, TRUE ) );
 			$pulses = array();
 			$pulse_count = 0;
 			while ( $query->have_posts() ):
@@ -469,7 +505,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				case 'user':
 					$valid = $data['user'] == get_the_author_meta( 'user_login' );
 					
-					if ( isset( $pulse_data['authors'] ) ):
+					if ( ! empty( $pulse_data['authors'] ) ):
 						foreach ( $pulse_data['authors'] as $author ):
 							$valid |= $data['user'] == $author['name'];
 						endforeach;
@@ -481,7 +517,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				case 'admin':
 					$valid = user_can( $pulse_data['author']['ID'], 'administer' );
 					
-					if ( isset( $pulse_data['authors'] ) ):
+					if ( ! empty( $pulse_data['authors'] ) ):
 						foreach ( $pulse_data['authors'] as $author ):
 							$valid |= user_can( $author['name'], 'administer' );
 						endforeach;
@@ -501,7 +537,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			endwhile;
 			
 			$page_count = ceil( $pulse_count / $posts_per_page );
-			$first_pulse = pulse_count * ( $data['page'] - 1 );
+			$first_pulse = $posts_per_page * ( $data['page'] - 1 );
 			for ( $i = $first_pulse; $i < $first_pulse + $posts_per_page; $i++ ):
 				echo $pulses[$i];
 			endfor;

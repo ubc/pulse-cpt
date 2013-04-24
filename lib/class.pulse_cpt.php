@@ -203,7 +203,7 @@ class Pulse_CPT {
      */
     public static function print_form_script() {
 		$global_args = array(
-			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		);
 		
 		if ( is_single() ):
@@ -425,9 +425,6 @@ class Pulse_CPT {
 						'ID'     => $author->ID,
 						'avatar' => Pulse_CPT_Form::get_user_image( $author, 12, FALSE ),
 					);
-					//error_log("Accepted CoAuthor: ".print_r($author->data->user_login, TRUE));
-				else:
-					//error_log("Rejected CoAuthor: ".print_r($author->data->user_login, TRUE));
 				endif;
 			endforeach;
 		endif;

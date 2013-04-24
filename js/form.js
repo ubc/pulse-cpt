@@ -127,7 +127,7 @@ var Pulse_CPT_Form = {
 		
 		jQuery( '.postbox .pulse-form-progress' ).show();
 		
-		jQuery.post( Pulse_CPT_Form_global.ajaxUrl, form_data, function( response ) {
+		jQuery.post( Pulse_CPT_Form_global.ajaxurl, form_data, function( response ) {
 			jQuery( '.postbox .pulse-form-progress' ).hide();
 			
 			if ( response == -1 ) {
@@ -219,7 +219,7 @@ var Pulse_CPT_Form = {
 		case "author":
 			if ( tags ) {
 				while ( tags_array[i] ) {
-					jQuery.ajax( Pulse_CPT_Form_global.ajaxUrl, {
+					jQuery.ajax( Pulse_CPT_Form_global.ajaxurl, {
 						async: false,
 						dataType: 'html',
 						type: 'post',

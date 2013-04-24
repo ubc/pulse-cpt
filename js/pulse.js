@@ -17,7 +17,20 @@ var Pulse_CPT = {
         } );
         
         jQuery('.pulse-list-filter.show select').on( 'change', function() {
-            Pulse_CPT.filter( jQuery(this).closest('.widget') );
+            var widget = jQuery(this).closest('.widget');
+            var author_id = 
+            Pulse_CPT.filter( widget, {
+                filters: {
+                    author_id: widget.find('.author-id').val(),
+                    cat_id: widget.find('.cat-id').val(),
+                    tag_id: widget.find('.tag-id').val(),
+                    date: {
+                        year: widget.find('.date-year').val(),
+                        monthnum: widget.find('.date-monthnum').val(),
+                        day: widget.find('.date-day').val(),
+                    },
+                },
+            } );
         } );
         
         jQuery('.pulse-list-filter.sort select').on( 'change', function() {
@@ -105,7 +118,7 @@ var Pulse_CPT = {
         // Show loading spinner
         element.find( '.pulse-form-progress' ).first().show();
         jQuery.ajax( {
-            url: Pulse_CPT_Form_global.ajaxUrl,
+            url: Pulse_CPT_Form_global.ajaxurl,
             data: {
                 action: 'pulse_cpt_replies',
                 data: {
@@ -173,7 +186,11 @@ var Pulse_CPT = {
         var show = jQuery('.pulse-list-filter.show select').val();
         var sort = jQuery('.pulse-list-filter.sort select').val();
         var page = jQuery('input.pulse-list-page').val();
+        var list = widget.find('.pulse-list');
         var user;
+        
+        list.fadeTo( 200, 0.3 );
+        list.css( 'pointer-events', 'none' );
         
         var prefix = "user_";
         if ( show.slice(0, prefix.length) == prefix ) {
@@ -190,7 +207,7 @@ var Pulse_CPT = {
         }
         
         jQuery.ajax( {
-            url: Pulse_CPT_Form_global.ajaxUrl,
+            url: Pulse_CPT_Form_global.ajaxurl,
             data: {
                 action: 'pulse_cpt_replies',
                 data: jQuery.extend( {
@@ -206,7 +223,9 @@ var Pulse_CPT = {
             },
             type: 'post',
             success: function( data ) {
-                jQuery('#pulse_cpt-'+widget_id+' .pulse-list').html(data);
+                list.html(data);
+                list.fadeTo( 200, 1 );
+                list.css( 'pointer-events', 'auto' );
             }
         } );
     },
