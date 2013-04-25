@@ -137,8 +137,6 @@ var Pulse_CPT_Form = {
 			if ( response.hasOwnProperty('error') ) {
 				Pulse_CPT_Form.display_msg( response.error );
 			} else {
-				// Clear the forms
-				form.each( function() { this.reset(); } );
 				
 				// counter goes back to what ever it used to be
 				var num_char_wrap = form.find( '.pulse-form-counter' );
@@ -155,9 +153,11 @@ var Pulse_CPT_Form = {
 					parent_pulse = jQuery('.pulse-list');
 				}
 			}
-			
-			jQuery('.tagbox').trigger('clear'); // A custom event defined in tagbox.js
 		}, "json" );
+		
+		// Clear the forms
+		form.each( function() { this.reset(); } );
+		jQuery('.tagbox').trigger('clear'); // A custom event defined in tagbox.js
 		
 		return false;
 	},
@@ -236,21 +236,6 @@ var Pulse_CPT_Form = {
 				}
 				
 				parent.find( '.pulse-author-shell').html(html_tags.join(' '));
-				
-				/*
-				switch( tags_array.length ) {
-				case 1:
-					parent.find('.pulse-author-shell').html('posting with ' +tags_array[0]);
-					break;
-				case 2:
-					parent.find('.pulse-author-shell').html('posting with ' +tags_array[0]+' and '+tags_array[1] );
-					break;
-				default:
-					var last = tags_array.pop();
-					parent.find('.pulse-author-shell').html('posting with ' +tags_array.join(', ') + ' and '+last );
-					break;
-				}
-				*/
 			} else {
 				parent.find('.pulse-author-shell').html('');
 			}

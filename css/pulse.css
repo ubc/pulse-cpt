@@ -186,6 +186,14 @@
     margin-left: 5px;
 }
 
+.pulse-more-replies {
+	padding: 3px 5px;
+	border-bottom: 1px solid #ECECEC;
+	margin: 0 5px;
+    display: block;
+    text-decoration: none;
+}
+
 .pulse-expand-content .pulse:first-child {
     margin-top: 8px;
 }

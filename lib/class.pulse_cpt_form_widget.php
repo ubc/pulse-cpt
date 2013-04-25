@@ -540,10 +540,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				$return['pulses'][] = $pulses[$i];
 			endfor;
 			
-			if ( $data['pagination'] == true && $pulse_count > $posts_per_page ):
-				ob_start();
-				self::pagination( $page_count, $data['page'] );
-				$return['pagination'] = ob_get_clean();
+			if ( $pulse_count > $posts_per_page ):
+				if ( $data['pagination'] == true ):
+					ob_start();
+					self::pagination( $page_count, $data['page'] );
+					$return['append'] = ob_get_clean();
+				else:
+					$return['append'] = '<a href="'.get_permalink( $query_args['post_parent'] ).'" class="pulse-more-replies">see all replies...</a>';
+				endif;
 			endif;
 		endif;
 		

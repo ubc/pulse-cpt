@@ -134,14 +134,7 @@ var Pulse_CPT = {
                 // Hide spinner again and show content
                 var list = jQuery(element).find('.pulse-replies');
                 list.html("");
-                
-                console.debug( data );
-                
-                jQuery.each( data['pulses'], function( index, pulse_data ) {
-                    var new_pulse = Pulse_CPT_Form.single_pulse_template( pulse_data );
-                    jQuery(new_pulse).appendTo(list);
-                } );
-                
+                Pulse_CPT.parsePulses( list, data );
                 element.find( '.pulse-form-progress' ).first().hide();
             }
         } );
@@ -237,19 +230,22 @@ var Pulse_CPT = {
             dataType: 'json',
             success: function( data ) {
                 list.html("");
-                var new_pulse;
-                
-                jQuery.each( data['pulses'], function( index, pulse_data ) {
-                    new_pulse = Pulse_CPT_Form.single_pulse_template( pulse_data );
-                    jQuery(new_pulse).appendTo(list);
-                } );
-                
-                list.append( data['pagination'] );
+                Pulse_CPT.parsePulses( list, data );
                 list.fadeTo( 200, 1 );
                 list.css( 'pointer-events', 'auto' );
             }
         } );
     },
+    
+    parsePulses: function( holder, data ) {
+        jQuery.each( data['pulses'], function( index, pulse_data ) {
+            var new_pulse = Pulse_CPT_Form.single_pulse_template( pulse_data );
+            jQuery(new_pulse).appendTo(holder);
+        } );
+        
+        holder.prepend( data['prepend'] );
+        holder.append( data['append'] );
+    }
 }
 
 jQuery('document').ready(Pulse_CPT.onReady);
