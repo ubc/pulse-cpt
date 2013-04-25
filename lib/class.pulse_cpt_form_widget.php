@@ -432,6 +432,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	/* Function to handle regular and nopriv ajax requests */
 	public static function ajax_replies() {
+		$return = array( 'pulses' => array() );
 		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
 		$data['page'] = ( empty( $data['page'] ) ? 1 : $data['page'] );
 		
@@ -494,7 +495,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$query_args['posts_per_page'] = -1; //Show all posts, as we are using our own method for paging.
 			
 			$query = new WP_Query( $query_args );
-			error_log( print_r( $query, TRUE ) );
 			$pulses = array();
 			$pulse_count = 0;
 			while ( $query->have_posts() ):
@@ -529,24 +529,25 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				endswitch;
 				
 				if ( $valid ):
-					ob_start();
-					Pulse_CPT::the_pulse( $pulse_data );
-					$pulses[] = ob_get_clean();
+					$pulses[] = $pulse_data;
 					$pulse_count += 1;
 				endif;
 			endwhile;
 			
 			$page_count = ceil( $pulse_count / $posts_per_page );
 			$first_pulse = $posts_per_page * ( $data['page'] - 1 );
-			for ( $i = $first_pulse; $i < $first_pulse + $posts_per_page; $i++ ):
-				echo $pulses[$i];
+			for ( $i = $first_pulse; $i < min( $pulse_count, $first_pulse + $posts_per_page ); $i++ ):
+				$return['pulses'][] = $pulses[$i];
 			endfor;
 			
 			if ( $data['pagination'] == true && $pulse_count > $posts_per_page ):
+				ob_start();
 				self::pagination( $page_count, $data['page'] );
+				$return['pagination'] = ob_get_clean();
 			endif;
 		endif;
 		
+		echo json_encode( $return );
 		die();
 	}
 	
