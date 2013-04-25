@@ -411,7 +411,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<div class="pulse-list">
 			<?php
 				$pulse_query = new WP_Query( self::query_arguments() );
-				error_log( print_r( $pulse_query, TRUE ) );
 				
 				while ( $pulse_query->have_posts() ):
 					$pulse_query->the_post();
@@ -440,8 +439,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$widgets = get_option('widget_pulse_cpt');
 			$query_args = self::query_arguments();
 			
-			if ( ! empty( $data['filters']['parent_id'] ) ):
-				$query_args['post_parent'] = $data['filters']['parent_id'];
+			if ( ! empty( $data['parent_id'] ) ):
+				$query_args['post_parent'] = $data['parent_id'];
 			endif;
 			
 			if ( ! empty( $data['filters']['author_id'] ) ):

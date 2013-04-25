@@ -122,10 +122,8 @@ var Pulse_CPT = {
             data: {
                 action: 'pulse_cpt_replies',
                 data: {
+                    'parent_id': element.data('pulse-id'),
                     'widget_id': element.closest('.widget').find('.widget-id').val(),
-                    filters: {
-                        'parent_id': element.data('pulse-id'),
-                    },
                 },
             },
             type: 'post',
