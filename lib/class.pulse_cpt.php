@@ -210,6 +210,8 @@ class Pulse_CPT {
 		
 		if ( is_single() ):
 			$global_args['id'] = get_the_ID();
+		elseif ( is_front_page() ):
+			$global_args['id'] = 0;
 		endif;
 		
 		if ( ! self::$add_form_script ): // We still need the ajax url even if user isnt logged in
@@ -221,8 +223,6 @@ class Pulse_CPT {
 			
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local',  Pulse_CPT_Form_Widget::$widgets );
-			
-			error_log( get_the_title().": ".$global_args['content_type'] );
 		endif;
 		
 		wp_print_scripts( 'pulse-cpt-form' );
@@ -237,8 +237,12 @@ class Pulse_CPT {
 			return "tag/".single_tag_title( "", FALSE );
 		elseif ( is_author() ):
 			return "author/".get_the_author_meta( 'user_login' );
+		elseif ( is_year() ):
+			return "date/".get_the_date( 'Y' );
+		elseif ( is_month() ):
+			return "date/".get_the_date( 'F Y' );
 		elseif ( is_date() ):
-			return "date/".get_the_date( /*'Y/m/j'*/ );
+			return "date/".get_the_date( 'F j, Y' );
 		else:
 			error_log( "'Pulse_CPT.get_content_type_for_node' was called outside the loop: ".print_r( $_POST, TRUE ) );
 		endif;

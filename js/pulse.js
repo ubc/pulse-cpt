@@ -19,20 +19,7 @@ var Pulse_CPT = {
         } );
         
         jQuery('.pulse-list-filter.show select').on( 'change', function() {
-            var widget = jQuery(this).closest('.widget');
-            var author_id = 
-            Pulse_CPT.filter( widget, {
-                filters: {
-                    author_id: widget.find('.author-id').val(),
-                    cat_id: widget.find('.cat-id').val(),
-                    tag_id: widget.find('.tag-id').val(),
-                    date: {
-                        year: widget.find('.date-year').val(),
-                        monthnum: widget.find('.date-monthnum').val(),
-                        day: widget.find('.date-day').val(),
-                    },
-                },
-            } );
+            Pulse_CPT.filter( jQuery(this).closest('.widget') );
         } );
         
         jQuery('.pulse-list-filter.sort select').on( 'change', function() {
@@ -91,8 +78,6 @@ var Pulse_CPT = {
             CTLT_Stream.on( 'server-push', function ( data ) { // Catch server push
                 if ( data.type == 'pulse' ) { // We are interested
                     var new_pulse_data = jQuery.parseJSON(data.data); // Extract pulse data from the event
-                    console.debug(new_pulse_data);
-                    
                     var all_visible_parents = jQuery('.pulse.expand');
                     var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
                     var parent_found = false;
@@ -115,7 +100,7 @@ var Pulse_CPT = {
                     
                     // If no appropriate place is found for the new pulse, put it in the main pulse-list
                     if ( ! parent_found && new_pulse_data.content_type == Pulse_CPT_Form_global.content_type ) {
-                        jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+                        Pulse_CPT.addPulse(new_pulse);
                     }
                     
                     var split = Pulse_CPT_Form_global.content_type.split("/");
@@ -126,7 +111,7 @@ var Pulse_CPT = {
                             if ( new_pulse_data.tags != false ) {
                                 jQuery.each( new_pulse_data.tags, function( index, tag ) {
                                     if ( tag.name == value ) {
-                                        jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+                                        Pulse_CPT.addPulse(new_pulse);
                                         return false; // Break out of the loop.
                                     } else {
                                         return true;
@@ -136,7 +121,7 @@ var Pulse_CPT = {
                             break;
                         case 'author':
                             if ( new_pulse_data.author.user_login == value ) {
-                                jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+                                Pulse_CPT.addPulse(new_pulse);
                             }
                             break;
                         default:
@@ -145,6 +130,11 @@ var Pulse_CPT = {
                 }
             } );
         }
+    },
+    
+    addPulse: function( new_pulse ) {
+        jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
+        jQuery('.pulse-list').children('.pulse').last().slideUp('slow');
     },
     
     expand: function() {
@@ -229,7 +219,8 @@ var Pulse_CPT = {
                 break;
         }
         
-        Pulse_CPT.filter( element.closest('.widget'), { 'page': page_id } );
+        var widget = element.closest('.widget');
+        Pulse_CPT.filter( widget, { 'page': page_id } );
     },
     
     filter: function( widget, overrides ) {
@@ -270,6 +261,16 @@ var Pulse_CPT = {
                     'order'     : order,
                     'page'      : page,
                     'pagination': true,
+                    'filters': {
+                        'author_id': widget.find('.author-id').val(),
+                        'cat_id': widget.find('.cat-id').val(),
+                        'tag_id': widget.find('.tag-id').val(),
+                        'date': {
+                            'year': widget.find('.date-year').val(),
+                            'monthnum': widget.find('.date-monthnum').val(),
+                            'day': widget.find('.date-day').val(),
+                        },
+                    },
                 }, overrides ),
             },
             type: 'post',

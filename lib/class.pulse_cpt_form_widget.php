@@ -5,7 +5,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	public static function init() {
 		add_action( 'widgets_init', array( __CLASS__, 'load' ) );
-		add_action( 'wp_ajax_pulse_cpt_pagination', array( __CLASS__, 'ajax_pagination' ) );
 		
 		// Ajax request handler for getting pulse replies
 		add_action( 'wp_ajax_pulse_cpt_replies',        array( __CLASS__, 'ajax_replies' ) );
@@ -247,8 +246,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				case 'tag':
 					$suffix = "tagged with ".$content_value;
 					break;
+				case 'date':
+					$suffix = "posted during ".$content_value;
+					break;
 				default:
-					$suffix = "posted on ".$content_value;
+					$suffix = "";
 					break;
 				endswitch;
 				
@@ -440,7 +442,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$widgets = get_option('widget_pulse_cpt');
 			$query_args = self::query_arguments();
 			
-			if ( ! empty( $data['parent_id'] ) ):
+			if ( isset( $data['parent_id'] ) ):
 				$query_args['post_parent'] = $data['parent_id'];
 			endif;
 			
@@ -578,7 +580,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					$end = $start + $length;
 					if ( $end > $page_count - 1 ):
 						$end = $page_count - 1;
-						$start = $end - $length;
+						$start = (int) max( 2, $end - $length );
 					endif;
 					
 					if ( $start > 2 ):
@@ -665,7 +667,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		
 		$arg = array(
 			'post_type'      => 'pulse-cpt',
-			//'post_parent'    => 0,
 			'posts_per_page' => 10,
 		);
 		
@@ -687,6 +688,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$arg['tag_id'] = $wp_query->query_vars['tag_id'];
 		elseif ( is_single() || is_page() ):
 			$arg['post_parent'] = get_the_ID();
+		elseif ( is_front_page() ):
+			$arg['post_parent'] = 0;
 		elseif( is_404() ):
 			return false; // Don't display anything
 		endif;
