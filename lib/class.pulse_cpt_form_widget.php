@@ -229,7 +229,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		
 		$id = substr( $args['widget_id'], 10 );
 		$content_identifier = Pulse_CPT::get_content_type_for_node();
-		$split = explode( '/', $content_identifier );
+		$split = explode( '/', $content_identifier, 2 );
 		$content_type = $split[0];
 		$content_value = $split[1];
 		$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
@@ -239,7 +239,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			echo $args['before_title'];
 			echo $instance['title'];
 			
-			if ( in_array( $content_type, array( 'author', 'tag' ) ) ):
+			if ( in_array( $content_type, array( 'author', 'tag', 'date' ) ) ):
 				switch ( $content_type ):
 				case 'author':
 					$suffix = "authored by ".get_the_author();
@@ -248,6 +248,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					$suffix = "tagged with ".$content_value;
 					break;
 				default:
+					$suffix = "posted on ".$content_value;
 					break;
 				endswitch;
 				
@@ -408,9 +409,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				</select>
 			</span>
 		</div>
-		<div>
-			<?php print_r( self::query_arguments() ); ?>
-		</div>
 		<div class="pulse-list">
 			<?php
 				$pulse_query = new WP_Query( self::query_arguments() );
@@ -502,8 +500,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			while ( $query->have_posts() ):
 				$post = $query->the_post();
 				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] );
-				
-				error_log("Post ".get_the_title()." ".get_the_author_meta( 'user_login' ));
 				
 				switch ( $data['show'] ):
 				case 'user':
@@ -667,7 +663,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	public static function query_arguments() {
 		global $wp_query;
 		
-		$arg = array( 'post_type' => 'pulse-cpt' );
+		$arg = array(
+			'post_type'      => 'pulse-cpt',
+			//'post_parent'    => 0,
+			'posts_per_page' => 10,
+		);
 		
 		if ( is_date() ):
 			$arg['year'] = $wp_query->query_vars['year'];
@@ -686,14 +686,10 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		elseif ( is_tag() ):
 			$arg['tag_id'] = $wp_query->query_vars['tag_id'];
 		elseif ( is_single() || is_page() ):
-			$arg['post_parent'] = get_the_ID(); 
-		elseif ( ! ( is_single() || is_page() ) ):
-			$arg['post_parent'] = 0;
+			$arg['post_parent'] = get_the_ID();
 		elseif( is_404() ):
 			return false; // Don't display anything
 		endif;
-		
-		$arg['posts_per_page'] = 10;
 		
 		return $arg;
 	}

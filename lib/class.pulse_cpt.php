@@ -13,11 +13,11 @@ class Pulse_CPT {
 	 * @return void
 	 */
 	public static function init() {
-		add_action( 'init',               array( __CLASS__, 'load' ) );
-		add_action( 'admin_menu',         array( __CLASS__, 'remove_submenus' ) );
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'print_form_script' ) );
-		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'print_pulse_script' ) );
-		add_action( 'template_redirect',  array( __CLASS__, 'template_redirect' ) );
+		add_action( 'init',                   array( __CLASS__, 'load' ) );
+		add_action( 'admin_menu',             array( __CLASS__, 'remove_submenus' ) );
+		add_action( 'wp_footer',              array( __CLASS__, 'print_form_script' ) );
+		add_action( 'wp_footer',              array( __CLASS__, 'print_pulse_script' ) );
+		add_action( 'template_redirect',      array( __CLASS__, 'template_redirect' ) );
 		add_filter( 'carry_content_template', array( __CLASS__, 'load_pulse_template' ) );
 		
 		// Add new columns
@@ -237,6 +237,8 @@ class Pulse_CPT {
 			return "tag/".single_tag_title( "", FALSE );
 		elseif ( is_author() ):
 			return "author/".get_the_author_meta( 'user_login' );
+		elseif ( is_date() ):
+			return "date/".get_the_date( /*'Y/m/j'*/ );
 		else:
 			error_log( "'Pulse_CPT.get_content_type_for_node' was called outside the loop: ".print_r( $_POST, TRUE ) );
 		endif;
@@ -250,7 +252,7 @@ class Pulse_CPT {
      * @return void
      */
     public static function print_pulse_script() {
-    	wp_enqueue_script( 'pulse-cpt' );
+    	wp_print_scripts( 'pulse-cpt' );
     	//wp_enqueue_script( 'bootstrap-popover' );
     	//wp_enqueue_style( 'bootstrap-popover' );
     }
