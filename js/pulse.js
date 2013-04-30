@@ -1,4 +1,6 @@
 var Pulse_CPT = {
+    popover_args: null,
+    
     onReady: function() {
         Pulse_CPT.listen();
         
@@ -36,6 +38,52 @@ var Pulse_CPT = {
         jQuery('.pulse-list-filter.sort select').on( 'change', function() {
             Pulse_CPT.filter( jQuery(this).closest('.widget') );
         } );
+        
+        // This code is commented out because it is incomplete. The PHP code that supports it is also incomplete.
+        // What follows is code to enable the ability of users to attach comments to their ratings.
+        /*
+        jQuery('body').append('<div id="popover-wrapper"></div>')
+        
+        jQuery('.pulse-list').on( 'click', '.rate', function( event ) {
+            var element = jQuery(event.target);
+            var wrapper = element.closest('.evaluate-wrapper');
+            
+            if ( ! element.hasClass('selected') ) {
+                wrapper.addClass('has-popover');
+                Pulse_CPT.popover_args = Evaluate.parseUrl( element.attr('href') );
+                wrapper.popover( {
+                    trigger: 'manual',
+                    html: true,
+                    content: '<div class="pulse-popover">Add a comment to your rating.<br /><textarea rows="2" cols="50" maxlength="40"></textarea><br /><button class="submit">Submit</button><button>No Thanks</button></div>',
+                    placement: 'left',
+                    container: '#popover-wrapper',
+                } );
+                wrapper.popover('show');
+                jQuery('#popover-wrapper textarea').focus();
+            } else {
+                wrapper.popover('destroy');
+                wrapper.removeClass('has-popover');
+            }
+        } );
+        
+        jQuery('#popover-wrapper').on( 'click', '.submit', function( event ) {
+            Pulse_CPT.popover_args['comment'] = jQuery('#popover-wrapper textarea').val();
+            Pulse_CPT.popover_args['vote'] = null;
+            
+            var data = {
+                action: 'evaluate-vote',
+                data: Pulse_CPT.popover_args,
+            }
+            
+            //jQuery.post( evaluate_ajax.ajaxurl, data );
+        } );
+        
+        jQuery('#popover-wrapper').on( 'click', 'button', function( event ) {
+            var element = jQuery('.pulse-list .evaluate-wrapper.has-popover');
+            element.popover('destroy');
+            element.removeClass('has-popover');
+        } );
+        */
     },
     
     listen: function() {

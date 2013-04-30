@@ -365,9 +365,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<input type="hidden" value="<?php echo $wp_query->query_vars['author_name']; ?>" name="filters[author_id]" class="author-id"></input>
 		<input type="hidden" value="<?php echo $wp_query->query_vars['cat']; ?>" name="filters[cat_id]" class="cat-id"></input>
 		<input type="hidden" value="<?php echo $wp_query->query_vars['tag_id']; ?>" name="filters[tag_id]" class="tag-id"></input>
-		<input type="hidden" value="<?php echo $wp_query->query_vars['year']; ?>" name="filters[date][year]" class="date-year"></input>
-		<input type="hidden" value="<?php echo $wp_query->query_vars['monthnum']; ?>" name="filters[date][monthnum]" class="date-monthnum"></input>
-		<input type="hidden" value="<?php echo $wp_query->query_vars['day']; ?>" name="filters[date][day]" class="date-day"></input>
+		<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['year'] : "0" ); ?>" name="filters[date][year]" class="date-year"></input>
+		<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['monthnum'] : "0" ); ?>" name="filters[date][monthnum]" class="date-monthnum"></input>
+		<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['day'] : "0" ); ?>" name="filters[date][day]" class="date-day"></input>
 		<div class="pulse-list-actions">
 			<span class="pulse-list-filter show">
 				<label>show:</label>
@@ -407,6 +407,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<?php endif; ?>
 				</select>
 			</span>
+		</div>
+		<div>
+			<?php print_r( self::query_arguments() ); ?>
 		</div>
 		<div class="pulse-list">
 			<?php
@@ -499,6 +502,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			while ( $query->have_posts() ):
 				$post = $query->the_post();
 				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] );
+				
+				error_log("Post ".get_the_title()." ".get_the_author_meta( 'user_login' ));
 				
 				switch ( $data['show'] ):
 				case 'user':

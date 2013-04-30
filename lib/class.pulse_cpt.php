@@ -13,11 +13,11 @@ class Pulse_CPT {
 	 * @return void
 	 */
 	public static function init() {
-		add_action( 'init',              array( __CLASS__, 'load' ) );
-		add_action( 'admin_menu',        array( __CLASS__, 'remove_submenus' ) );
-		add_action( 'wp_footer',         array( __CLASS__, 'print_form_script' ) );
-		add_action( 'wp_footer',         array( __CLASS__, 'print_pulse_script' ) );
-		add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ) );
+		add_action( 'init',               array( __CLASS__, 'load' ) );
+		add_action( 'admin_menu',         array( __CLASS__, 'remove_submenus' ) );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'print_form_script' ) );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'print_pulse_script' ) );
+		add_action( 'template_redirect',  array( __CLASS__, 'template_redirect' ) );
 		add_filter( 'carry_content_template', array( __CLASS__, 'load_pulse_template' ) );
 		
 		// Add new columns
@@ -113,12 +113,12 @@ class Pulse_CPT {
      */
     public static function register_script_and_style() {
     	wp_register_script( 'autoGrowInput', PULSE_CPT_DIR_URL.'/js/jquery.autoGrowInput.js', array( 'jquery' ), '1.0', true );
-    	wp_register_script( 'tagbox',        PULSE_CPT_DIR_URL.'/js/tagbox.js',               array( 'jquery','jquery-ui-autocomplete', 'autoGrowInput' ), '1.0', true );
-    	wp_register_script( 'autoGrowInput', PULSE_CPT_DIR_URL.'/js/jquery.autoGrowInput.js', array( 'jquery' ), '1.0', true );
     	wp_register_script( 'autogrow',      PULSE_CPT_DIR_URL.'/js/autogrow.js',             array( 'jquery' ), '1.0', true );
+    	wp_register_script( 'tagbox',        PULSE_CPT_DIR_URL.'/js/tagbox.js',               array( 'jquery','jquery-ui-autocomplete', 'autoGrowInput' ), '1.0', true );
     	wp_register_script( 'doT',           PULSE_CPT_DIR_URL.'/js/doT.js',                  array( 'jquery' ), '1.0', true );
     	wp_register_script( 'charCount',     PULSE_CPT_DIR_URL.'/js/charCount.js',            array( 'jquery' ), '1.0', true );
     	
+    	//wp_register_script( 'bootstrap-popover',           PULSE_CPT_DIR_URL.'/js/bootstrap-popover.min.js',       array( 'jquery' ), '1.0', true );
     	wp_register_script( 'jquery-ui-position',          PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js',          array( 'jquery' ), '1.0', true );
     	wp_register_script( 'jquery-ui-autocomplete',      PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js',      array( 'jquery', 'jquery-ui-position', 'jquery-ui-widget', 'jquery-ui-core' ), '1.0', true );
     	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js', array( 'jquery-ui-autocomplete' ), '1.0', true );
@@ -132,6 +132,8 @@ class Pulse_CPT {
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css?t='.$cachebuster);
 		$cachebuster = filemtime( PULSE_CPT_DIR_PATH.'/css/pulse.css' );
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css?t='.$cachebuster);
+		
+    	//wp_register_style( 'bootstrap-popover', PULSE_CPT_DIR_URL.'/css/bootstrap-popover.min.css');
     }
     
     /**
@@ -236,7 +238,7 @@ class Pulse_CPT {
 		elseif ( is_author() ):
 			return "author/".get_the_author_meta( 'user_login' );
 		else:
-			error_log( "'get_content_type_for_node' was called outside the loop: ".print_r( $_POST, TRUE ) );
+			error_log( "'Pulse_CPT.get_content_type_for_node' was called outside the loop: ".print_r( $_POST, TRUE ) );
 		endif;
 	}
     
@@ -247,8 +249,10 @@ class Pulse_CPT {
      * @static
      * @return void
      */
-    public static function print_pulse_script() { 
-    	wp_print_scripts( 'pulse-cpt' );
+    public static function print_pulse_script() {
+    	wp_enqueue_script( 'pulse-cpt' );
+    	//wp_enqueue_script( 'bootstrap-popover' );
+    	//wp_enqueue_style( 'bootstrap-popover' );
     }
 	
 	/**
@@ -282,23 +286,25 @@ class Pulse_CPT {
 						<?php echo $it['date']; ?>
 					</a>
 					<span class="pulse-rating">
-						<?php
-							if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-								global $wpdb;
-								$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
-								
-								if ( $template ):
-									$data = Evaluate::get_metric_data_js();
-									$data->type = $metric->type;
-								else:
-									$data = Evaluate::get_metric_data( $metric );
-									if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
-									if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
+						<div class="evaluate-wrapper">
+							<?php
+								if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+									global $wpdb;
+									$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
+									
+									if ( $template ):
+										$data = Evaluate::get_metric_data_js();
+										$data->type = $metric->type;
+									else:
+										$data = Evaluate::get_metric_data( $metric );
+										if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
+										if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
+									endif;
+									
+									echo Evaluate::display_metric( $data, $template );
 								endif;
-								
-								echo Evaluate::display_metric( $data, $template );
-							endif;
-						?>
+							?>
+						</div>
 					</span>
 				</div>
 				<div class="pulse-content">

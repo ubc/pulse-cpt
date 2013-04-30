@@ -18,7 +18,6 @@
 }
 
 /* Pulse List Actions */
-
 .pulse-list-actions {
     margin-top: 3px;
     height: 20px;
@@ -93,7 +92,6 @@
 
 
 /* Pulse List Pagination */
-
 .pulse-pagination {
     margin-top: 3px;
     text-align: center;
@@ -215,12 +213,17 @@
     width: 165px;
 }
 
-.pulse-meta .evaluate-shell {
+.pulse-meta .evaluate-wrapper {
     float: right;
+    padding-left: 5px;
 }
 
-.pulse-meta .evaluate-shell .rating-text,
-.pulse-meta .evaluate-shell .rate-name {
+.pulse-meta .evaluate-wrapper .evaluate-shell {
+    margin: 0;
+}
+
+.pulse-meta .evaluate-wrapper .rating-text,
+.pulse-meta .evaluate-wrapper .rate-name {
     display: none;
 }
 
@@ -328,4 +331,15 @@
 
 .error {
     color: darkred;
+}
+
+/* Evaluate Popover */
+.pulse-popover button {
+    float: right;
+    margin: 2px;
+    margin-right: 0;
+}
+
+.pulse-popover textarea {
+    resize: none;
 }
