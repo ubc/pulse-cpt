@@ -20,12 +20,13 @@
 /* Pulse List Actions */
 .pulse-list-actions {
     margin-top: 3px;
-    height: 20px;
-    float: right;
+    text-align: right;
 }
 
 .pulse-list-filter {
     margin-right: 7px;
+    margin-bottom: 3px;
+    display: inline-block;
 }
 
 .pulse-list-filter select {
@@ -69,10 +70,6 @@
 
 
 /* Pulse List */
-.pulse-list {
-	margin-top: 23px;
-}
-
 .pulse-list .pulse:hover {
 	cursor: pointer;
 	background: #EEE;
