@@ -194,28 +194,25 @@
 }
 
 .pulse-meta {
-    width: 215px;
-	position: absolute;
-	top: 5px;
-	right: 5px;
 	font-size: 11px;
 }
 
-.pulse-meta > * {
+.pulse-timestamp {
     float: right;
+    width: 45px;
+    text-align: right;
 }
 
-.pulse-meta .pulse-rating {
-    float: left;
-    width: 165px;
+.pulse-rating {
+    float: right;
 }
 
 .pulse-meta .evaluate-wrapper {
-    float: right;
     padding-left: 5px;
 }
 
 .pulse-meta .evaluate-wrapper .evaluate-shell {
+    display: inline-block;
     margin: 0;
 }
 
@@ -230,15 +227,21 @@
 
 .pulse-meta a,
 .pulse-actions a,
-.pulse-author-meta a {
+.pulse-author a {
 	text-decoration: none;
 }
 
-.pulse-author-meta a small {
+.pulse-author {
+    display: inline-block;
+    min-width: 50%;
+    font-size: 13px;
+}
+
+.pulse-author a small {
 	display: none;
 }
 
-.pulse-author-meta a:hover small {
+.pulse-author a:hover small {
 	display: inline;
 	font-weight: normal;
 }

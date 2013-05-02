@@ -282,17 +282,17 @@ class Pulse_CPT {
 		<div class="pulse" data-pulse-id="<?php echo $it['ID']; ?>">
 			<div class="pulse-wrap">
 				<?php echo $it['author']['avatar_30']; ?>
-				<div class="pulse-author-meta">
-					<a href="<?php echo $it['author']['post_url']; ?>">
-						<?php echo $it['author']['display_name']; ?> <small>@<?php echo $it['author']['user_login']; ?></small>
-					</a>
-				</div>
 				<div class="pulse-meta">
 					<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
 						<?php echo $it['date']; ?>
 					</a>
+					<span class="pulse-author">
+						<a href="<?php echo $it['author']['post_url']; ?>">
+							<?php echo $it['author']['display_name']; ?> <small>@<?php echo $it['author']['user_login']; ?></small>
+						</a>
+					</span>
 					<span class="pulse-rating">
-						<div class="evaluate-wrapper">
+						<span class="evaluate-wrapper">
 							<?php
 								if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
 									global $wpdb;
@@ -310,7 +310,7 @@ class Pulse_CPT {
 									echo Evaluate::display_metric( $data, $template );
 								endif;
 							?>
-						</div>
+						</span>
 					</span>
 				</div>
 				<div class="pulse-content">

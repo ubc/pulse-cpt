@@ -79,6 +79,11 @@
 	z-index: 1;
 }
 
+.pulse-form-submit-wrap input.pulse-form-submit {
+	padding-right: 7px;
+	padding-left: 7px;
+}
+
 .pulse-form-submit.disabled {
 	color: #CCC;
 	cursor: not-allowed;
@@ -261,21 +266,12 @@
 }
 
 .pulse-tabs .pulse-tablist li {
-    /*
-	list-style: none;
-	float: left;
-	position: relative;
-	top: 0;
-	*/
 	padding: 0;
-    /*
-	white-space: nowrap;
-	*/
 }
 
 .pulse-tablist li a {
 	float: left;
-	padding: 3px 10px;
+	padding: 3px 4px;
 	text-decoration: none;
 	color: #999;
 	background: url(../img/sprite.gif) no-repeat;
