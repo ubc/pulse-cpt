@@ -128,6 +128,12 @@ var Pulse_CPT = {
                             break;
                     }
                 }
+                
+                var content_rating_metric = new_pulse_data.content_rating;
+                if ( content_rating_metric ) {
+                    var content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
+                    jQuery(new_pulse).find('.content-rating .evaluate-wrapper').html(content_rating);
+                }
             } );
         }
     },
@@ -288,6 +294,11 @@ var Pulse_CPT = {
         jQuery.each( data['pulses'], function( index, pulse_data ) {
             var new_pulse = Pulse_CPT_Form.single_pulse_template( pulse_data );
             jQuery(new_pulse).appendTo(holder);
+            
+            if ( data.content_rating ) {
+                var content_rating = Evaluate.template[data.content_rating.type](data.content_rating);
+                jQuery(new_pulse).find('.content-rating .evaluate-wrapper').html(content_rating);
+            }
         } );
         
         holder.prepend( data['prepend'] );

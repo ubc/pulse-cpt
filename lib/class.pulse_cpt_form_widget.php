@@ -46,6 +46,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			'bitly_api_key'          => get_option( 'pulse_bitly_key' ),
 			'enable_replies'         => (bool) $new_instance['enable_comments'],
 			'rating_metric'          => $new_instance['rating_metric'],
+			'display_content_rating' => $new_instance['display_content_rating'],
 			'tabs'                   => $tabs,
 		) );
 	}
@@ -68,6 +69,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		    'bitly_user'             => get_option( 'pulse_bitly_username' ),
 		    'bitly_api_key'          => get_option( 'pulse_bitly_key' ),
 		    'rating_metric'          => false,
+			'display_content_rating' => false,
 		    'enable_replies'         => false,
 			'tabs'                   => array(
 				'tagging'      => true,
@@ -143,7 +145,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<?php
 						if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // Evaluate plugin is enabled
 							global $wpdb;
-							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
+							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS.' WHERE type <> "poll"' );
 							
 							foreach ( $metrics as $metric ):
 								$params = unserialize( $metric->params );
@@ -153,7 +155,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 								endif;
 								
 								$content_types = $params['content_types'];
-								if ( in_array( 'pulse-cpt', $content_types ) && $metric->type != 'poll' ):
+								if ( in_array( 'pulse-cpt', $content_types ) ):
 									?>
 									<option value="<?php echo $metric->slug; ?>" <?php selected( $instance['rating_metric'] == $metric->slug ); ?>>
 										<?php echo $metric->nicename; ?>
@@ -166,6 +168,44 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				</select>
 				<br />
 				<small>Viewers can rate each pulse.</small>
+			</p>
+			<!-- Display Content Rating (Evaluate) -->
+			<p>
+				<label for="<?php echo $this->get_field_id('display_content_rating'); ?>">
+					Display Content Rating
+				</label>
+				<?php if ( ! Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // Evaluate plugin is not enabled  ?>
+					<br />
+					<small style="color: darkred;">
+						Install <a href="http://wordpress.org/extend/plugins/evaluate/">Evaluate</a> to use this functionality.
+					</small>
+				<?php endif; ?>
+				<br />
+				<select id="<?php echo $this->get_field_id('display_content_rating'); ?>" name="<?php echo $this->get_field_name('display_content_rating'); ?>" <?php disabled( ! Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ); ?>>
+					<option value="">None</option>
+					<?php
+						if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // Evaluate plugin is enabled
+							global $wpdb;
+							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS.' WHERE type = "range"' );
+							
+							foreach ( $metrics as $metric ):
+								$params = unserialize( $metric->params );
+								
+								if ( ! array_key_exists( 'content_types', $params ) ):
+									continue; // Metric has no association, move on..
+								endif;
+								
+								?>
+								<option value="<?php echo $metric->id; ?>" <?php selected( $instance['display_content_rating'] == $metric->id ); ?>>
+									<?php echo $metric->nicename; ?>
+								</option>
+								<?php
+							endforeach;
+						endif;
+					?>
+				</select>
+				<br />
+				<small>Pulses will display the user's rating of the content the pulse is replying to.</small>
 			</p>
 			<!-- Enable Co Authoring -->
 			<p>
@@ -271,6 +311,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				'bitly_user'             => get_option('pulse_bitly_username'),
 				'bitly_api_key'          => get_option('pulse_bitly_key'),
 				'rating_metric'          => $instance['rating_metric'],
+				'display_content_rating' => $instance['display_content_rating'],
 				'tabs'                   => $instance['tabs'],
 			);
 			
@@ -341,7 +382,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						</span>					
 						<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" />
 					</div>
-					<input type="hidden" value="<?php echo $instance['enable_location_sensitive']; ?>" name="location_sensitive" />
 					<input type="hidden" value="<?php echo $instance['enable_comments']; ?>" name="enable_comments" />
 					<input type="hidden" value="pulse_cpt_insert" name="action" />
 					<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); ?>
@@ -417,7 +457,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				
 				while ( $pulse_query->have_posts() ):
 					$pulse_query->the_post();
-					Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance['rating_metric'] ) );
+					Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance ) );
 				endwhile;
 				
 				// Reset Post Data
@@ -501,7 +541,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$pulse_count = 0;
 			while ( $query->have_posts() ):
 				$post = $query->the_post();
-				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']]['rating_metric'] );
+				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']] );
 				
 				switch ( $data['show'] ):
 				case 'user':
@@ -649,7 +689,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
   	 * @return void
   	 */
   	public static function footer( $instance ) {
-  		$it = Pulse_CPT::the_pulse_array_js( $instance['rating_metric'] );
+  		$it = Pulse_CPT::the_pulse_array_js( $instance );
   		?>
   		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it, TRUE ); ?></script>
   		<?php 

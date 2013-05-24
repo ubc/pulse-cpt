@@ -294,7 +294,7 @@ class Pulse_CPT {
 					<span class="pulse-rating">
 						<span class="evaluate-wrapper">
 							<?php
-								if ( $it['rating']['slug'] != null && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+								if ( ! empty( $it['rating']['slug'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
 									global $wpdb;
 									$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
 									
@@ -312,6 +312,26 @@ class Pulse_CPT {
 							?>
 						</span>
 					</span>
+					<?php if ( ! empty( $it['content_rating'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): ?>
+						<span class="content-rating">
+							<div class="evaluate-wrapper">
+								<?php
+									if ( $template ):
+										echo "<!-- To be replaced via javascript. -->";
+									else:
+										$data = $it['content_rating'];
+										//if ( $it['content_rating']['counter_up'] != null ) $data->counter_up = $it['content_rating']['counter_up'];
+										//if ( $it['content_rating']['counter_down'] != null ) $data->counter_down = $it['content_rating']['counter_down'];
+										if ( empty( $data->user_vote ) ):
+											echo '<span style="font-size:80%;">NO RATING</span>';
+										else:
+											echo Evaluate::display_metric( $data, $template );
+										endif;
+									endif;
+								?>
+							</div>
+						</span>
+					<?php endif; ?>
 				</div>
 				<div class="pulse-content">
 					<?php echo $it['content']; ?>
@@ -406,8 +426,8 @@ class Pulse_CPT {
 	 * @static
 	 * @return void
 	 */
-	public static function the_pulse_json( $rating_metric = null ) {
-		return json_encode( Pulse_CPT::the_pulse_array( $rating_metric ) );
+	public static function the_pulse_json( $widget = null ) {
+		return json_encode( Pulse_CPT::the_pulse_array( $widget ) );
 	}
 	
 	/**
@@ -417,10 +437,11 @@ class Pulse_CPT {
 	 * @static
 	 * @return void
 	 */
-	public static function the_pulse_array( $rating_metric = null ) {
-		global $post;
+	public static function the_pulse_array( $widget = null ) {
+		global $wpdb, $post;
+		$parent = $post->post_parent;
 		
-		// tags
+		// Tags
 		$posttags = get_the_tags();
 		
 		if ( $posttags ):
@@ -457,17 +478,34 @@ class Pulse_CPT {
 			$coauthors = false;
 		endif;
 		
-		if ( $rating_metric == 'default' ):
-			$rating_metric = get_option( 'pulse_default_metric' );
+		// Evaluate
+		if ( $widget['rating_metric'] == 'default' ):
+			$widget['rating_metric'] = get_option( 'pulse_default_metric' );
 		endif;
 		
-		if ( ! empty( $rating_metric ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-			$rating_data = (array) Evaluate::get_data_by_slug( $rating_metric, get_the_ID() );
+		if ( ! empty( $widget['rating_metric'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+			$rating_data = (array) Evaluate::get_data_by_slug( $widget['rating_metric'], get_the_ID() );
 		else:
 			$rating_data = array();
 		endif;
 		
-		return array_merge( $rating_data, array(  
+		if ( $parent != 0 && ! empty( $widget['display_content_rating'] ) ):
+			$content_rating = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM '.EVAL_DB_METRICS.' WHERE id=%s', $widget['display_content_rating'] ) );
+			$content_rating->preview = true;
+			
+			$post_id = $post->ID;
+			$author = get_the_author_meta( 'ID' );
+			
+			$post = get_post( $parent );
+			setup_postdata( $post );
+			
+			$content_rating = Evaluate::get_metric_data( $content_rating, $author );
+			
+			$post = get_post( $post_id );
+			setup_postdata( $post );
+		endif;
+		
+		return array_merge( $rating_data, array(
 			'ID'        => get_the_ID(),
 			'date'      => Pulse_CPT::get_the_date(),
 			'content'   => apply_filters( 'the_content', make_clickable( get_the_content() ) ),
@@ -479,12 +517,13 @@ class Pulse_CPT {
 				'display_name' => get_the_author(),
 				'post_url'     => get_author_posts_url( get_the_author_meta('ID') ),
 			),
-			'tags'	      => $tags,
-			'authors'     => $coauthors,
-			'num_replies' => self::get_num_replies(),
-			'parent'      => $post->post_parent,
-			'rating'      => array(
-				'slug'         => $rating_metric,
+			'tags'	         => $tags,
+			'authors'        => $coauthors,
+			'num_replies'    => self::get_num_replies(),
+			'parent'         => $parent,
+			'content_rating' => $content_rating,
+			'rating'         => array(
+				'slug'         => $widget['rating_metric'],
 				'counter_up'   => 0,
 				'counter_down' => 0,
 			),
@@ -498,9 +537,17 @@ class Pulse_CPT {
 	 * @static
 	 * @return void
 	 */
-	public static function the_pulse_array_js( $rating_metric = null ) {
-		if ( $rating_metric == 'default' ):
-			$rating_metric = get_option( 'pulse_default_metric' );
+	public static function the_pulse_array_js( $widget = null ) {
+		if ( $widget['rating_metric'] == 'default' ):
+			$widget['rating_metric'] = get_option( 'pulse_default_metric' );
+		endif;
+		
+		if ( isset( $widget['display_content_rating'] ) ):
+			$content_rating = array(
+				'value'  => '{{=it.content_rating.value}}',
+			);
+		else:
+			$content_rating = null;
 		endif;
 		
 		return array(  
@@ -515,9 +562,10 @@ class Pulse_CPT {
 				'display_name' => '{{=it.author.display_name}}',
 				'post_url'     => '{{=it.author.post_url}}',
 			),
-			'num_replies' => '{{=it.num_replies}}',
-			'rating'      => array(
-				'slug'         => $rating_metric,
+			'num_replies'    => '{{=it.num_replies}}',
+			'content_rating' => $content_rating,
+			'rating'         => array(
+				'slug'         => $widget['rating_metric'],
 				'counter_up'   => '{{=it.rating.counter_up}}',
 				'counter_down' => '{{=it.rating.counter_down}}',
 			),
