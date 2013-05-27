@@ -155,7 +155,7 @@ class Pulse_CPT_Form {
 		while ( $the_query->have_posts() ):
 			$the_query->the_post();
 			$widgets = get_option( 'widget_pulse_cpt' );
-			echo Pulse_CPT::the_pulse_json( $widgets[$_POST['widget_id']]['rating_metric'] );
+			echo Pulse_CPT::the_pulse_json( $widgets[$_POST['widget_id']] );
 		endwhile;
 		
 		// Reset Post Data
@@ -234,7 +234,7 @@ class Pulse_CPT_Form {
 			
 			$query->the_post();
 			$widgets = get_option( 'widget_pulse_cpt' );
-			$data = Pulse_CPT::the_pulse_array( $widgets[$_POST['widget_id']]['rating_metric'] );
+			$data = Pulse_CPT::the_pulse_array( $widgets[$_POST['widget_id']] );
 			$data['content_type'] = $_POST['content_type'];
 			$data = json_encode( $data );
 			
