@@ -127,12 +127,17 @@ var Pulse_CPT = {
                         default:
                             break;
                     }
-                }
-                
-                var content_rating_metric = new_pulse_data.content_rating;
-                if ( content_rating_metric ) {
-                    var content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
-                    jQuery(new_pulse).find('.content-rating .evaluate-wrapper').html(content_rating);
+                    
+                    var content_rating_metric = new_pulse_data.content_rating;
+                    if ( content_rating_metric != undefined ) {
+                        var content_rating = '<span class="no-rating">NO RATING</span>';
+                        
+                        if ( content_rating_metric.user_vote != undefined ) {
+                            content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
+                        }
+                        
+                        jQuery('.pulse-'+new_pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
+                    }
                 }
             } );
         }
@@ -295,9 +300,14 @@ var Pulse_CPT = {
             var new_pulse = Pulse_CPT_Form.single_pulse_template( pulse_data );
             jQuery(new_pulse).appendTo(holder);
             
-            if ( data.content_rating ) {
-                var content_rating = Evaluate.template[data.content_rating.type](data.content_rating);
-                jQuery(new_pulse).find('.content-rating .evaluate-wrapper').html(content_rating);
+            if ( pulse_data.content_rating != undefined ) {
+                var content_rating = '<span class="no-rating">NO RATING</span>';
+                
+                if ( pulse_data.content_rating.user_vote != undefined ) {
+                    content_rating = Evaluate.template[pulse_data.content_rating.type](pulse_data.content_rating);
+                }
+                
+                jQuery('.pulse-'+pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
             }
         } );
         

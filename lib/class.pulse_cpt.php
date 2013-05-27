@@ -279,7 +279,7 @@ class Pulse_CPT {
 		endif;
 		
 		?>
-		<div class="pulse" data-pulse-id="<?php echo $it['ID']; ?>">
+		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>">
 			<div class="pulse-wrap">
 				<?php echo $it['author']['avatar_30']; ?>
 				<div class="pulse-meta">
@@ -323,7 +323,7 @@ class Pulse_CPT {
 										//if ( $it['content_rating']['counter_up'] != null ) $data->counter_up = $it['content_rating']['counter_up'];
 										//if ( $it['content_rating']['counter_down'] != null ) $data->counter_down = $it['content_rating']['counter_down'];
 										if ( empty( $data->user_vote ) ):
-											echo '<span style="font-size:80%;">NO RATING</span>';
+											echo '<span class="no-rating">NO RATING</span>';
 										else:
 											echo Evaluate::display_metric( $data, $template );
 										endif;
