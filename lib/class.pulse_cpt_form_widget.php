@@ -205,7 +205,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					?>
 				</select>
 				<br />
-				<small>Pulses will display the user's rating of the content the pulse is replying to.</small>
+				<small>Pulses will display the user's rating of the content the pulse is replying to. Only supports Range-type metrics.</small>
 			</p>
 			<!-- Enable Co Authoring -->
 			<p>
