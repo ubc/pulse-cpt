@@ -225,6 +225,10 @@
     margin: 0;
 }
 
+.pulse-meta .no-rating {
+    font-size: 80%;
+}
+
 .pulse-meta a,
 .pulse-actions a,
 .pulse-author a {
