@@ -137,6 +137,7 @@ var Pulse_CPT = {
                         }
                         
                         jQuery('.pulse-'+new_pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
+                        jQuery('.pulse-'+new_pulse_data.ID+' .content-rating .evaluate-shell').removeClass('can-vote');
                     }
                 }
             } );
@@ -308,6 +309,7 @@ var Pulse_CPT = {
                 }
                 
                 jQuery('.pulse-'+pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
+                jQuery('.pulse-'+pulse_data.ID+' .content-rating .evaluate-shell').removeClass('can-vote');
             }
         } );
         

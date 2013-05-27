@@ -320,8 +320,6 @@ class Pulse_CPT {
 										echo "<!-- To be replaced via javascript. -->";
 									else:
 										$data = $it['content_rating'];
-										//if ( $it['content_rating']['counter_up'] != null ) $data->counter_up = $it['content_rating']['counter_up'];
-										//if ( $it['content_rating']['counter_down'] != null ) $data->counter_down = $it['content_rating']['counter_down'];
 										if ( empty( $data->user_vote ) ):
 											echo '<span class="no-rating">NO RATING</span>';
 										else:
@@ -491,18 +489,26 @@ class Pulse_CPT {
 		
 		if ( $parent != 0 && ! empty( $widget['display_content_rating'] ) ):
 			$content_rating = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM '.EVAL_DB_METRICS.' WHERE id=%s', $widget['display_content_rating'] ) );
-			$content_rating->preview = true;
+			$excluded = get_post_meta( $parent, 'metric' );
+			$parent_data = get_post( $parent );
+			$params = unserialize( $content_rating->params );
 			
-			$post_id = $post->ID;
-			$author = get_the_author_meta( 'ID' );
-			
-			$post = get_post( $parent );
-			setup_postdata( $post );
-			
-			$content_rating = Evaluate::get_metric_data( $content_rating, $author );
-			
-			$post = get_post( $post_id );
-			setup_postdata( $post );
+			if ( array_key_exists( 'content_types', $params ) && ! in_array( $content_rating->id, $excluded ) && in_array( $parent_data->post_type, $params['content_types'] ) ):
+				$content_rating->preview = true;
+				
+				$post_id = $post->ID;
+				$author = get_the_author_meta( 'ID' );
+				
+				$post = $parent_data;
+				setup_postdata( $post );
+				
+				$content_rating = Evaluate::get_metric_data( $content_rating, $author );
+				
+				$post = get_post( $post_id );
+				setup_postdata( $post );
+			else:
+				$content_rating = null;
+			endif;
 		endif;
 		
 		return array_merge( $rating_data, array(
