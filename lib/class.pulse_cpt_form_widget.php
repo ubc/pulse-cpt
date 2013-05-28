@@ -380,7 +380,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<span class="pulse-form-progress hide">
 							<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
 						</span>					
-						<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit" />
+						<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit btn button" />
 					</div>
 					<input type="hidden" value="<?php echo $instance['enable_comments']; ?>" name="enable_comments" />
 					<input type="hidden" value="pulse_cpt_insert" name="action" />
@@ -414,7 +414,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<div class="pulse-list-actions">
 			<span class="pulse-list-filter show">
 				<label>show:</label>
-				<select dir="rtl">
+				<select>
 					<option value="">all</option>
 					<?php if ( is_user_logged_in() && $content_type != 'author' ): ?> 
 						<option value="user_<?php echo wp_get_current_user()->user_login;?>">mine</option>
@@ -432,7 +432,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			</span>
 			<span class="pulse-list-filter sort">
 				<label>sort:</label>
-				<select dir="rtl">
+				<select>
 					<option value="/DESC">newest</option>
 					<option value="/ASC">oldest</option>
 					<?php if ( ! empty( $instance['rating_metric'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): ?>

@@ -31,7 +31,8 @@
 
 .pulse-list-filter select {
     border: none;
-    background: none;
+    background: #EEE;
+    
 }
 
 .pulse-list-filter select:focus {
