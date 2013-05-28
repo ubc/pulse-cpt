@@ -271,8 +271,10 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$split = explode( '/', $content_identifier, 2 );
 		$content_type = $split[0];
 		$content_value = $split[1];
-		$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
-		
+		if( class_exists('Evaluate') )
+			$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
+		else
+			$metric_data = array();
 		echo $args['before_widget']; 
 		if ( ! empty( $instance['title'] ) && $instance['display_title'] ):
 			echo $args['before_title'];
