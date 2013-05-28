@@ -7,7 +7,9 @@ class Pulse_CPT_Form {
 	public static function init() {
 		add_action( 'wp_ajax_pulse_get_user_image', array( __CLASS__, 'get_user_image' ) );
 		add_action( 'wp_ajax_pulse_cpt_insert',     array( __CLASS__, 'insert' ) );
+		
 		add_action( 'publish_pulse-cpt',            array( __CLASS__, 'send_to_stream' ), 20 );
+		
 		add_filter( 'wp_insert_post_data',          array( __CLASS__, 'edit_post_data' ), 10, 2 );
 	}
 	
@@ -225,7 +227,8 @@ class Pulse_CPT_Form {
 		// We're only interested in the parent post
 		if ( wp_is_post_revision( $pulse_id ) ) return;
 		
-		if ( CTLT_Stream::is_node_active() ):
+		
+		if ( class_exists('CTLT_Stream') && CTLT_Stream::is_node_active() ):
 			// The Query
 			$query = new WP_Query( array(
 				'post_type' => 'pulse-cpt',
