@@ -128,6 +128,7 @@ var Pulse_CPT_Form = {
 		jQuery( '.postbox .pulse-form-progress' ).show();
 		
 		jQuery.post( Pulse_CPT_Form_global.ajaxurl, form_data, function( response ) {
+			
 			jQuery( '.postbox .pulse-form-progress' ).hide();
 			
 			if ( response == -1 ) {
@@ -152,6 +153,8 @@ var Pulse_CPT_Form = {
 				if ( parent_pulse.length <= 0 ) {
 					parent_pulse = jQuery('.pulse-list');
 				}
+				jQuery(html).prependTo(parent_pulse);
+				
 			}
 		}, "json" );
 		
