@@ -22,7 +22,7 @@
 
 .postbox textarea {
 	border: none;
-    width: 97%;
+    width: 95%;
 	height: 30px;
 	resize: none;
 	background: #FFF;
@@ -80,8 +80,7 @@
 }
 
 .pulse-form-submit-wrap input.pulse-form-submit {
-	padding-right: 7px;
-	padding-left: 7px;
+	padding: 2px 7px;
 }
 
 .pulse-form-submit.disabled {

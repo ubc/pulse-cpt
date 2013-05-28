@@ -370,23 +370,7 @@ class Pulse_CPT {
 							<li><a href="#reply-url" class="reply-action">Reply</a></li>
 						<?php endif; ?>
 						<li><span class="reply-count"><?php echo $it['num_replies']; ?></span> Replies</li>
-						<?php
-							global $wp_query;
-							if ( is_front_page() ):
-								$id = 0;
-							elseif ( is_single() ):
-								$id = $wp_query->post->ID;
-							else:
-								$id = null;
-							endif;
-						?>
-						<?php if ( ! $template && isset( $it['parent'] ) && $id !== $it['parent'] ): ?>
-							<?php if ( $it['parent'] == 0 ): ?>
-								<li class="reply-to">on the <a href="<?php echo home_url(); ?>">Front Page</a></li>
-							<?php else: ?>
-								<li class="reply-to">in reply to <a href="<?php echo get_permalink( $it['parent'] ); ?>"><?php echo get_the_title( $it['parent'] ); ?></a></li>
-							<?php endif; ?>
-						<?php endif; ?>
+						<li class="reply-to"><?php echo $it['reply_to']; ?></li>
 						<span class="pulse-form-progress hide">
 							<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL; ?>/img/spinner.gif" />
 						</span>
@@ -542,6 +526,25 @@ class Pulse_CPT {
 			endif;
 		endif;
 		
+		// Reply To Line
+		if ( is_front_page() ):
+			$id = 0;
+		elseif ( is_single() ):
+			$id = $post->ID;
+		else:
+			$id = null;
+		endif;
+		
+		if ( isset( $parent ) && $id !== $parent ):
+			if ( $parent == 0 ):
+				$reply_to = 'on the <a href="'.home_url().'">Front Page</a>';
+			else:
+				$reply_to = 'in reply to <a href="'.get_permalink( $parent ).'">'.get_the_title( $parent ).'</a>';
+			endif;
+		else:
+			$reply_to = "";
+		endif;
+		
 		return array_merge( $rating_data, array(
 			'ID'        => get_the_ID(),
 			'date'      => Pulse_CPT::get_the_date(),
@@ -558,6 +561,7 @@ class Pulse_CPT {
 			'authors'        => $coauthors,
 			'num_replies'    => self::get_num_replies(),
 			'parent'         => $parent,
+			'reply_to'       => $reply_to,
 			'content_rating' => $content_rating,
 			'rating'         => array(
 				'slug'         => $widget['rating_metric'],
@@ -600,6 +604,7 @@ class Pulse_CPT {
 				'post_url'     => '{{=it.author.post_url}}',
 			),
 			'num_replies'    => '{{=it.num_replies}}',
+			'reply_to'       => '{{=it.reply_to}}',
 			'content_rating' => $content_rating,
 			'rating'         => array(
 				'slug'         => $widget['rating_metric'],
