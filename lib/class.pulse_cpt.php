@@ -366,7 +366,7 @@ class Pulse_CPT {
 				<div class="pulse-actions">
 					<ul>
 						<li><a href="#expand-url" class="expand-action">Expand</a></li>
-						<?php if ( is_user_logged_in() ): // Display reply and favorite only if user is logged in ?>
+						<?php if ( is_user_logged_in() ): // Display reply only if user is logged in ?>
 							<li><a href="#reply-url" class="reply-action">Reply</a></li>
 						<?php endif; ?>
 						<li><span class="reply-count"><?php echo $it['num_replies']; ?></span> Replies</li>
@@ -374,11 +374,13 @@ class Pulse_CPT {
 							global $wp_query;
 							if ( is_front_page() ):
 								$id = 0;
-							else:
+							elseif ( is_single() ):
 								$id = $wp_query->post->ID;
+							else:
+								$id = null;
 							endif;
 						?>
-						<?php if ( ! $template && isset( $it['parent'] ) && $id != $it['parent'] ): ?>
+						<?php if ( ! $template && isset( $it['parent'] ) && $id !== $it['parent'] ): ?>
 							<?php if ( $it['parent'] == 0 ): ?>
 								<li class="reply-to">on the <a href="<?php echo home_url(); ?>">Front Page</a></li>
 							<?php else: ?>
