@@ -22,11 +22,15 @@ class Pulse_CPT {
 		
 		// Add new columns
 		add_filter( 'manage_pulse-cpt_posts_columns',       array( __CLASS__, 'add_new_column' ) );
-		add_action( 'manage_pulse-cpt_posts_custom_column', array( __CLASS__,'manage_columns'), 10, 2 );
+		add_action( 'manage_pulse-cpt_posts_custom_column', array( __CLASS__, 'manage_columns' ), 10, 2 );
+		
+		// Add permalink filter
+		add_filter( 'post_type_link', array( __CLASS__, 'pulse_permalink' ), 1, 3 );
 	}
 	
 	public static function load() {
 		Pulse_CPT::register_pulse();
+		Pulse_CPT::pulse_rewrite();
 	  
 		if ( ! is_admin() ):
 			Pulse_CPT::register_script_and_style();
@@ -260,6 +264,31 @@ class Pulse_CPT {
     	//wp_enqueue_script( 'bootstrap-popover' );
     	//wp_enqueue_style( 'bootstrap-popover' );
     }
+	
+	function pulse_rewrite() {
+		global $wp_rewrite;
+		$queryarg = 'post_type=pulse-cpt&p=';
+		$wp_rewrite->add_rewrite_tag( '%pulse_id%', '([^/]+)', $queryarg );
+		$wp_rewrite->add_permastruct( 'pulse-cpt', '/pulse/%postname%-%pulse_id%', false );
+		
+		flush_rewrite_rules();
+	}
+	
+	public static function pulse_permalink( $post_link, $id = 0, $leavename ) {
+		global $wp_rewrite;
+		
+		$post = &get_post( $id );
+		if ( is_wp_error( $post ) ):
+			return $post;
+		endif;
+		
+		$newlink = $wp_rewrite->get_extra_permastruct( 'pulse-cpt' );
+		$newlink = str_replace( "%pulse_id%", $post->ID, $newlink );
+		$newlink = str_replace( "%postname%", $post->post_name, $newlink );
+		$newlink = home_url( user_trailingslashit( $newlink ) );
+		
+		return $newlink;
+	}
 	
 	/**
 	 * the_pulse function.
