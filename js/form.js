@@ -289,10 +289,10 @@ var Pulse_CPT_Form = {
 		var id = element.parents( '.widget_pulse_cpt' ).attr('id').substring(10);
 		
 		if ( Pulse_CPT_Form_local[id].enable_url_shortener ) {
-			var textarea = element.parent().siblings('textarea');
+			var textarea = element.closest('form').find('.pulse-form-input textarea');
 			var value = textarea.val();
 			
-			if (value != undefined) {
+			if ( value != undefined ) {
 				var words = value.split(" ");
 				var num_of_words = words.length;
 				
