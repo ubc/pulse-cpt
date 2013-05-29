@@ -233,7 +233,7 @@ class Pulse_CPT {
     }
 	
 	public static function get_content_type_for_node() {
-		if ( is_single() ):
+		if ( is_single() || is_page() ):
 			return "page/".get_the_ID();
 		elseif ( is_front_page() ):
 			return "front";

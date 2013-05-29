@@ -153,7 +153,11 @@ var Pulse_CPT_Form = {
 				if ( parent_pulse.length <= 0 ) {
 					parent_pulse = jQuery('.pulse-list');
 				}
-				jQuery(html).prependTo(parent_pulse);
+				
+				if(typeof CTLT_Stream == 'undefined'){
+					jQuery(html).prependTo(parent_pulse);
+				}
+				
 				
 			}
 		}, "json" );
