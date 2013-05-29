@@ -32,7 +32,6 @@
 .pulse-list-filter select {
     border: none;
     background: #EEE;
-    
 }
 
 .pulse-list-filter select:focus {
@@ -48,8 +47,9 @@
         background-image: url(../img/dropdown.png);
         background-repeat: no-repeat;
         background-position: right;
-        padding-right: 16px;
         background-color: #EEE;
+        padding-right: 16px;
+        padding-left: 3px;
     }
     
     .pulse-list-filter select:hover {
