@@ -146,7 +146,7 @@ var Pulse_CPT = {
     
     addPulse: function( new_pulse ) {
         jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
-        jQuery('.pulse-list').children('.pulse').last().slideUp('slow');
+        //jQuery('.pulse-list').children('.pulse').last().slideUp('slow');
     },
     
     expand: function() {
