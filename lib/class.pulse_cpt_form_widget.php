@@ -258,7 +258,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			endif;
 			
 			return;
-		elseif ( get_post_meta( $post->ID, 'pulse_cpt-enabled', TRUE ) == 'on' ):
+		elseif ( is_single() && get_post_meta( $post->ID, 'pulse_cpt-enabled', TRUE ) == 'on' ):
 			if ( current_user_can( 'administrator' ) ):
 				echo $args['before_widget']; 
 				echo $args['before_title'];
