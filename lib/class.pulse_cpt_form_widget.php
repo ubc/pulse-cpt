@@ -234,7 +234,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	 * @return void
 	 */
 	function widget( $args, $instance ) {
-		global $current_user;
+		global $post, $current_user;
 		
 		if ( self::$quantity > 0 ):
 			if ( current_user_can( 'administrator' ) ):
@@ -254,7 +254,29 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						</small>
 					</div>
 				<?php
-				echo $args['after_widget']; 
+				echo $args['after_widget'];
+			endif;
+			
+			return;
+		elseif ( get_post_meta( $post->ID, 'pulse_cpt-enabled', TRUE ) == 'on' ):
+			if ( current_user_can( 'administrator' ) ):
+				echo $args['before_widget']; 
+				echo $args['before_title'];
+				echo $instance['title'];
+				echo $args['after_title'];
+				?>
+					<div class="pulse-widget-warning">
+						<div class="error">
+							Pulse CPT has been disabled on this page.
+						</div>
+						<small>
+							This message is only displayed to administrators.
+							<br />
+							<a href=" <?php echo get_edit_post_link( $post->ID ); ?> ">Edit this page</a>, if you wish to enable Pulse CPT.
+						</small>
+					</div>
+				<?php
+				echo $args['after_widget'];
 			endif;
 			
 			return;
@@ -271,10 +293,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$split = explode( '/', $content_identifier, 2 );
 		$content_type = $split[0];
 		$content_value = $split[1];
-		if( class_exists('Evaluate') )
+		
+		if ( class_exists('Evaluate') ):
 			$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
-		else
+		else:
 			$metric_data = array();
+		endif;
+		
 		echo $args['before_widget']; 
 		if ( ! empty( $instance['title'] ) && $instance['display_title'] ):
 			echo $args['before_title'];

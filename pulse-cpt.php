@@ -22,6 +22,7 @@ require_once( 'lib/class.pulse_cpt.php' );
 require_once( 'lib/class.pulse_cpt_form.php' );
 require_once( 'lib/class.pulse_cpt_form_widget.php' );
 require_once( 'lib/class.pulse_cpt_settings.php' );
+require_once( 'lib/class.pulse_cpt_admin.php' );
 
 // Register the activation hooks for the plugin
 register_activation_hook( __FILE__, array( 'Pulse_CPT', 'install' ) );

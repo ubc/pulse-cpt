@@ -14,7 +14,6 @@ class Pulse_CPT {
 	 */
 	public static function init() {
 		add_action( 'init',                   array( __CLASS__, 'load' ) );
-		add_action( 'admin_menu',             array( __CLASS__, 'remove_submenus' ) );
 		add_action( 'wp_footer',              array( __CLASS__, 'print_form_script' ) );
 		add_action( 'wp_footer',              array( __CLASS__, 'print_pulse_script' ) );
 		add_action( 'template_redirect',      array( __CLASS__, 'template_redirect' ) );
@@ -35,11 +34,6 @@ class Pulse_CPT {
 		if ( ! is_admin() ):
 			Pulse_CPT::register_script_and_style();
 		endif;
-	}
-	
-	public static function remove_submenus() {
-		remove_submenu_page( 'edit.php?post_type=pulse-cpt', 'edit-tags.php?taxonomy=post_tag&amp;post_type=pulse-cpt' );
-		remove_submenu_page( 'edit.php?post_type=pulse-cpt', 'edit-tags.php?taxonomy=category&amp;post_type=pulse-cpt' );
 	}
 	
 	/**
@@ -74,17 +68,17 @@ class Pulse_CPT {
 	 */
 	public static function register_pulse() {
 		$labels = array(
-			'name'               => _x('Pulse', 'pule-ct'),
-			'singular_name'      => _x('Pulse', 'pulse-ct'),
-			'add_new'            => _x('Add New', 'pulse-ct'),
-			'add_new_item'       => __('Add New Pulse'),
-			'edit_item'          => __('Edit Pulse'),
-			'new_item'           => __('New Pulse'),
-			'all_items'          => __('All Pulses'),
-			'view_item'          => __('View Pulses'),
-			'search_items'       => __('Search Pulses'),
-			'not_found'          => __('No pulses found'),
-			'not_found_in_trash' => __('No pulses found in Trash'), 
+			'name'               => _x( 'Pulse', 'pulse-cpt' ),
+			'singular_name'      => _x( 'Pulse', 'pulse-cpt' ),
+			'add_new'            => _x( 'Add New', 'pulse-cpt' ),
+			'add_new_item'       => __( 'Add New Pulse' ),
+			'edit_item'          => __( 'Edit Pulse' ),
+			'new_item'           => __( 'New Pulse' ),
+			'all_items'          => __( 'All Pulses' ),
+			'view_item'          => __( 'View Pulses' ),
+			'search_items'       => __( 'Search Pulses' ),
+			'not_found'          => __( 'No pulses found' ),
+			'not_found_in_trash' => __( 'No pulses found in Trash' ), 
 			'parent_item_colon'  => '',
 			'menu_name'          => 'Pulse',
 		);
