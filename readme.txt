@@ -1,4 +1,4 @@
-=== Evaluate ===
+=== Pulse CPT ===
 Contributors: devindra, enej, ctlt-dev, ubcdev
 Tags: comments, rating, pulse, metric, nodejs, dynamic
 Requires at least: 3.5
@@ -9,8 +9,18 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Enables a widget that allows comments (called pulses) to be posted on any page of the site. Integrates with Stream, Evaluate, and Co Author+ to bring additional functionality to the comment stream.
 
+
 == Description ==
 
+Pulse will allow you to create a dynamic stream of comments on the various pages of your site, allowing users to create a live discussion around the content you post.
+The plugin sports a number of features to improve this stream:
+* Character Count Limit, you can limit the number of characters users can use in their pulses, twitter-style.
+* Tagging, posters can mark their pulses with arbitrary tags.
+* URL Shortening, integrates with Bit.ly's url shortening service to automatically shorten links in pulses. A useful feature when you are limiting the character count.
+* Pulse Rating, add a metric to each pulse to allow users to vote on which pulses are the best. (Requires the Evaluate plugin)
+* Content Rating, display the pulse author's rating of the content that the pulse responds to. This lets you create a quick and simple review system. (Requires the Evaluate plugin)
+* Co-Authoring, posters can name other users as being a co-author of their pulse. (Requires the Co-Author Plus plugin)
+* Live Updating, a core feature of Pulse CPT, this feature powers the dynamism of the pulse list. (Requires the Stream plugin)
 
 
 == Installation ==
@@ -22,63 +32,19 @@ Enables a widget that allows comments (called pulses) to be posted on any page o
 
 == Usage ==
 
-Metrics are what Evaluate uses to keep track of votes for content on your site (like posts, pages, or any public custom post type). These can be questions like "Was this article helpful?", or be untitled and just have an administrative name.
+To use Pulse CPT simply go to  Appearance -> Widgets
+The drag the "Pulse Form" widget from the Available Widgets section to one of the content areas on the right.
+Make sure you customize your widget, and voila your pulse list will now appear in that content area.
+The widget configuration will point out necessary plugins for each feature.
 
-Metrics are usually associated with more than one piece of content. They are displayed in order after the main post content.
-
-= Creating Metrics =
-
-To create a metric nagivate to Metrics -> Add New
-
-Metrics will have a type and style associated with them. These are:
-* One way
-    * Thumb
-    * Arrow (Chevron)
-    * Heart
-    * Star
-* Two way
-    * Thumbs
-    * Arrows (Chevron)
-* Range (Star Rating)
-* Poll
-
-Note: extending/customizing the styling options is quite easy (by just changing `img/sprite.gif` or through `css/evaluate.css`).
-
-= Displaying/Hiding Metrics =
-
-By default, Evaluate will display metrics for all content from the type you specified while creating the metric. So, if you create a metric for 'pages', then that metric will be displayed on all content that is a 'page'.
-
-If you want to exclude a particular metric from a specific post or page (or custom post type) you can use the Evaluate meta box when editing a post to choose metrics that you want to exclude from that post.
-
-= How are metrics scored? =
-
-Evaluate scores the content that belong to a metric by user votes.
-
-For one-way metrics (such as a Thumbs Up! for posts), this is just how many votes it has received.
-
-For two-way (up/down vote) metrics, the lower bound of the [Wilson Score interval](http://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval) is calculated. This tries to better approach the 'real' ratio, of up versus down votes, than other methods, as explained in [How Not to Sort by Average Rating](http://www.evanmiller.org/how-not-to-sort-by-average-rating.html).
-
-Star rating scores are calculated by a simple Bayesian estimate (tending towards 2.5/5). 
-
-Polls are not given a score, but their answers are of course expressed in percentages.
-
-= Sorting Content by Score =
-
-You can add the arguments `?evaluate=sort&sort=<sort_type>&metric_id=<metric_id>` to the url of any page that displays content to sort it by one of it's metric scores. 
-
-<metric_id> should be replaced by the id of the metric you want to sort by. You can see the metric ID on each metric's details page.
-<sort_type> can be one of 
- * score, the calculated score for each post. Undefined behaviour for poll metric types.
- * total_votes, the total number of votes that have been made on each post.
- * user_vote, only shows posts that the user has voted on.
-Adding `order=<asc|desc>` will determine the order.
+You can read some more thorough documentation of this plugin (although intended for UBC staff), at http://wiki.ubc.ca/Documentation:Wordpress/Plugins/Pulse_CPT
 
 
 == Screenshots ==
 
-1. Metrics displayed underneath the post
-2. Customizable styles
-3. Metric list
+1. An example of the plugin in action.
+2. Pulse CPT's settings page.
+3. The widget configuration box for the Pulse Form
 
 
 == Changelog ==
