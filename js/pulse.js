@@ -132,7 +132,7 @@ var Pulse_CPT = {
                     if ( content_rating_metric != undefined ) {
                         var content_rating = '<span class="no-rating">NO RATING</span>';
                         
-                        if ( content_rating_metric.user_vote != undefined ) {
+                        if ( content_rating_metric.user_vote != undefined && content_rating_metric.user_vote != false ) {
                             content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
                         }
                         
@@ -146,7 +146,10 @@ var Pulse_CPT = {
     
     addPulse: function( new_pulse ) {
         jQuery(new_pulse).prependTo('.pulse-list').hide().slideDown('slow');
-        //jQuery('.pulse-list').children('.pulse').last().slideUp('slow');
+        
+        if ( jQuery('.pulse-list > .pulse').length > 10 ) {
+            jQuery('.pulse-list').children('.pulse').last().slideUp('slow');
+        }
     },
     
     expand: function() {
