@@ -406,7 +406,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<?php endif; ?>
 						<span class="pulse-form-progress hide">
 							<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
-						</span>					
+						</span>	
 						<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit btn button" />
 					</div>
 					<input type="hidden" value="<?php echo $instance['enable_comments']; ?>" name="enable_comments" />
@@ -439,6 +439,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['monthnum'] : "0" ); ?>" name="filters[date][monthnum]" class="date-monthnum"></input>
 		<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['day'] : "0" ); ?>" name="filters[date][day]" class="date-day"></input>
 		<div class="pulse-list-actions">
+			<span class="pulse-form-progress hide">
+				<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
+			</span>	
 			<span class="pulse-list-filter show">
 				<label>show:</label>
 				<select>
@@ -506,7 +509,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$data['page'] = ( empty( $data['page'] ) ? 1 : $data['page'] );
 		
 		if ( $data ):
-			$widgets = get_option('widget_pulse_cpt');
+			$widgets = get_option( 'widget_pulse_cpt' );
 			$query_args = self::query_arguments();
 			
 			if ( isset( $data['parent_id'] ) ):

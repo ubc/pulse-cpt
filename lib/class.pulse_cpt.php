@@ -205,11 +205,10 @@ class Pulse_CPT {
 		$global_args = array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		);
-		
-		if ( is_single() ):
-			$global_args['id'] = get_the_ID();
-		elseif ( is_front_page() ):
+		if ( is_home() ):
 			$global_args['id'] = 0;
+		elseif ( ! is_archive() ):
+			$global_args['id'] = get_the_ID();
 		endif;
 		
 		if ( ! self::$add_form_script ): // We still need the ajax url even if user isnt logged in

@@ -23,6 +23,10 @@
     text-align: right;
 }
 
+.pulse-list-actions .pulse-form-progress img {
+    margin-top: -2px;
+}
+
 .pulse-list-filter {
     margin-right: 7px;
     margin-bottom: 3px;

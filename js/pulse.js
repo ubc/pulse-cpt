@@ -246,6 +246,7 @@ var Pulse_CPT = {
         var list = widget.find('.pulse-list');
         var user;
         
+        jQuery('.pulse-list-actions .pulse-form-progress').show();
         list.fadeTo( 200, 0.3 );
         list.css( 'pointer-events', 'none' );
         
@@ -295,6 +296,8 @@ var Pulse_CPT = {
                 Pulse_CPT.parsePulses( list, data );
                 list.fadeTo( 200, 1 );
                 list.css( 'pointer-events', 'auto' );
+                
+                jQuery('.pulse-list-actions .pulse-form-progress').hide();
             }
         } );
     },
