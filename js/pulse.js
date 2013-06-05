@@ -18,6 +18,10 @@ var Pulse_CPT = {
             event.stopPropagation(); //stop so we dont collapse parent pulse
         } );
         
+        jQuery('.pulse-pagination').on( 'click', '.pulse-pagination-btn:not(.disabled)', function( event ) {
+            Pulse_CPT.loadMore(this);
+        } );
+        
         jQuery('.pulse-list-filter.show select').on( 'change', function() {
             Pulse_CPT.filter( jQuery(this).closest('.widget') );
         } );
@@ -143,6 +147,7 @@ var Pulse_CPT = {
         
         if ( jQuery('.pulse-list > .pulse').length > 10 ) {
             jQuery('.pulse-list').children('.pulse').last().slideUp('slow');
+            jQuery('.pulse-pagination-btn').removeClass('.disabled');
         }
     },
     
@@ -195,50 +200,13 @@ var Pulse_CPT = {
         Pulse_CPT_Form.reply.apply( this, [ parent_pulse ] );
     },
     
-    goToPage: function( id, element ) {
-        if ( element == null ) {
-            element = jQuery(this);
-        } else {
-            element = jQuery(element);
-        }
-        
-        var list = element.closest('ul');
-        switch ( id ) {
-            case 'prev':
-                page_id = parseInt(jQuery('input.pulse-list-page').val()) - 1;
-                break;
-            case 'next':
-                page_id = parseInt(jQuery('input.pulse-list-page').val()) + 1;
-                break;
-            case 'first':
-                page_id = 1;
-                break;
-            case 'last':
-                list.children('.pulse-page-link').eq(-1).children().click();
-                break;
-            case 'select':
-                page_id = prompt("What page do you want to go to?");
-                max = parseInt( list.children('.pulse-page-link').eq(-1).children().text() );
-                if ( page_id > max ) {
-                    page_id = max;
-                }
-                break;
-            default:
-                page_id = id;
-                break;
-        }
-        
-        var widget = element.closest('.widget');
-        Pulse_CPT.filter( widget, { 'page': page_id } );
-    },
-    
     loadMore: function( element ) {
         element = jQuery(element);
         var widget = element.closest('.widget');
         
         Pulse_CPT.filter( widget, {
             'offset': widget.find('.pulse-list .pulse').length,
-        } );
+        }, false );
     },
     
     filter: function( widget, overrides, clear ) {
@@ -249,11 +217,13 @@ var Pulse_CPT = {
         var list = widget.find('.pulse-list');
         var user;
         
-        clear = ( clear == undefined ? false : clear );
+        clear = ( clear == undefined ? true : clear );
         
         jQuery('.pulse-list-actions .pulse-form-progress').show();
-        list.fadeTo( 200, 0.3 );
-        list.css( 'pointer-events', 'none' );
+        if ( clear == true ) {
+            list.fadeTo( 200, 0.3 );
+            list.css( 'pointer-events', 'none' );
+        }
         
         var prefix = "user_";
         if ( show.slice(0, prefix.length) == prefix ) {
@@ -280,7 +250,6 @@ var Pulse_CPT = {
                     'show'      : show,
                     'user'      : user,
                     'order'     : order,
-                    'page'      : page,
                     'pagination': true,
                     'filters': {
                         'author_id': widget.find('.author-id').val(),
@@ -301,19 +270,32 @@ var Pulse_CPT = {
                     list.html("");
                 }
                 
-                Pulse_CPT.parsePulses( list, data );
-                list.fadeTo( 200, 1 );
-                list.css( 'pointer-events', 'auto' );
+                Pulse_CPT.parsePulses( list, data, ! clear );
+                
+                if ( clear == true ) {
+                    list.fadeTo( 200, 1 );
+                    list.css( 'pointer-events', 'auto' );
+                }
                 
                 jQuery('.pulse-list-actions .pulse-form-progress').hide();
+                
+                if ( data['pagination'] ) {
+                    jQuery('.pulse-pagination .pulse-pagination-btn').removeClass('disabled');
+                } else {
+                    jQuery('.pulse-pagination .pulse-pagination-btn').addClass('disabled');
+                }
             }
         } );
     },
     
-    parsePulses: function( holder, data ) {
+    parsePulses: function( holder, data, slide ) {
         jQuery.each( data['pulses'], function( index, pulse_data ) {
             var new_pulse = Pulse_CPT_Form.single_pulse_template( pulse_data );
-            jQuery(new_pulse).appendTo(holder);
+            new_pulse = jQuery(new_pulse).appendTo(holder);
+            
+            if ( slide == true ) {
+                new_pulse.hide().slideDown();
+            }
             
             if ( pulse_data.content_rating != undefined ) {
                 var content_rating = Evaluate.template[pulse_data.content_rating.type](pulse_data.content_rating);

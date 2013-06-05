@@ -504,7 +504,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	/* Function to handle regular and nopriv ajax requests */
 	public static function ajax_replies() {
-		$return = array( 'pulses' => array() );
+		$return = array(
+			'pulses' => array(),
+			'pagination' => false,
+		);
+		
 		$data = ( isset( $_POST['data'] ) ? $_POST['data'] : false );
 		$data['page'] = ( empty( $data['page'] ) ? 1 : $data['page'] );
 		
@@ -567,7 +571,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$query_args['posts_per_page'] = -1; //Show all posts, as we are using our own method for paging.
 			
 			$query = new WP_Query( $query_args );
-			$pulses = array();
 			$pulse_count = 0;
 			$index = 0;
 			$offset = ( empty( $data['offset'] ) ? 0 : $data['offset'] );
@@ -604,31 +607,18 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					endswitch;
 					
 					if ( $valid ):
-						$pulses[] = $pulse_data;
+						$return['pulses'][] = $pulse_data;
 						$pulse_count += 1;
 					endif;
 				endif;
 				
 				$index += 1;
-			endwhile;
-			
-			$page_count = ceil( $pulse_count / $posts_per_page );
-			$first_pulse = $posts_per_page * ( $data['page'] - 1 );
-			for ( $i = $first_pulse; $i < min( $pulse_count, $first_pulse + $posts_per_page ); $i++ ):
-				$return['pulses'][] = $pulses[$i];
-			endfor;
-			
-			/*
-			if ( $pulse_count > $posts_per_page ):
-				if ( $data['pagination'] == true ):
-					ob_start();
-					self::pagination( $page_count, $data['page'] );
-					$return['append'] = ob_get_clean();
-				else:
-					$return['append'] = '<a href="'.get_permalink( $query_args['post_parent'] ).'" class="pulse-more-replies">see all replies...</a>';
+				
+				if ( $pulse_count >= $posts_per_page ):
+					$return['pagination'] = true;
+					break;
 				endif;
-			endif;
-			*/
+			endwhile;
 		endif;
 		
 		echo json_encode( $return );
@@ -638,98 +628,12 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	public static function pagination( $page_count, $selected = 1, $length = 12 ) {
 		?>
 		<div class="pulse-pagination">
-			<span class="pulse-pagination-btn" onclick="Pulse_CPT.loadMore(this);">
+			<span class="pulse-pagination-btn">
 				<div id="pulse-pagination-more">Load More</span>
 			</span>
 		</div>
 		<?php
 	}
-	
-	/**
-	 * OLD IMPLEMENTATION
-	 * $selected is the 1-based index of the currently selected page.
-	 *
-	public static function pagination( $page_count, $selected = 1, $length = 12 ) {
-		$length -= 4; // Reserve 4 buttons for the next/prev/first/last buttons.
-		
-		if ( $selected < 1 ):
-			$selected = 1;
-		elseif ( $selected > $page_count ):
-			$selected = $page_count;
-		endif;
-		?>
-		<div class="pulse-pagination">
-			<ul>
-				<?php self::pagination_special( "prev", "<", $selected == 1 ); ?>
-				<?php if ( $page_count > $length ): ?>
-					<?php
-					self::pagination_single( 1, $selected == 1 );
-					
-					$start = (int) max( 2, $selected - $length/2 );
-					$end = $start + $length;
-					if ( $end > $page_count - 1 ):
-						$end = $page_count - 1;
-						$start = (int) max( 2, $end - $length );
-					endif;
-					
-					if ( $start > 2 ):
-						$early_selector = true;
-						$start += 1;
-					endif;
-					
-					if ( $end < $page_count - 1 ):
-						$late_selector = true;
-						$end -= 1;
-					endif;
-					
-					if ( $early_selector ):
-						self::pagination_special( "select", "..." );
-					endif;
-					
-					for ( $i = $start; $i <= $end; $i++ ):
-						self::pagination_single( $i, $selected == $i );
-					endfor;
-					
-					if ( $late_selector ):
-						self::pagination_special( "select", "..." );
-					endif;
-					
-					self::pagination_single( $page_count, $selected == $page_count );
-					?>
-				<?php else: ?>
-					<?php
-					for ( $i = 1; $i <= $page_count; $i++ ):
-						self::pagination_single( $i, $selected == $i );
-					endfor;
-					?>
-				<?php endif; ?>
-				<?php self::pagination_special( "next", ">", $selected == $page_count ); ?>
-			</ul>
-			<input type="hidden" class="pulse-list-page" value="<?php echo $selected; ?>" />
-		</div>
-		<?php
-	}
-	
-	public static function pagination_single( $id, $selected = false ) {
-		?>
-		<li class="pulse-pagination-btn pulse-page-link pulse-page-<?php echo $id; ?><?php echo ( $selected ? ' active' : '' ); ?>">
-			<span onclick="Pulse_CPT.goToPage(<?php echo $id; ?>, this);">
-				<?php echo $id; ?>
-			</span>
-		</li>
-		<?php
-	}
-	
-	public static function pagination_special( $slug, $text, $disabled = false ) {
-		?>
-		<li class="pulse-pagination-btn pulse-page-<?php echo $slug; ?><?php echo ( $disabled ? " disabled" : "" ); ?>">
-			<span <?php echo ( $disabled ? '' : 'onclick="Pulse_CPT.goToPage(\''.$slug.'\', this);' ); ?>">
-				<?php echo $text; ?>
-			</span>
-		</li>
-		<?php
-	}
-	*/
   	
   	/**
   	 * footer function.

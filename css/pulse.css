@@ -99,18 +99,11 @@
     text-align: center;
 }
 
-.pulse-pagination > ul {
-    display: inline-block;
-    margin: 0;
-}
-
 .pulse-pagination-btn {
     display: inline;
 }
 
 .pulse-pagination-btn > * {
-    float: left;
-    width: 24px;
     padding: 4px 0;
     line-height: 14px;
     text-decoration: none;
@@ -133,15 +126,6 @@
 .pulse-pagination-btn:not(.disabled) > *:hover {
     color: #348AB2;
     border-color: #348AB2;
-}
-
-.pulse-pagination input {
-    display: none;
-}
-
-#pulse-pagination-more {
-    float: none;
-    width: auto;
 }
 
 

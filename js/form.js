@@ -138,7 +138,6 @@ var Pulse_CPT_Form = {
 			if ( response.hasOwnProperty('error') ) {
 				Pulse_CPT_Form.display_msg( response.error );
 			} else {
-				
 				// counter goes back to what ever it used to be
 				var num_char_wrap = form.find( '.pulse-form-counter' );
 				var num_char = num_char_wrap.data( 'num_char' );
@@ -154,11 +153,9 @@ var Pulse_CPT_Form = {
 					parent_pulse = jQuery('.pulse-list');
 				}
 				
-				if(typeof CTLT_Stream == 'undefined'){
+				if ( typeof CTLT_Stream == 'undefined' ) {
 					jQuery(html).prependTo(parent_pulse);
 				}
-				
-				
 			}
 		}, "json" );
 		
