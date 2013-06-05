@@ -130,14 +130,8 @@ var Pulse_CPT = {
                     
                     var content_rating_metric = new_pulse_data.content_rating;
                     if ( content_rating_metric != undefined ) {
-                        var content_rating = '<span class="no-rating">NO RATING</span>';
-                        
-                        if ( content_rating_metric.user_vote != undefined && content_rating_metric.user_vote != false ) {
-                            content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
-                        }
-                        
+                        var content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
                         jQuery('.pulse-'+new_pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
-                        jQuery('.pulse-'+new_pulse_data.ID+' .content-rating .evaluate-shell').removeClass('can-vote');
                     }
                 }
             } );
@@ -238,13 +232,24 @@ var Pulse_CPT = {
         Pulse_CPT.filter( widget, { 'page': page_id } );
     },
     
-    filter: function( widget, overrides ) {
+    loadMore: function( element ) {
+        element = jQuery(element);
+        var widget = element.closest('.widget');
+        
+        Pulse_CPT.filter( widget, {
+            'offset': widget.find('.pulse-list .pulse').length,
+        } );
+    },
+    
+    filter: function( widget, overrides, clear ) {
         var widget_id = widget.find('.widget-id').val();
         var show = jQuery('.pulse-list-filter.show select').val();
         var sort = jQuery('.pulse-list-filter.sort select').val();
         var page = jQuery('input.pulse-list-page').val();
         var list = widget.find('.pulse-list');
         var user;
+        
+        clear = ( clear == undefined ? false : clear );
         
         jQuery('.pulse-list-actions .pulse-form-progress').show();
         list.fadeTo( 200, 0.3 );
@@ -292,7 +297,10 @@ var Pulse_CPT = {
             type: 'post',
             dataType: 'json',
             success: function( data ) {
-                list.html("");
+                if ( clear == true ) {
+                    list.html("");
+                }
+                
                 Pulse_CPT.parsePulses( list, data );
                 list.fadeTo( 200, 1 );
                 list.css( 'pointer-events', 'auto' );
@@ -308,14 +316,8 @@ var Pulse_CPT = {
             jQuery(new_pulse).appendTo(holder);
             
             if ( pulse_data.content_rating != undefined ) {
-                var content_rating = '<span class="no-rating">NO RATING</span>';
-                
-                if ( pulse_data.content_rating.user_vote != undefined ) {
-                    content_rating = Evaluate.template[pulse_data.content_rating.type](pulse_data.content_rating);
-                }
-                
+                var content_rating = Evaluate.template[pulse_data.content_rating.type](pulse_data.content_rating);
                 jQuery('.pulse-'+pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
-                jQuery('.pulse-'+pulse_data.ID+' .content-rating .evaluate-shell').removeClass('can-vote');
             }
         } );
         

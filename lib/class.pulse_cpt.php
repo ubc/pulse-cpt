@@ -341,12 +341,7 @@ class Pulse_CPT {
 									if ( $template ):
 										echo "<!-- To be replaced via javascript. -->";
 									else:
-										$data = $it['content_rating'];
-										if ( empty( $data->user_vote ) ):
-											echo '<span class="no-rating">NO RATING</span>';
-										else:
-											echo Evaluate::display_metric( $data, $template );
-										endif;
+										echo Evaluate::display_metric( $it['content_rating'], $template );
 									endif;
 								?>
 							</div>
@@ -502,7 +497,7 @@ class Pulse_CPT {
 			$params = unserialize( $content_rating->params );
 			
 			if ( array_key_exists( 'content_types', $params ) && ! in_array( $content_rating->id, $excluded ) && in_array( $parent_data->post_type, $params['content_types'] ) ):
-				$content_rating->preview = true;
+				$content_rating->show_user_vote = true;
 				
 				$post_id = $post->ID;
 				$author = get_the_author_meta( 'ID' );

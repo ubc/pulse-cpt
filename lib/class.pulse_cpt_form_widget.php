@@ -186,7 +186,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<?php
 						if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): // Evaluate plugin is enabled
 							global $wpdb;
-							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS.' WHERE type = "range"' );
+							$metrics = $wpdb->get_results( 'SELECT * FROM '.EVAL_DB_METRICS );
 							
 							foreach ( $metrics as $metric ):
 								$params = unserialize( $metric->params );
@@ -493,10 +493,10 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				// Reset Post Data
 				wp_reset_postdata();
 			?>
-			<?php if ( $pulse_query->max_num_pages > 1 ): ?>
-				<?php self::pagination( $pulse_query->max_num_pages, 1 ); ?>
-			<?php endif; ?>
 		</div>
+		<?php if ( $pulse_query->max_num_pages > 1 ): ?>
+			<?php self::pagination( $pulse_query->max_num_pages, 1 ); ?>
+		<?php endif; ?>
 		<?php
 		echo $args['after_widget'];
 		self::footer( $instance );
@@ -569,41 +569,47 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$query = new WP_Query( $query_args );
 			$pulses = array();
 			$pulse_count = 0;
+			$index = 0;
+			$offset = ( empty( $data['offset'] ) ? 0 : $data['offset'] );
 			while ( $query->have_posts() ):
 				$post = $query->the_post();
 				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']] );
 				
-				switch ( $data['show'] ):
-				case 'user':
-					$valid = $data['user'] == get_the_author_meta( 'user_login' );
+				if ( $index >= $offset ):
+					switch ( $data['show'] ):
+					case 'user':
+						$valid = $data['user'] == get_the_author_meta( 'user_login' );
+						
+						if ( ! empty( $pulse_data['authors'] ) ):
+							foreach ( $pulse_data['authors'] as $author ):
+								$valid |= $data['user'] == $author['name'];
+							endforeach;
+						endif;
+						break;
+					case 'vote':
+						$valid = $pulse_data['user_vote'];
+						break;
+					case 'admin':
+						$valid = user_can( $pulse_data['author']['ID'], 'administer' );
+						
+						if ( ! empty( $pulse_data['authors'] ) ):
+							foreach ( $pulse_data['authors'] as $author ):
+								$valid |= user_can( $author['name'], 'administer' );
+							endforeach;
+						endif;
+						break;
+					default:
+						$valid = true;
+						break;
+					endswitch;
 					
-					if ( ! empty( $pulse_data['authors'] ) ):
-						foreach ( $pulse_data['authors'] as $author ):
-							$valid |= $data['user'] == $author['name'];
-						endforeach;
+					if ( $valid ):
+						$pulses[] = $pulse_data;
+						$pulse_count += 1;
 					endif;
-					break;
-				case 'vote':
-					$valid = $pulse_data['user_vote'];
-					break;
-				case 'admin':
-					$valid = user_can( $pulse_data['author']['ID'], 'administer' );
-					
-					if ( ! empty( $pulse_data['authors'] ) ):
-						foreach ( $pulse_data['authors'] as $author ):
-							$valid |= user_can( $author['name'], 'administer' );
-						endforeach;
-					endif;
-					break;
-				default:
-					$valid = true;
-					break;
-				endswitch;
-				
-				if ( $valid ):
-					$pulses[] = $pulse_data;
-					$pulse_count += 1;
 				endif;
+				
+				$index += 1;
 			endwhile;
 			
 			$page_count = ceil( $pulse_count / $posts_per_page );
@@ -612,6 +618,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				$return['pulses'][] = $pulses[$i];
 			endfor;
 			
+			/*
 			if ( $pulse_count > $posts_per_page ):
 				if ( $data['pagination'] == true ):
 					ob_start();
@@ -621,15 +628,27 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					$return['append'] = '<a href="'.get_permalink( $query_args['post_parent'] ).'" class="pulse-more-replies">see all replies...</a>';
 				endif;
 			endif;
+			*/
 		endif;
 		
 		echo json_encode( $return );
 		die();
 	}
+
+	public static function pagination( $page_count, $selected = 1, $length = 12 ) {
+		?>
+		<div class="pulse-pagination">
+			<span class="pulse-pagination-btn" onclick="Pulse_CPT.loadMore(this);">
+				<div id="pulse-pagination-more">Load More</span>
+			</span>
+		</div>
+		<?php
+	}
 	
 	/**
+	 * OLD IMPLEMENTATION
 	 * $selected is the 1-based index of the currently selected page.
-	 */
+	 *
 	public static function pagination( $page_count, $selected = 1, $length = 12 ) {
 		$length -= 4; // Reserve 4 buttons for the next/prev/first/last buttons.
 		
@@ -693,7 +712,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	public static function pagination_single( $id, $selected = false ) {
 		?>
-		<li class="pulse-page-link pulse-page-<?php echo $id; ?><?php echo ( $selected ? ' active' : '' ); ?>">
+		<li class="pulse-pagination-btn pulse-page-link pulse-page-<?php echo $id; ?><?php echo ( $selected ? ' active' : '' ); ?>">
 			<span onclick="Pulse_CPT.goToPage(<?php echo $id; ?>, this);">
 				<?php echo $id; ?>
 			</span>
@@ -703,13 +722,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	
 	public static function pagination_special( $slug, $text, $disabled = false ) {
 		?>
-		<li class="pulse-page-<?php echo $slug; ?><?php echo ( $disabled ? " disabled" : "" ); ?>">
+		<li class="pulse-pagination-btn pulse-page-<?php echo $slug; ?><?php echo ( $disabled ? " disabled" : "" ); ?>">
 			<span <?php echo ( $disabled ? '' : 'onclick="Pulse_CPT.goToPage(\''.$slug.'\', this);' ); ?>">
 				<?php echo $text; ?>
 			</span>
 		</li>
 		<?php
 	}
+	*/
   	
   	/**
   	 * footer function.
