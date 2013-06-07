@@ -36,6 +36,10 @@
 .pulse-list-filter select {
     border: none;
     background: #EEE;
+    height: 19px;
+    font-size: 12px;
+    margin: 0;
+    line-height: 1;
 }
 
 .pulse-list-filter select:focus {
@@ -52,6 +56,7 @@
         background-repeat: no-repeat;
         background-position: right;
         background-color: #EEE;
+        padding: 0;
         padding-right: 16px;
         padding-left: 3px;
     }
@@ -71,6 +76,7 @@
 
 .pulse-list-filter label {
     color: lightgray;
+    display: inline-block;
 }
 
 
@@ -190,6 +196,7 @@
 
 .pulse-meta {
 	font-size: 80%;
+    line-height: 16px;
 }
 
 .pulse-timestamp {
