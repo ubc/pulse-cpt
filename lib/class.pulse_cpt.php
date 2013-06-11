@@ -132,6 +132,7 @@ class Pulse_CPT {
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css?t='.$cachebuster);
 		
     	//wp_register_style( 'bootstrap-popover', PULSE_CPT_DIR_URL.'/css/bootstrap-popover.min.css');
+		wp_register_style( 'speech-bubble-icons', PULSE_CPT_DIR_URL.'/css/bubble.css');
     }
     
     /**
@@ -192,6 +193,7 @@ class Pulse_CPT {
     public static function print_form_style() {
     	wp_enqueue_style( 'pulse-cpt-form' );
     	wp_enqueue_style( 'pulse-cpt-list' );
+    	wp_enqueue_style( 'speech-bubble-icons' );
     }
     
     /**
@@ -302,7 +304,7 @@ class Pulse_CPT {
 		
 		?>
 		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>">
-			<div class="pulse-wrap">
+			<div class="pulse-wrap pulse-margin">
 				<?php echo $it['author']['avatar_30']; ?>
 				<div class="pulse-meta">
 					<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
@@ -353,12 +355,25 @@ class Pulse_CPT {
 				</div>
 				<div class="pulse-actions">
 					<ul>
-						<li><a href="#expand-url" class="expand-action">Expand</a></li>
+						<li class="visible-expanded">
+							<a href="#expand-url" class="expand-action">Expand</a>
+						</li>
 						<?php if ( is_user_logged_in() ): // Display reply only if user is logged in ?>
-							<li><a href="#reply-url" class="reply-action">Reply</a></li>
+							<li class="visible-expanded">
+								<a href="#reply-url" class="reply-action">Reply</a>
+							</li>
 						<?php endif; ?>
-						<li><span class="reply-count"><?php echo $it['num_replies']; ?></span> Replies</li>
-						<li class="reply-to"><?php echo $it['reply_to']; ?></li>
+						<li>
+							<span class="pulse-margin visible-collapsed"></span>
+							<span class="pulse-reply-counter spch-bub-inside">
+								<span class="point"></span>  
+								<em><span class="reply-count"><?php echo $it['num_replies']; ?></span></em>
+							</span>
+							<span> Replies</span>
+						</li>
+						<li class="visible-expanded reply-to">
+							<?php echo $it['reply_to']; ?>
+						</li>
 						<span class="pulse-form-progress hide">
 							<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL; ?>/img/spinner.gif" />
 						</span>

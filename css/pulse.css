@@ -157,7 +157,7 @@
     display: none;
 }
 
-.pulse-wrap {
+.pulse-margin {
 	margin-left: 36px;
 }
 
@@ -320,15 +320,11 @@
 }
 
 .pulse-list .pulse-actions {
+	display: block;
     margin-top: -24px;
     position: relative;
     top: 5px;
     left: -36px;
-}
-
-.pulse-list .pulse.expand > .pulse-wrap > .pulse-actions,
-.pulse-list .pulse:hover > .pulse-wrap > .pulse-actions {
-	display: block;
 }
 
 .pulse-widget-warning {
@@ -337,6 +333,18 @@
 
 .error {
     color: darkred;
+}
+
+/* Visibility */
+.pulse .visible-expanded,
+.pulse.expand .visible-collapsed,
+.pulse:hover .visible-collapsed {
+    display: none;
+}
+
+.pulse.expand .visible-expanded,
+.pulse:hover .visible-expanded {
+    display: inline-block;
 }
 
 /* Evaluate Popover */

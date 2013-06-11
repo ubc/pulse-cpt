@@ -82,20 +82,23 @@ var Pulse_CPT = {
             CTLT_Stream.on( 'server-push', function ( data ) { // Catch server push
                 if ( data.type == 'pulse' ) { // We are interested
                     var new_pulse_data = jQuery.parseJSON(data.data); // Extract pulse data from the event
-                    var all_visible_parents = jQuery('.pulse.expand');
                     var new_pulse = Pulse_CPT_Form.single_pulse_template(new_pulse_data);
                     var parent_found = false;
                     
-                    jQuery.each( all_visible_parents, function( i, val ) { // Loop through and try to match the ids
+                    jQuery.each( jQuery('.pulse'), function( i, val ) { // Loop through and try to match the ids
                         parent_element = jQuery(val)
                         if ( parent_element.data('pulse-id') == new_pulse_data.parent ) { // If the ids match,
-                            // Put the new pulse in it's reply section.
-                            jQuery(new_pulse).prependTo( parent_element.find('.pulse-expand-content .pulse-replies') ).hide().slideDown('slow');
-                            
                             var reply_count = parent_element.find(' > .pulse-wrap > .pulse-actions .reply-count');
                             reply_count.text( parseInt( reply_count.text() ) + 1 );
                             
-                            parent_found = true;
+                            if ( parent_element.hasClass('expand') ) {
+                                // Put the new pulse in it's reply section.
+                                jQuery(new_pulse).prependTo( parent_element.find('.pulse-expand-content .pulse-replies') ).hide().slideDown('slow');
+                                parent_found = true;
+                            } else {
+                                parent_element.find('.pulse-reply-counter').addClass('new');
+                            }
+                            
                             return false; // break out of the loop.
                         } else {
                             return true;
@@ -186,6 +189,7 @@ var Pulse_CPT = {
                 list.html("");
                 Pulse_CPT.parsePulses( list, data );
                 element.find( '.pulse-form-progress' ).first().hide();
+                element.find('.pulse-reply-counter').first().removeClass( 'new' );
             }
         } );
     },
