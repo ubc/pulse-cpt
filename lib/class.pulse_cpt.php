@@ -218,7 +218,7 @@ class Pulse_CPT {
 		else: //localize full data for logged in user
 			$global_args['content_type'] = Pulse_CPT::get_content_type_for_node();
 			$global_args['tags'] = Pulse_CPT_Form::get_tags();
-			$global_args['authors'] = Pulse_CPT_Form::get_authors();
+			$global_args['authors'] = Pulse_CPT_Form::get_coauthors();
 			
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_global', $global_args );
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local',  Pulse_CPT_Form_Widget::$widgets );
@@ -404,19 +404,20 @@ class Pulse_CPT {
 					
 					<?php if ( $template ): ?>
 						{{ if ( it.authors ) { }}
-							<span class="posted-with">with </span>
 							<ul class="pulse-co-authors">
+								<li class="posted-with">with </li>
 								{{~it.authors :value:index}}
-								<li>
-									<a href="{{=value.url}}">{{=value.name}}</a>
-								</li>
+									<li>
+										{{=value.avatar}}
+										<a href="{{=value.url}}">{{=value.name}}</a>
+									</li>
 								{{~}}
 							</ul>
 						{{ } }}
 					<?php else: ?>
 						<?php if ( ! empty( $it['authors'] ) ): ?>
-							<span class="posted-with">with </span>
 							<ul class="pulse-co-authors">
+								<li class="posted-with">with </li>
 								<?php foreach( $it['authors'] as $author ): ?>
 									<li>
 										<?php echo $author['avatar']; ?>
@@ -471,28 +472,8 @@ class Pulse_CPT {
 			$tags = false;
 		endif;
 		
-		// Coauthors 
-		if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ):
-			$authors = get_coauthors( $post->ID );
-			
-			$coauthors = array();
-			foreach ( $authors as $author ):
-				if ( $post->post_author != $author->ID && is_author( $post->post_author )
-					|| is_author() && $author->ID != get_the_author_meta( "ID" )
-					|| $post->post_author != $author->ID && ! is_author() ):
-					$coauthors[] = array(
-						'name'   => $author->user_nicename,
-						'url'    => get_author_posts_url( $author->ID, $author->user_nicename ),
-						'ID'     => $author->ID,
-						'avatar' => Pulse_CPT_Form::get_user_image( $author, 12, FALSE ),
-					);
-				endif;
-			endforeach;
-		endif;
-		
-		if ( empty( $coauthors ) ):
-			$coauthors = false;
-		endif;
+		// Coauthors
+		$coauthors = Pulse_CPT_Form::get_coauthors();
 		
 		// Evaluate
 		if ( $widget['rating_metric'] == 'default' ):

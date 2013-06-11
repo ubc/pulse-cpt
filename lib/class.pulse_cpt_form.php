@@ -57,21 +57,30 @@ class Pulse_CPT_Form {
 	 * @static
 	 * @return void
 	 */
-	public static function get_authors() {
-		$args = array();
-		global $current_user;
-		$users = get_users($args);
-		foreach ( $users as $user ):
-			if ( $user != $current_user ):
-				$avatar = get_avatar( $user->user_email, 20 );
-				$simple_user[] = array(
-					'value' => $user->display_name,
-					'label' => $avatar.' '.$user->display_name,
-				);
-			endif;
-		endforeach;
+	public static function get_coauthors() {
+		if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ):
+			$authors = get_coauthors( $post->ID );
+			
+			$coauthors = array();
+			foreach ( $authors as $author ):
+				if ( $post->post_author != $author->ID && is_author( $post->post_author )
+					|| is_author() && $author->ID != get_the_author_meta( "ID" )
+					|| $post->post_author != $author->ID && ! is_author() ):
+					$coauthors[] = array(
+						'name'   => $author->user_nicename,
+						'url'    => get_author_posts_url( $author->ID, $author->user_nicename ),
+						'ID'     => $author->ID,
+						'avatar' => Pulse_CPT_Form::get_user_image( $author, 12, FALSE ),
+					);
+				endif;
+			endforeach;
+		endif;
+		
+		if ( empty( $coauthors ) ):
+			$coauthors = false;
+		endif;
 	  
-		return $simple_user;
+		return $coauthors;
 	}
 	
 	/**
