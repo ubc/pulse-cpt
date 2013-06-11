@@ -150,6 +150,7 @@
 
 .pulse-content {
     word-wrap: break-word;
+    padding-bottom: 3px;
 }
 
 .widget .pulse-content .evaluate-metrics-wrapper {
@@ -169,7 +170,7 @@
 }
 
 .pulse .pulse-wrap > .avatar,
-.pulse-actions,
+/*.pulse-actions,*/
 .pulse-expand-content {
     margin-left: -36px;
 }
@@ -281,6 +282,7 @@
 	list-style: none;
 	display: inline;
 	font-size: 11px;
+    line-height: 24px;
 }
 
 .pulse-tags,
@@ -295,6 +297,7 @@
 
 .pulse-actions ul li {
 	margin: 0 5px 0 0;
+    padding: 0;
 	float: left;
 }
 
@@ -317,9 +320,10 @@
 }
 
 .pulse-list .pulse-actions {
-    margin-top: -20px;
+    margin-top: -24px;
     position: relative;
     top: 5px;
+    left: -36px;
 }
 
 .pulse-list .pulse.expand > .pulse-wrap > .pulse-actions,
