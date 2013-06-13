@@ -116,7 +116,7 @@ class Pulse_CPT {
     	wp_register_script( 'doT',           PULSE_CPT_DIR_URL.'/js/doT.js',                  array( 'jquery' ), '1.0', true );
     	wp_register_script( 'charCount',     PULSE_CPT_DIR_URL.'/js/charCount.js',            array( 'jquery' ), '1.0', true );
     	
-    	//wp_register_script( 'bootstrap-popover',           PULSE_CPT_DIR_URL.'/js/bootstrap-popover.min.js',       array( 'jquery' ), '1.0', true );
+    	wp_register_script( 'bootstrap-popover',           PULSE_CPT_DIR_URL.'/js/bootstrap-popover.min.js',       array( 'jquery' ), '1.0', true );
     	wp_register_script( 'jquery-ui-position',          PULSE_CPT_DIR_URL.'/js/jquery.ui.position.js',          array( 'jquery' ), '1.0', true );
     	wp_register_script( 'jquery-ui-autocomplete',      PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.js',      array( 'jquery', 'jquery-ui-position', 'jquery-ui-widget', 'jquery-ui-core' ), '1.0', true );
     	wp_register_script( 'jquery-ui-autocomplete-html', PULSE_CPT_DIR_URL.'/js/jquery.ui.autocomplete.html.js', array( 'jquery-ui-autocomplete' ), '1.0', true );
@@ -131,7 +131,7 @@ class Pulse_CPT {
 		$cachebuster = filemtime( PULSE_CPT_DIR_PATH.'/css/pulse.css' );
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css?t='.$cachebuster);
 		
-    	//wp_register_style( 'bootstrap-popover', PULSE_CPT_DIR_URL.'/css/bootstrap-popover.min.css');
+    	wp_register_style( 'bootstrap-popover', PULSE_CPT_DIR_URL.'/css/bootstrap-popover.min.css');
 		wp_register_style( 'speech-bubble-icons', PULSE_CPT_DIR_URL.'/css/bubble.css');
     }
     
@@ -207,6 +207,7 @@ class Pulse_CPT {
 		$global_args = array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		);
+		
 		if ( is_home() ):
 			$global_args['id'] = 0;
 		elseif ( ! is_archive() ):
@@ -256,8 +257,8 @@ class Pulse_CPT {
      */
     public static function print_pulse_script() {
     	wp_print_scripts( 'pulse-cpt' );
-    	//wp_enqueue_script( 'bootstrap-popover' );
-    	//wp_enqueue_style( 'bootstrap-popover' );
+    	wp_enqueue_script( 'bootstrap-popover' );
+    	wp_enqueue_style( 'bootstrap-popover' );
     }
 	
 	function pulse_rewrite() {
@@ -305,7 +306,26 @@ class Pulse_CPT {
 		?>
 		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>">
 			<div class="pulse-wrap pulse-margin">
-				<?php echo $it['author']['avatar_30']; ?>
+				<div class="pulse-authors">
+					<?php echo $it['author']['avatar_30']; ?>
+					<ul class="pulse-co-authors">
+						<?php if ( $template ): ?>
+							{{~it.authors :value:index}}
+								<li>
+									<a href="{{=value.url}}" data-title="{{=value.name}}" data-placement="right"></a>
+									{{=value.avatar}}
+								</li>
+							{{~}}
+						<?php else: ?>
+							<?php foreach( $it['authors'] as $author ): ?>
+								<li>
+									<a href="<?php echo $author['url']; ?>" data-title="<?php echo $author['name']; ?>" data-placement="right"></a>
+									<?php echo $author['avatar']; ?>
+								</li>
+							<?php endforeach; ?>
+						<?php endif; ?>
+					</ul>
+				</div>
 				<div class="pulse-meta">
 					<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
 						<?php echo $it['date']; ?>
@@ -364,7 +384,7 @@ class Pulse_CPT {
 							</li>
 						<?php endif; ?>
 						<li>
-							<span class="pulse-margin visible-collapsed"></span>
+							<span class="visible-collapsed"></span>
 							<span class="pulse-reply-counter spch-bub-inside">
 								<span class="point"></span>  
 								<em><span class="reply-count"><?php echo $it['num_replies']; ?></span></em>
@@ -396,32 +416,6 @@ class Pulse_CPT {
 								<?php foreach( $it['tags'] as $tag ): ?>
 									<li>
 										<a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a>
-									</li>
-								<?php endforeach; ?>
-							</ul>
-						<?php endif; ?>
-					<?php endif; ?>
-					
-					<?php if ( $template ): ?>
-						{{ if ( it.authors ) { }}
-							<ul class="pulse-co-authors">
-								<li class="posted-with">with </li>
-								{{~it.authors :value:index}}
-									<li>
-										{{=value.avatar}}
-										<a href="{{=value.url}}">{{=value.name}}</a>
-									</li>
-								{{~}}
-							</ul>
-						{{ } }}
-					<?php else: ?>
-						<?php if ( ! empty( $it['authors'] ) ): ?>
-							<ul class="pulse-co-authors">
-								<li class="posted-with">with </li>
-								<?php foreach( $it['authors'] as $author ): ?>
-									<li>
-										<?php echo $author['avatar']; ?>
-										<a href="<?php echo $author['url']; ?>"><?php echo $author['name']; ?></a>
 									</li>
 								<?php endforeach; ?>
 							</ul>

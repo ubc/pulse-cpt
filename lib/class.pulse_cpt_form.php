@@ -58,6 +58,7 @@ class Pulse_CPT_Form {
 	 * @return void
 	 */
 	public static function get_coauthors() {
+		global $post;
 		if ( Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ):
 			$authors = get_coauthors( $post->ID );
 			
@@ -67,10 +68,10 @@ class Pulse_CPT_Form {
 					|| is_author() && $author->ID != get_the_author_meta( "ID" )
 					|| $post->post_author != $author->ID && ! is_author() ):
 					$coauthors[] = array(
-						'name'   => $author->user_nicename,
+						'name'   => $author->display_name,
 						'url'    => get_author_posts_url( $author->ID, $author->user_nicename ),
 						'ID'     => $author->ID,
-						'avatar' => Pulse_CPT_Form::get_user_image( $author, 12, FALSE ),
+						'avatar' => Pulse_CPT_Form::get_user_image( $author, 15, FALSE ),
 					);
 				endif;
 			endforeach;
@@ -94,13 +95,15 @@ class Pulse_CPT_Form {
 		$user = wp_get_current_user();
 		$widgets = get_option('widget_pulse_cpt');
 		
+		error_log( print_r( $widgets[$_POST['widget_id']], TRUE ) );
+		
 		if ( ! isset( $user->ID ) ):
 			echo json_encode( array( 'error' => 'Your login has expired, please login again.' ) );
 			die();
 		elseif ( empty( $_POST ) || ! wp_verify_nonce( $_POST['_wpnonce_pulse_form'], 'wpnonce_pulse_form' ) || empty( $user ) ):
 			echo json_encode( array( 'error' => 'Sorry, your nonce did not verify.' ) );
 			die();
-		elseif ( strlen( $_POST['posttext'] ) > $widgets[$_POST['widget_id']]['num_char'] ):
+		elseif ( $widgets[$_POST['widget_id']]['enable_character_count'] && strlen( $_POST['posttext'] ) > $widgets[$_POST['widget_id']]['num_char'] ):
 			echo json_encode( array( 'error' => 'Too many characters.' ) );
 			die();
 		endif;

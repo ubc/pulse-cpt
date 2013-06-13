@@ -165,11 +165,15 @@
 	margin: 0;
 }
 
-.pulse .pulse-wrap > .avatar {
+.pulse-wrap p {
+    margin-bottom: 0.8em;
+}
+
+.pulse-authors {
 	float: left;
 }
 
-.pulse .pulse-wrap > .avatar,
+.pulse-authors,
 /*.pulse-actions,*/
 .pulse-expand-content {
     margin-left: -36px;
@@ -181,6 +185,8 @@
 
 .pulse-replies {
     margin-left: 5px;
+    position: relative;
+    top: -16px;
 }
 
 .pulse-more-replies {
@@ -275,8 +281,40 @@
 	padding: 0 0 0 20px;
 }
 
-.pulse-co-authors,
-.pulse-co-authors li,
+.pulse-authors {
+    width: 30px;
+}
+
+.pulse-authors .pulse-co-authors {
+    display: block;
+}
+
+.pulse-authors .pulse-co-authors li {
+    float: left;
+    list-style: none;
+    padding: 0;
+    opacity: 0.5;
+    position: relative;
+    height: 15px;
+}
+
+.pulse-authors .pulse-co-authors li:hover {
+    opacity: 1.0;
+}
+
+.pulse-authors .pulse-co-authors a {
+    display: block;
+    width: 9px;
+    height: 9px;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+}
+
+.pulse-authors .tooltip-inner {
+    white-space: nowrap;
+}
+
 .pulse-actions ul li,
 .pulse-tags li {
 	list-style: none;
@@ -286,8 +324,7 @@
 }
 
 .pulse-tags,
-.pulse-actions ul,
-.pulse-co-authors {
+.pulse-actions ul {
 	margin: 0;
 }
 
@@ -321,10 +358,8 @@
 
 .pulse-list .pulse-actions {
 	display: block;
-    margin-top: -24px;
-    position: relative;
-    top: 5px;
-    left: -36px;
+    position: absolute;
+    bottom: 0;
 }
 
 .pulse-widget-warning {

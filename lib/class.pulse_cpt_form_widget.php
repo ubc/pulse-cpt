@@ -306,6 +306,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			
 			return;
 		elseif ( ! $pulse_query->have_posts() && current_user_can( 'administrator' ) ):
+			/*
 			?>
 				<div class="pulse-widget-warning">
 					<div class="error">
@@ -318,6 +319,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					</small>
 				</div>
 			<?php
+			*/
 		else:
 			self::$quantity++;
 		endif;

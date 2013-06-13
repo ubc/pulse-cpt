@@ -4,6 +4,8 @@ var Pulse_CPT = {
     onReady: function() {
         Pulse_CPT.listen();
         
+        jQuery(".pulse-co-authors a").tooltip();
+        
         // These are delegated to .pulse-list to attach to dynamic elements too
         jQuery('.pulse-list').on( 'click', '.pulse', Pulse_CPT.expand );
         jQuery('.pulse-list').on( 'click', '.expand-action', Pulse_CPT.expand );
