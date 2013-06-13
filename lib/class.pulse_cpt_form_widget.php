@@ -238,7 +238,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		
 		$pulse_query = new WP_Query( self::query_arguments() );
 		
-		if ( ! $pulse_query->have_posts() && $current_user->ID <= 0 ):
+		if ( ! $pulse_query->have_posts() && ! is_user_logged_in() ):
 			return; // There are no pulses, and we can't post. Don't display anything.
 		endif;
 		
@@ -287,7 +287,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			endif;
 			
 			return;
-		elseif ( is_single() && get_post_meta( $post->ID, 'pulse_cpt-enabled', TRUE ) == 'on' ):
+		elseif ( $post != null && get_post_meta( $post->ID, 'pulse_cpt-enabled', TRUE ) == 'on' ):
 			if ( current_user_can( 'administrator' ) ):
 				?>
 					<div class="pulse-widget-warning">
