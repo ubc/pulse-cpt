@@ -186,7 +186,13 @@ class Pulse_CPT_Form {
 	public static function edit_post_data( $data, $postarr ) {
 		// Change the post title into something more meaning full 
 		if ( $data['post_type'] == 'pulse-cpt' && $data['post_status'] != 'auto-draft' ):
-			$data['post_title'] = Pulse_CPT_Form::title_from_content( $data['post_content'] );
+			$data['post_title'] = wp_unique_post_slug(
+				/*slug       */ Pulse_CPT_Form::title_from_content( $data['post_content'] ),
+				/*post_ID    */ $data['ID'],
+				/*post_status*/ $data['post_status'],
+				/*post_type  */ $data['post_type'],
+				/*post_parent*/ $data['post_parent']
+			);
 		endif;
 		
 		return $data;
