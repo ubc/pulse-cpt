@@ -246,8 +246,6 @@ class Pulse_CPT {
 			return "date/".get_the_date( 'F Y' );
 		elseif ( is_date() ):
 			return "date/".get_the_date( 'F j, Y' );
-		else:
-			error_log( "'Pulse_CPT.get_content_type_for_node' was called outside the loop: ".print_r( $_POST, TRUE ) );
 		endif;
 	}
     
@@ -264,7 +262,7 @@ class Pulse_CPT {
     	wp_enqueue_style( 'bootstrap-popover' );
     }
 	
-	function pulse_rewrite() {
+	public static function pulse_rewrite() {
 		global $wp_rewrite;
 		$queryarg = 'post_type=pulse-cpt&p=';
 		$wp_rewrite->add_rewrite_tag( '%pulse_id%', '([^/]+)', $queryarg );
@@ -281,12 +279,16 @@ class Pulse_CPT {
 			return $post;
 		endif;
 		
-		$newlink = $wp_rewrite->get_extra_permastruct( 'pulse-cpt' );
-		$newlink = str_replace( "%pulse_id%", $post->ID, $newlink );
-		$newlink = str_replace( "%postname%", $post->post_name, $newlink );
-		$newlink = home_url( user_trailingslashit( $newlink ) );
-		
-		return $newlink;
+		if ( $post->post_type == 'pulse-cpt' ):
+			$newlink = $wp_rewrite->get_extra_permastruct( 'pulse-cpt' );
+			$newlink = str_replace( "%pulse_id%", $post->ID, $newlink );
+			$newlink = str_replace( "%postname%", $post->post_name, $newlink );
+			$newlink = home_url( user_trailingslashit( $newlink ) );
+			
+			return $newlink;
+		else:
+			return $post_link;
+		endif;
 	}
 	
 	/**
