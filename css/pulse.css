@@ -1,156 +1,31 @@
-/* Widget */
-.widget_pulse_cpt h1 {
-    margin-bottom: 0;
-}
-
-.widget_pulse_cpt .postbox-placeholder,
-.widget_pulse_cpt .postbox {
-    margin-top: 10px !important;
-}
-
-.archive .widget_pulse_cpt > .postbox-placeholder,
-.archive .widget_pulse_cpt > .postbox {
-    display: none !important;
-}
-
-.pulse-widget-title-suffix {
-    color: darkgrey;
-}
-
-/* Pulse List Actions */
-.pulse-list-actions {
-    margin-top: 3px;
-    text-align: right;
-}
-
-.pulse-list-actions .pulse-form-progress img {
-    margin-top: -2px;
-}
-
-.pulse-list-filter {
-    margin-right: 7px;
-    margin-bottom: 3px;
-    display: inline-block;
-}
-
-.pulse-list-filter select {
-    border: none;
-    background: #EEE;
-    height: 19px;
-    font-size: 12px;
-    margin: 0;
-    line-height: 1;
-}
-
-.pulse-list-filter select:focus {
-    outline: none;
-}
-
-/**
- * This is a hack to only target webkit browsers (Safari and Chrome)
- */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-    .pulse-list-filter select {
-        -webkit-appearance: none;
-        background-image: url(../img/dropdown.png);
-        background-repeat: no-repeat;
-        background-position: right;
-        background-color: #EEE;
-        padding: 0;
-        padding-right: 16px;
-        padding-left: 3px;
-    }
-    
-    .pulse-list-filter select:hover {
-        background-color: #DDD;
-    }
-    
-    .pulse-list-filter.show select {
-        width: 68px;
-    }
-    
-    .pulse-list-filter.sort select {
-        width: 95px;
-    }
-}
-
-.pulse-list-filter label {
-    color: lightgray;
-    display: inline-block;
-}
-
-
-/* Pulse List */
-.pulse-list .pulse:hover {
-	cursor: pointer;
-	background: #EEE;
-	border: 1px solid #ECECEC;
-}
-
-.pulse-list .pulse.expand {
-	background: #FFF;
-	cursor: default;
-	border: 1px solid #EFEFEF;
-	margin: 5px;
-}
-
-.pulse-list .pulse.expand:hover {
-	border-color: #E0E0E0;
-}
-
-
-/* Pulse List Pagination */
-.pulse-pagination {
-    margin-top: 3px;
-    text-align: center;
-}
-
-.pulse-pagination-btn {
-    display: inline;
-}
-
-.pulse-pagination-btn > * {
-    padding: 4px 0;
-    line-height: 14px;
-    text-decoration: none;
-    border: 1px solid #DDD;
-    margin: 1px;
-    cursor: pointer;
-}
-
-.pulse-pagination-btn.active > *,
-.pulse-pagination-btn.disabled > * {
-    color: #DDD;
-    cursor: default;
-}
-
-.pulse-pagination-btn.active > * {
-    color: #5DA1C1;
-    border-color: #5DA1C1;
-}
-
-.pulse-pagination-btn:not(.disabled) > *:hover {
-    color: #348AB2;
-    border-color: #348AB2;
-}
-
-
 /* Pulse */
 .pulse {
-	padding: 5px;
-	border: 1px solid #FFF;
-	border-bottom: 1px solid #ECECEC;
 	margin: 0 5px;
     font-size: 13.5px;
+	position: relative;
+    height: 90px;
 }
 
-.pulse .postbox {
-    margin-top: 8px !important;
+.pulse-list .pulse-inner {
+    width: 100%;
+	border: 1px solid white;
+	border-bottom-color: #ECECEC;
+    background: white;
+	padding: 5px;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
 }
 
 .pulse-content {
     word-wrap: break-word;
     padding-bottom: 3px;
+    height: 50px;
+    min-height: 50px;
+    overflow: hidden;
+}
+
+.pulse-wrap p {
+    margin-bottom: 0;
 }
 
 .widget .pulse-content .evaluate-metrics-wrapper {
@@ -161,46 +36,107 @@
 	margin-left: 36px;
 }
 
+.pulse-nomargin {
+	margin-left: -36px;
+}
+
 .widget_pulse_cpt .pulse-wrap ul {
 	margin: 0;
 }
 
-.pulse-wrap p {
-    margin-bottom: 0.8em;
-}
-
-.pulse-authors {
-	float: left;
-}
-
-.pulse-authors,
-/*.pulse-actions,*/
-.pulse-expand-content {
-    margin-left: -36px;
-}
-
 .pulse .pulse .reply-to {
-    display: none;
+    display: none !important;
 }
 
 .pulse-replies {
     margin-left: 5px;
-    position: relative;
-    top: -16px;
 }
 
-.pulse-more-replies {
-	padding: 3px 5px;
-	border-bottom: 1px solid #ECECEC;
-	margin: 0 5px;
-    display: block;
-    text-decoration: none;
+.pulse.expand > .pulse-inner > .pulse-wrap > .pulse-expand-content {
+	display: block;
+    width: 100%;
 }
 
-.pulse-expand-content .pulse:first-child {
-    margin-top: 8px;
+.pulse-list .pulse-expand-content {
+	display: none;
 }
 
+.pulse-actions ul li,
+.pulse-tags li {
+	list-style: none;
+	display: inline;
+	font-size: 11px;
+    line-height: 19px;
+}
+
+.pulse-wrap > *:not(.pulse-content) a,
+.pulse-authors a {
+	text-decoration: none;
+}
+
+
+
+/* Expanded */
+.pulse > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-expanded,
+.pulse > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-collapsed,
+.pulse > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-hover,
+.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-expanded,
+.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-collapsed,
+.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-hover,
+.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-expanded,
+.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-collapse,
+.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-hover {
+    display: none;
+}
+
+.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-expanded,
+.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-collapsed,
+.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-hover,
+.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-expanded,
+.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-collapsed,
+.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-hover {
+    display: inline-block;
+}
+
+.pulse:hover > .pulse-inner,
+.pulse.expand > .pulse-inner {
+    box-shadow: 0 4px 2px -2px rgba(0,0,0,0.4);
+    position: absolute;
+    top: 0;
+}
+
+.pulse:hover .pulse-content,
+.pulse.expand .pulse-content {
+    height: auto;
+}
+
+.pulse-list .pulse:hover {
+    z-index: 5;
+	cursor: pointer;
+	background: #EEE;
+}
+
+.pulse-list .pulse.expand {
+    z-index: 10;
+	cursor: default;
+	background: white;
+	margin: 5px;
+}
+
+.pulse-list .pulse:hover > .pulse-inner {
+	border-color: #ECECEC;
+}
+
+.pulse-list .pulse.expand > .pulse-inner{
+	border-color: #EFEFEF;
+}
+
+.pulse-list .pulse.expand:hover > .pulse-inner {
+	border-color: #E0E0E0;
+}
+
+
+/* Pulse Meta */
 .pulse-meta {
 	font-size: 80%;
     line-height: 16px;
@@ -234,16 +170,56 @@
     margin: 0;
 }
 
-.pulse-meta a,
-.pulse-actions a,
-.pulse-author a {
-	text-decoration: none;
+
+/* Pulse Actions */
+.pulse-actions {
+	display: none;
 }
 
-.pulse-author {
-    display: inline-block;
-    min-width: 50%;
-    font-size: 120%;
+.pulse-list .pulse-actions {
+	display: block;
+}
+
+.pulse-actions ul {
+	overflow: hidden;
+	margin: 0;
+}
+
+.pulse-actions ul li {
+	margin: 0 5px 0 0;
+    padding: 0;
+	float: left;
+}
+
+
+/* Pulse Tags */
+.pulse-tags {
+	background: url(../img/sprite.gif) no-repeat 0 -65px;
+	padding: 0 0 0 20px;
+	margin: 0;
+}
+
+
+/* Pulse Authors */
+.pulse-authors {
+    margin-bottom: 5px;
+}
+
+.pulse-authors ul {
+    display: block;
+}
+
+.pulse-authors ul li {
+    float: left;
+    list-style: none;
+    padding: 0;
+    opacity: 0.5;
+    position: relative;
+    margin: 0 1px;
+}
+
+.pulse-authors li:hover {
+    opacity: 1.0;
 }
 
 .pulse-author a small {
@@ -255,140 +231,36 @@
 	font-weight: normal;
 }
 
-.pulse.expand > .pulse-wrap > .pulse-expand-content {
-	display: block;
-}
-
-.pulse-list .pulse-expand-content {
-	display: none;
-}
-
-.pulse,
-.pulse-footer,
-.pulse-footer-action,
-.pulse-comments-intro {
-	position: relative;
-	overflow: hidden;
-}
-
-.pulse-footer-action,
-.pulse-comments-intro {
-	float: left;
-}
-
-.pulse-tags {
-	background: url(../img/sprite.gif) no-repeat 0 -65px;
-	padding: 0 0 0 20px;
-}
-
-.pulse-authors {
-    width: 30px;
-}
-
-.pulse-authors .pulse-co-authors {
-    display: block;
-}
-
-.pulse-authors .pulse-co-authors li {
-    float: left;
-    list-style: none;
-    padding: 0;
-    opacity: 0.5;
-    position: relative;
-    height: 15px;
-}
-
-.pulse-authors .pulse-co-authors li:hover {
-    opacity: 1.0;
-}
-
-.pulse-authors .pulse-co-authors a {
-    display: block;
-    width: 9px;
-    height: 9px;
+.pulse-author-addendum {
+    z-index: 10;
+    line-height: 12px;
     position: absolute;
-    top: 3px;
-    left: 3px;
-}
-
-.pulse-authors .tooltip-inner {
     white-space: nowrap;
-}
-
-.pulse-actions ul li,
-.pulse-tags li {
-	list-style: none;
-	display: inline;
-	font-size: 11px;
-    line-height: 24px;
-}
-
-.pulse-tags,
-.pulse-actions ul {
-	margin: 0;
-}
-
-.pulse-actions ul {
-	overflow: hidden;
-}
-
-.pulse-actions ul li {
-	margin: 0 5px 0 0;
-    padding: 0;
-	float: left;
-}
-
-.posted-with {
-	color: #999;
-}
-
-.pulse-form-progress {
-	position: relative;
-    top: 2px;
-}
-
-.pulse-form-progress.hide {
-	display: none;
-}
-
-/* Pulse Actions */
-.pulse-actions {
-	display: none;
-}
-
-.pulse-list .pulse-actions {
-	display: block;
-    position: absolute;
-    bottom: 0;
-}
-
-.pulse-widget-warning {
-    padding: 5px;
-}
-
-.error {
-    color: darkred;
-}
-
-/* Visibility */
-.pulse .visible-expanded,
-.pulse.expand .visible-collapsed,
-.pulse:hover .visible-collapsed {
     display: none;
+    
+    background: white;
+    padding: 2px;
 }
 
-.pulse.expand .visible-expanded,
-.pulse:hover .visible-expanded {
+.pulse-author:hover .pulse-author-addendum {
     display: inline-block;
 }
 
-/* Evaluate Popover */
-.pulse-popover button {
-    float: right;
-    margin: 2px;
-    margin-right: 0;
+.pulse-avatar {
+    float: left;
+    position: relative;
 }
 
-.pulse-popover textarea {
-    resize: none;
+.pulse-avatar-stack {
+    position: absolute;
+    top: 2px;
+    left: 1px;
+    width: 30px;
+    height: 30px;
+}
+
+
+/* Only display the top three avatars */
+.pulse-avatar-stack > .pulse-avatar-stack > .pulse-avatar-stack > .pulse-avatar-stack {
+    display: none;
 }

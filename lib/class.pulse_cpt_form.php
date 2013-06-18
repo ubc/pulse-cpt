@@ -64,16 +64,13 @@ class Pulse_CPT_Form {
 			
 			$coauthors = array();
 			foreach ( $authors as $author ):
-				if ( $post->post_author != $author->ID && is_author( $post->post_author )
-					|| is_author() && $author->ID != get_the_author_meta( "ID" )
-					|| $post->post_author != $author->ID && ! is_author() ):
-					$coauthors[] = array(
-						'name'   => $author->display_name,
-						'url'    => get_author_posts_url( $author->ID, $author->user_nicename ),
-						'ID'     => $author->ID,
-						'avatar' => Pulse_CPT_Form::get_user_image( $author, 15, FALSE ),
-					);
-				endif;
+				$coauthors[] = array(
+					'name'   => $author->display_name,
+					'login'  => $author->user_login,
+					'url'    => get_author_posts_url( $author->ID, $author->user_nicename ),
+					'ID'     => $author->ID,
+					'avatar' => Pulse_CPT_Form::get_user_image( $author, 30, FALSE ),
+				);
 			endforeach;
 		endif;
 		

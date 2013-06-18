@@ -341,3 +341,14 @@
 .pulse-tablist .pulse-tabs-author:hover {
 	background-position: -1px -99px;
 }
+
+/* Evaluate Popover */
+.pulse-popover button {
+    float: right;
+    margin: 2px;
+    margin-right: 0;
+}
+
+.pulse-popover textarea {
+    resize: none;
+}

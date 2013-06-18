@@ -1,0 +1,133 @@
+.error {
+    color: darkred;
+}
+
+/* Widget */
+.widget_pulse_cpt h1 {
+    margin-bottom: 0;
+}
+
+.widget_pulse_cpt .postbox-placeholder,
+.widget_pulse_cpt .postbox {
+    margin-top: 10px !important;
+}
+
+.archive .widget_pulse_cpt > .postbox-placeholder,
+.archive .widget_pulse_cpt > .postbox {
+    display: none !important;
+}
+
+.pulse-widget-title-suffix {
+    color: darkgrey;
+}
+
+.pulse-widget-warning {
+    padding: 5px;
+}
+
+.pulse-form-progress {
+	position: relative;
+    top: 2px;
+}
+
+.pulse-form-progress.hide {
+	display: none;
+}
+
+/* Pulse List Actions */
+.pulse-list-actions {
+    margin-top: 3px;
+    text-align: right;
+}
+
+.pulse-list-actions .pulse-form-progress img {
+    margin-top: -2px;
+}
+
+.pulse-list-filter {
+    margin-right: 7px;
+    margin-bottom: 3px;
+    display: inline-block;
+}
+
+.pulse-list-filter select {
+    border: none;
+    background: #EEE;
+    height: 19px;
+    font-size: 12px;
+    margin: 0;
+    line-height: 1;
+}
+
+.pulse-list-filter select:focus {
+    outline: none;
+}
+
+/**
+ * This is a hack to only target webkit browsers (Safari and Chrome)
+ */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .pulse-list-filter select {
+        -webkit-appearance: none;
+        background-image: url(../img/dropdown.png);
+        background-repeat: no-repeat;
+        background-position: right;
+        background-color: #EEE;
+        padding: 0;
+        padding-right: 16px;
+        padding-left: 3px;
+    }
+    
+    .pulse-list-filter select:hover {
+        background-color: #DDD;
+    }
+    
+    .pulse-list-filter.show select {
+        width: 68px;
+    }
+    
+    .pulse-list-filter.sort select {
+        width: 95px;
+    }
+}
+
+.pulse-list-filter label {
+    color: lightgray;
+    display: inline-block;
+}
+
+
+/* Pulse List Pagination */
+.pulse-pagination {
+    margin-top: 3px;
+    text-align: center;
+}
+
+.pulse-pagination-btn {
+    display: inline;
+}
+
+.pulse-pagination-btn > * {
+    padding: 4px 0;
+    line-height: 14px;
+    text-decoration: none;
+    border: 1px solid #DDD;
+    margin: 1px;
+    cursor: pointer;
+}
+
+.pulse-pagination-btn.active > *,
+.pulse-pagination-btn.disabled > * {
+    color: #DDD;
+    cursor: default;
+}
+
+.pulse-pagination-btn.active > * {
+    color: #5DA1C1;
+    border-color: #5DA1C1;
+}
+
+.pulse-pagination-btn:not(.disabled) > *:hover {
+    color: #348AB2;
+    border-color: #348AB2;
+}

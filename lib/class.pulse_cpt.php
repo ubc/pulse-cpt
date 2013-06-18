@@ -130,6 +130,8 @@ class Pulse_CPT {
     	wp_register_style( 'pulse-cpt-form', PULSE_CPT_DIR_URL.'/css/form.css?t='.$cachebuster);
 		$cachebuster = filemtime( PULSE_CPT_DIR_PATH.'/css/pulse.css' );
     	wp_register_style( 'pulse-cpt-list', PULSE_CPT_DIR_URL.'/css/pulse.css?t='.$cachebuster);
+		$cachebuster = filemtime( PULSE_CPT_DIR_PATH.'/css/widget.css' );
+    	wp_register_style( 'pulse-cpt-widget', PULSE_CPT_DIR_URL.'/css/widget.css?t='.$cachebuster);
 		
     	wp_register_style( 'bootstrap-popover', PULSE_CPT_DIR_URL.'/css/bootstrap-popover.min.css');
 		wp_register_style( 'speech-bubble-icons', PULSE_CPT_DIR_URL.'/css/bubble.css');
@@ -192,6 +194,7 @@ class Pulse_CPT {
      */
     public static function print_form_style() {
     	wp_enqueue_style( 'pulse-cpt-form' );
+    	wp_enqueue_style( 'pulse-cpt-widget' );
     	wp_enqueue_style( 'pulse-cpt-list' );
     	wp_enqueue_style( 'speech-bubble-icons' );
     }
@@ -305,127 +308,168 @@ class Pulse_CPT {
 		
 		?>
 		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>">
-			<div class="pulse-wrap pulse-margin">
-				<div class="pulse-authors">
-					<?php echo $it['author']['avatar_30']; ?>
-					<ul class="pulse-co-authors">
-						<?php if ( $template ): ?>
-							{{~it.authors :value:index}}
-								<li>
-									<a href="{{=value.url}}" data-title="{{=value.name}}" data-placement="right"></a>
-									{{=value.avatar}}
-								</li>
-							{{~}}
-						<?php else: ?>
-							<?php foreach( $it['authors'] as $author ): ?>
-								<li>
-									<a href="<?php echo $author['url']; ?>" data-title="<?php echo $author['name']; ?>" data-placement="right"></a>
-									<?php echo $author['avatar']; ?>
-								</li>
-							<?php endforeach; ?>
-						<?php endif; ?>
-					</ul>
-				</div>
-				<div class="pulse-meta">
-					<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
-						<?php echo $it['date']; ?>
-					</a>
-					<span class="pulse-author">
-						<a href="<?php echo $it['author']['post_url']; ?>">
-							<?php echo $it['author']['display_name']; ?> <small>@<?php echo $it['author']['user_login']; ?></small>
+			<div class="pulse-inner">
+				<div class="pulse-wrap pulse-margin">
+					<div class="pulse-meta">
+						<div class="pulse-avatar pulse-nomargin">
+							<?php //echo $it['author']['avatar_30']; ?>
+							<?php if ( $template ): ?>
+								{{~it.authors :value:index}}
+									<div class="pulse-avatar-stack">
+										{{=value.avatar}}
+								{{~}}
+								
+								{{~it.authors :value:index}}
+									</div>
+								{{~}}
+							<?php else: ?>
+								<?php foreach( $it['authors'] as $author ): ?>
+									<div class="pulse-avatar-stack">
+										<?php echo $author['avatar']; ?>
+								<?php endforeach; ?>
+								
+								<?php foreach( $it['authors'] as $author ): ?>
+									</div>
+								<?php endforeach; ?>
+							<?php endif; ?>
+						</div>
+						
+						<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
+							<?php echo $it['date']; ?>
 						</a>
-					</span>
-					<span class="pulse-rating">
-						<span class="evaluate-wrapper">
-							<?php
-								if ( ! empty( $it['rating']['slug'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-									global $wpdb;
-									$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
-									
-									if ( $template ):
-										$data = Evaluate::get_metric_data_js();
-										$data->type = $metric->type;
-									else:
-										$data = Evaluate::get_metric_data( $metric );
-										if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
-										if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
-									endif;
-									
-									echo Evaluate::display_metric( $data, $template );
-								endif;
-							?>
-						</span>
-					</span>
-					<?php if ( ! empty( $it['content_rating'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): ?>
-						<span class="content-rating">
-							<div class="evaluate-wrapper">
+						
+						<span class="pulse-rating">
+							<span class="evaluate-wrapper">
 								<?php
-									if ( $template ):
-										echo "<!-- To be replaced via javascript. -->";
-									else:
-										echo Evaluate::display_metric( $it['content_rating'], $template );
+									if ( ! empty( $it['rating']['slug'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+										global $wpdb;
+										$metric = $wpdb->get_row( "SELECT * FROM ".EVAL_DB_METRICS." WHERE slug='".$it['rating']['slug']."'" );
+										
+										if ( $template ):
+											$data = Evaluate::get_metric_data_js();
+											$data->type = $metric->type;
+										else:
+											$data = Evaluate::get_metric_data( $metric );
+											if ( $it['rating']['counter_up'] != null ) $data->counter_up = $it['rating']['counter_up'];
+											if ( $it['rating']['counter_down'] != null ) $data->counter_down = $it['rating']['counter_down'];
+										endif;
+										
+										echo Evaluate::display_metric( $data, $template );
 									endif;
 								?>
-							</div>
-						</span>
-					<?php endif; ?>
-				</div>
-				<div class="pulse-content">
-					<?php echo $it['content']; ?>
-				</div>
-				<div class="pulse-actions">
-					<ul>
-						<li class="visible-expanded">
-							<a href="#expand-url" class="expand-action">Expand</a>
-						</li>
-						<?php if ( is_user_logged_in() ): // Display reply only if user is logged in ?>
-							<li class="visible-expanded">
-								<a href="#reply-url" class="reply-action">Reply</a>
-							</li>
-						<?php endif; ?>
-						<li>
-							<span class="visible-collapsed"></span>
-							<span class="pulse-reply-counter spch-bub-inside">
-								<span class="point"></span>  
-								<em><span class="reply-count"><?php echo $it['num_replies']; ?></span></em>
 							</span>
-							<span> Replies</span>
-						</li>
-						<li class="visible-expanded reply-to">
-							<?php echo $it['reply_to']; ?>
-						</li>
-						<span class="pulse-form-progress hide">
-							<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL; ?>/img/spinner.gif" />
 						</span>
-					</ul>
-				</div>
-				<div class="pulse-expand-content">
-					<?php if ( $template ): ?>
-						{{ if ( it.tags ) { }}
-							<ul class="pulse-tags">
-								{{~it.tags :value:index}}
-								<li>
-									<a href="{{=value.url}}">{{=value.name}}</a> 
-								</li>
-								{{~}}
-							</ul>
-						{{ } }}
-					<?php else: ?>
-						<?php if ( ! empty( $it['tags'] ) ): ?>
-							<ul class="pulse-tags">
-								<?php foreach( $it['tags'] as $tag ): ?>
-									<li>
-										<a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a>
-									</li>
-								<?php endforeach; ?>
-							</ul>
-						<?php endif; ?>
-					<?php endif; ?>
+					</div>
 					
-					<div class="pulse-pivot"></div>
-					<div class="pulse-replies"></div>
-				</div> <!-- end of pulse-expand-content -->
-			</div> <!-- end of pulse wrap -->
+					<div class="pulse-content">
+						<?php if ( $template ): ?>
+							{{? it.authors.length > 1 }}
+								<div class="pulse-authors hidden-collapsed">
+									<ul>
+										{{~it.authors :value:index}}
+											<li class="pulse-author">
+												{{=value.avatar}}
+												<div class="pulse-author-addendum">
+													<a href="{{=value.url}}">
+														{{=value.name}} <small>@{{=value.login}}</small>
+													</a>
+												</div>
+											</li>
+										{{~}}
+									</ul>
+								</div>
+							{{?}}
+						<?php else: ?>
+							<?php if ( sizeof( $it['authors'] ) > 1 ): ?>
+								<div class="pulse-authors hidden-collapsed">
+									<ul>
+										<?php foreach( $it['authors'] as $author ): ?>
+											<li class="pulse-author">
+												<?php echo $author['avatar']; ?>
+												<div class="pulse-author-addendum">
+													<a href="<?php echo $author['url']; ?>">
+														<?php echo $author['name']; ?> <small>@<?php echo $author['login']; ?></small>
+													</a>
+												</div>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							<?php endif; ?>
+						<?php endif; ?>
+						
+						<?php if ( ! empty( $it['content_rating'] ) && Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ): ?>
+							<span class="content-rating">
+								<div class="evaluate-wrapper">
+									<?php
+										if ( $template ):
+											echo "<!-- To be replaced via javascript. -->";
+										else:
+											echo Evaluate::display_metric( $it['content_rating'], $template );
+										endif;
+									?>
+								</div>
+							</span>
+						<?php endif; ?>
+						
+						<?php echo $it['content']; ?>
+					</div>
+					
+					<div class="pulse-actions pulse-nomargin">
+						<ul>
+							<li class="hidden-collapsed">
+								<a href="#expand-url" class="expand-action">Expand</a>
+							</li>
+							<?php if ( is_user_logged_in() ): // Display reply only if user is logged in ?>
+								<li class="hidden-collapsed">
+									<a href="#reply-url" class="reply-action">Reply</a>
+								</li>
+							<?php endif; ?>
+							<li>
+								<span class="pulse-reply-counter spch-bub-inside">
+									<span class="point"></span>  
+									<em><span class="reply-count"><?php echo $it['num_replies']; ?></span></em>
+								</span>
+								<span> Replies</span>
+							</li>
+							<li class="hidden-collapsed reply-to">
+								<?php echo $it['reply_to']; ?>
+							</li>
+							<span class="pulse-form-progress hide">
+								<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL; ?>/img/spinner.gif" />
+							</span>
+						</ul>
+					</div>
+					
+					<div class="pulse-expand-content pulse-nomargin visible-expanded">
+						<?php if ( $template ): ?>
+							{{ if ( it.tags ) { }}
+								<ul class="pulse-tags">
+									{{~it.tags :value:index}}
+									<li>
+										<a href="{{=value.url}}">{{=value.name}}</a> 
+									</li>
+									{{~}}
+								</ul>
+							{{ } }}
+						<?php else: ?>
+							<?php if ( ! empty( $it['tags'] ) ): ?>
+								<ul class="pulse-tags">
+									<?php foreach( $it['tags'] as $tag ): ?>
+										<li>
+											<a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a>
+										</li>
+									<?php endforeach; ?>
+								</ul>
+							<?php endif; ?>
+						<?php endif; ?>
+						
+						<div class="pulse-pivot"></div>
+						<div class="pulse-replies"></div>
+					</div> <!-- end of pulse-expand-content -->
+				</div> <!-- end of pulse wrap -->
+				
+			</div>
 		</div>
 		<?php
 	}
