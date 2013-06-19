@@ -12,8 +12,8 @@
     margin-top: 10px !important;
 }
 
-.archive .widget_pulse_cpt > .postbox-placeholder,
-.archive .widget_pulse_cpt > .postbox {
+.archive .widget_pulse_cpt > .widget-wrap > .postbox-placeholder,
+.archive .widget_pulse_cpt > .widget-wrap > .postbox {
     display: none !important;
 }
 

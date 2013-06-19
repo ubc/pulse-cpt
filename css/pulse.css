@@ -70,7 +70,7 @@
 }
 
 .pulse-wrap > *:not(.pulse-content) a,
-.pulse-authors a {
+.pulse-author a {
 	text-decoration: none;
 }
 
@@ -121,6 +121,7 @@
 	cursor: default;
 	background: white;
 	margin: 5px;
+    padding: 0;
 }
 
 .pulse-list .pulse:hover > .pulse-inner {
@@ -224,11 +225,11 @@
 
 .pulse-author a small {
 	display: none;
+	font-weight: normal;
 }
 
 .pulse-author a:hover small {
 	display: inline;
-	font-weight: normal;
 }
 
 .pulse-author-addendum {

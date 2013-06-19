@@ -26,7 +26,7 @@ class Pulse_CPT {
 	
 	public static function load() {
 		Pulse_CPT::register_pulse();
-	  
+		
 		if ( ! is_admin() ):
 			Pulse_CPT::register_script_and_style();
 		endif;
@@ -266,7 +266,7 @@ class Pulse_CPT {
 	 * @param mixed $it (default: null)
 	 * @return void
 	 */
-	public static function the_pulse( $it = null, $template = false ) {
+	public static function the_pulse( $it = null, $template = false, $mini = false ) {
 		if ( $it == null ):
 			if ( $template ):
 				$it = self::the_pulse_array_js();
@@ -281,7 +281,6 @@ class Pulse_CPT {
 				<div class="pulse-wrap pulse-margin">
 					<div class="pulse-meta">
 						<div class="pulse-avatar pulse-nomargin">
-							<?php //echo $it['author']['avatar_30']; ?>
 							<?php if ( $template ): ?>
 								{{~it.authors :value:index}}
 									<div class="pulse-avatar-stack">
@@ -347,6 +346,12 @@ class Pulse_CPT {
 										{{~}}
 									</ul>
 								</div>
+							{{??}}
+								<span class="pulse-author hidden-collapsed">
+									<a href="{{=value.url}}">
+										{{=value.name}} <small>@{{=value.login}}</small>
+									</a>
+								</span>
 							{{?}}
 						<?php else: ?>
 							<?php if ( sizeof( $it['authors'] ) > 1 ): ?>
@@ -364,6 +369,12 @@ class Pulse_CPT {
 										<?php endforeach; ?>
 									</ul>
 								</div>
+							<?php else: ?>
+								<span class="pulse-author hidden-collapsed">
+									<a href="<?php echo $author['url']; ?>">
+										<?php echo $author['name']; ?> <small>@<?php echo $author['login']; ?></small>
+									</a>
+								</span>
 							<?php endif; ?>
 						<?php endif; ?>
 						
@@ -408,12 +419,9 @@ class Pulse_CPT {
 								<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL; ?>/img/spinner.gif" />
 							</span>
 						</ul>
-					</div>
-					
-					<div class="pulse-expand-content pulse-nomargin visible-expanded">
 						<?php if ( $template ): ?>
 							{{ if ( it.tags ) { }}
-								<ul class="pulse-tags">
+								<ul class="pulse-tags hidden-collapsed">
 									{{~it.tags :value:index}}
 									<li>
 										<a href="{{=value.url}}">{{=value.name}}</a> 
@@ -423,7 +431,7 @@ class Pulse_CPT {
 							{{ } }}
 						<?php else: ?>
 							<?php if ( ! empty( $it['tags'] ) ): ?>
-								<ul class="pulse-tags">
+								<ul class="pulse-tags hidden-collapsed">
 									<?php foreach( $it['tags'] as $tag ): ?>
 										<li>
 											<a href="<?php echo $tag['url']; ?>"><?php echo $tag['name']; ?></a>
@@ -432,7 +440,9 @@ class Pulse_CPT {
 								</ul>
 							<?php endif; ?>
 						<?php endif; ?>
-						
+					</div>
+					
+					<div class="pulse-expand-content pulse-nomargin visible-expanded">
 						<div class="pulse-pivot"></div>
 						<div class="pulse-replies"></div>
 					</div> <!-- end of pulse-expand-content -->

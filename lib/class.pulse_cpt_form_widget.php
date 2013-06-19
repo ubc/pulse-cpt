@@ -242,6 +242,12 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			return; // There are no pulses, and we can't post. Don't display anything.
 		endif;
 		
+		$id = substr( $args['widget_id'], 10 );
+		$content_identifier = Pulse_CPT::get_content_type_for_node();
+		$split = explode( '/', $content_identifier, 2 );
+		$content_type = $split[0];
+		$content_value = $split[1];
+		
 		echo $args['before_widget']; 
 		if ( ! empty( $instance['title'] ) && $instance['display_title'] ):
 			echo $args['before_title'];
@@ -328,12 +334,6 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$instance['rating_metric'] = get_option( 'pulse_default_metric' );
 		endif;
 		
-		$id = substr( $args['widget_id'], 10 );
-		$content_identifier = Pulse_CPT::get_content_type_for_node();
-		$split = explode( '/', $content_identifier, 2 );
-		$content_type = $split[0];
-		$content_value = $split[1];
-		
 		if ( class_exists('Evaluate') ):
 			$metric_data = Evaluate::get_data_by_slug( $instance['rating_metric'] );
 		else:
@@ -376,7 +376,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						<div class="pulse-author-shell tagbox-display-shell"></div>
 						<div class="pulse-file-shell tagbox-display-shell"></div>
 					<?php endif; ?>
-						
+					
 					<?php if ( $has_tabs_bar ): ?>
 						<div class="pulse-tabs">
 							<?php if ( $instance['tabs']['tagging'] ): ?>
@@ -499,7 +499,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			<?php
 				while ( $pulse_query->have_posts() ):
 					$pulse_query->the_post();
-					Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance ) );
+					Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance ), false, $content_type == 'author' );
 				endwhile;
 				
 				// Reset Post Data
@@ -586,6 +586,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			$pulse_count = 0;
 			$index = 0;
 			$offset = ( empty( $data['offset'] ) ? 0 : $data['offset'] );
+			
 			while ( $query->have_posts() ):
 				$post = $query->the_post();
 				$pulse_data = Pulse_CPT::the_pulse_array( $widgets[$data['widget_id']] );
