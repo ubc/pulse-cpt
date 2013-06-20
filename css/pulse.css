@@ -75,26 +75,61 @@
 }
 
 
+/* Pulse Mini View */
+.pulse.mini {
+    height: 34px;
+}
 
-/* Expanded */
-.pulse > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-expanded,
-.pulse > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-collapsed,
-.pulse > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-hover,
-.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-expanded,
-.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-collapsed,
-.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-hover,
-.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-expanded,
-.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-collapse,
-.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-hover {
+.pulse-mini {
+    width: 100%;
+    font-size: smaller;
+}
+
+.pulse-mini a {
+    text-decoration: none;
+}
+
+.pulse-mini p {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding: 0 8px;
+    margin: 0;
+    font-size: larger;
+}
+
+.pulse-mini br,
+.pulse-mini .evaluate-metrics-wrapper {
     display: none;
 }
 
-.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-expanded,
-.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-collapsed,
-.pulse.expand > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-hover,
-.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-expanded,
-.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .hidden-collapsed,
-.pulse:hover > .pulse-inner > .pulse-wrap > *:not(.pulse-expand-content) .visible-hover {
+.pulse-mini .reply-to {
+    float: right;
+}
+
+
+/* Expanded */
+.pulse .visible-expanded,
+.pulse .hidden-collapsed,
+.pulse .visible-hover,
+.pulse.expand .hidden-expanded,
+.pulse.expand .visible-collapsed,
+.pulse.expand .visible-hover,
+.pulse:hover .visible-expanded,
+.pulse:hover .visible-collapsed,
+.pulse:hover .hidden-hover {
+    display: none;
+}
+
+.pulse.expand .visible-expanded,
+.pulse.expand .hidden-collapsed,
+.pulse.expand .hidden-hover,
+.pulse:hover .hidden-expanded,
+.pulse:hover .hidden-collapsed,
+.pulse:hover .visible-hover,
+.pulse:not(:hover) .hidden-expanded,
+.pulse:not(:hover) .visible-collapsed,
+.pulse:not(:hover) .hidden-hover {
     display: inline-block;
 }
 

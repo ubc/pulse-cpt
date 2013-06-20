@@ -276,9 +276,20 @@ class Pulse_CPT {
 		endif;
 		
 		?>
-		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>">
+		<div class="pulse pulse-<?php echo $it['ID']; ?><?php echo ( $mini ? " mini" : "" ); ?>" data-pulse-id="<?php echo $it['ID']; ?>">
 			<div class="pulse-inner">
-				<div class="pulse-wrap pulse-margin">
+				<?php if ( $mini ): ?>
+					<div class="pulse-mini visible-collapsed">
+						<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
+							<?php echo $it['date']; ?>
+						</a>
+						<span class="reply-to">
+							Posted on <?php echo $it['parent_link']; ?>
+						</span>
+						<?php echo $it['content']; ?>
+					</div>
+				<?php endif; ?>
+				<div class="pulse-wrap pulse-margin<?php echo ( $mini ? " hidden-collapsed" : "" ); ?>">
 					<div class="pulse-meta">
 						<div class="pulse-avatar pulse-nomargin">
 							<?php if ( $template ): ?>
@@ -447,7 +458,6 @@ class Pulse_CPT {
 						<div class="pulse-replies"></div>
 					</div> <!-- end of pulse-expand-content -->
 				</div> <!-- end of pulse wrap -->
-				
 			</div>
 		</div>
 		<?php
@@ -538,11 +548,14 @@ class Pulse_CPT {
 		
 		if ( isset( $parent ) && $id !== $parent ):
 			if ( $parent == 0 ):
-				$reply_to = 'on the <a href="'.home_url().'">Front Page</a>';
+				$parent_link = '<a href="'.home_url().'">Front Page</a>';
+				$reply_to = 'on the '.$parent_link;
 			else:
-				$reply_to = 'in reply to <a href="'.get_permalink( $parent ).'">'.get_the_title( $parent ).'</a>';
+				$parent_link = '<a href="'.get_permalink( $parent ).'">'.get_the_title( $parent ).'</a>';
+				$reply_to = 'in reply to '.$parent_link;
 			endif;
 		else:
+			$parent_link = "";
 			$reply_to = "";
 		endif;
 		
@@ -562,6 +575,7 @@ class Pulse_CPT {
 			'authors'        => $coauthors,
 			'num_replies'    => self::get_num_replies(),
 			'parent'         => $parent,
+			'parent_link'    => $parent_link,
 			'reply_to'       => $reply_to,
 			'content_rating' => $content_rating,
 			'rating'         => array(
@@ -605,6 +619,7 @@ class Pulse_CPT {
 				'post_url'     => '{{=it.author.post_url}}',
 			),
 			'num_replies'    => '{{=it.num_replies}}',
+			'parent_link'    => '{{=it.parent_link}}',
 			'reply_to'       => '{{=it.reply_to}}',
 			'content_rating' => $content_rating,
 			'rating'         => array(
