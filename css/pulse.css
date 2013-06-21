@@ -238,7 +238,7 @@ body:not(.author) .pulse-wrap {
 /* Pulse Authors */
 .pulse-authors {
     margin-bottom: 5px;
-    overflow: hidden;
+    height: 36px;
 }
 
 .pulse-authors ul {
