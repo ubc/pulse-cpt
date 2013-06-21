@@ -12,8 +12,8 @@
 	border-bottom-color: #ECECEC;
     background: white;
 	padding: 5px;
-    box-sizing:border-box;
-    -moz-box-sizing:border-box;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
 }
 
 .pulse-content {
@@ -76,8 +76,16 @@
 
 
 /* Pulse Mini View */
-.pulse.mini {
+body.author .pulse {
     height: 34px;
+}
+
+body:not(.author) .pulse-mini {
+    display: none !important;
+}
+
+body:not(.author) .pulse-wrap {
+    display: block !important;
 }
 
 .pulse-mini {
@@ -109,18 +117,19 @@
 
 
 /* Expanded */
-.pulse .visible-expanded,
-.pulse .hidden-collapsed,
-.pulse .visible-hover,
-.pulse.expand .hidden-expanded,
-.pulse.expand .visible-collapsed,
-.pulse.expand .visible-hover,
-.pulse:hover .visible-expanded,
-.pulse:hover .visible-collapsed,
-.pulse:hover .hidden-hover {
+.pulse:not(.expand):not(:hover) .visible-expanded,
+.pulse:not(.expand):not(:hover) .hidden-collapsed,
+.pulse:not(.expand):not(:hover) .visible-hover,
+.pulse:not(:hover).expand .hidden-expanded,
+.pulse:not(:hover).expand .visible-collapsed,
+.pulse:not(:hover).expand .visible-hover,
+.pulse:not(.expand):hover .visible-expanded,
+.pulse:not(.expand):hover .visible-collapsed,
+.pulse:not(.expand):hover .hidden-hover {
     display: none;
 }
 
+/*
 .pulse.expand .visible-expanded,
 .pulse.expand .hidden-collapsed,
 .pulse.expand .hidden-hover,
@@ -132,6 +141,7 @@
 .pulse:not(:hover) .hidden-hover {
     display: inline-block;
 }
+*/
 
 .pulse:hover > .pulse-inner,
 .pulse.expand > .pulse-inner {
@@ -239,6 +249,7 @@
 /* Pulse Authors */
 .pulse-authors {
     margin-bottom: 5px;
+    overflow: hidden;
 }
 
 .pulse-authors ul {

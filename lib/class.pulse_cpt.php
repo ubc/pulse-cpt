@@ -266,7 +266,7 @@ class Pulse_CPT {
 	 * @param mixed $it (default: null)
 	 * @return void
 	 */
-	public static function the_pulse( $it = null, $template = false, $mini = false ) {
+	public static function the_pulse( $it = null, $template = false ) {
 		if ( $it == null ):
 			if ( $template ):
 				$it = self::the_pulse_array_js();
@@ -276,20 +276,18 @@ class Pulse_CPT {
 		endif;
 		
 		?>
-		<div class="pulse pulse-<?php echo $it['ID']; ?><?php echo ( $mini ? " mini" : "" ); ?>" data-pulse-id="<?php echo $it['ID']; ?>">
+		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>">
 			<div class="pulse-inner">
-				<?php if ( $mini ): ?>
-					<div class="pulse-mini visible-collapsed">
-						<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
-							<?php echo $it['date']; ?>
-						</a>
-						<span class="reply-to">
-							Posted on <?php echo $it['parent_link']; ?>
-						</span>
-						<?php echo $it['content']; ?>
-					</div>
-				<?php endif; ?>
-				<div class="pulse-wrap pulse-margin<?php echo ( $mini ? " hidden-collapsed" : "" ); ?>">
+				<div class="pulse-mini visible-collapsed">
+					<a class="pulse-timestamp" href="<?php echo $it['permalink']; ?>">
+						<?php echo $it['date']; ?>
+					</a>
+					<span class="reply-to">
+						Posted on <?php echo $it['parent_link']; ?>
+					</span>
+					<?php echo $it['content']; ?>
+				</div>
+				<div class="pulse-wrap pulse-margin hidden-collapsed">
 					<div class="pulse-meta">
 						<div class="pulse-avatar pulse-nomargin">
 							<?php if ( $template ): ?>

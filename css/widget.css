@@ -2,6 +2,10 @@
     color: darkred;
 }
 
+.site #main .widget-area {
+    overflow: visible;
+}
+
 /* Widget */
 .widget_pulse_cpt h1 {
     margin-bottom: 0;
@@ -12,8 +16,8 @@
     margin-top: 10px !important;
 }
 
-.archive .widget_pulse_cpt > .widget-wrap > .postbox-placeholder,
-.archive .widget_pulse_cpt > .widget-wrap > .postbox {
+.archive .pulse-widget > .postbox-placeholder,
+.archive .pulse-widget > .postbox {
     display: none !important;
 }
 
