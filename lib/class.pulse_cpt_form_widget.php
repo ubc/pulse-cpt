@@ -329,9 +329,9 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					</div>
 				<?php
 				*/
-			else:
-				self::$quantity++;
 			endif;
+			
+			self::$quantity++;
 			
 			if ( $instance['rating_metric'] == 'default' ):
 				$instance['rating_metric'] = get_option( 'pulse_default_metric' );

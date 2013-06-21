@@ -72,12 +72,23 @@ class Pulse_CPT_Form {
 					'avatar' => Pulse_CPT_Form::get_user_image( $author, 30, FALSE ),
 				);
 			endforeach;
+		else:
+			$author = get_userdata( $post->post_author );
+			$coauthors[] = array(
+				'name'   => $author->display_name,
+				'login'  => $author->user_login,
+				'url'    => get_author_posts_url( $author->ID, $author->user_nicename ),
+				'ID'     => $author->ID,
+				'avatar' => Pulse_CPT_Form::get_user_image( $author, 30, FALSE ),
+			);
 		endif;
 		
 		if ( empty( $coauthors ) ):
 			$coauthors = false;
 		endif;
-	  
+		
+		error_log( print_r( $coauthors, TRUE ) );
+		
 		return $coauthors;
 	}
 	

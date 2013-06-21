@@ -498,7 +498,7 @@ class Pulse_CPT {
 		endif;
 		
 		// Coauthors
-		$coauthors = Pulse_CPT_Form::get_coauthors();
+		$authors = Pulse_CPT_Form::get_coauthors();
 		
 		// Evaluate
 		if ( $widget['rating_metric'] == 'default' ):
@@ -570,7 +570,7 @@ class Pulse_CPT {
 				'post_url'     => get_author_posts_url( get_the_author_meta('ID') ),
 			),
 			'tags'	         => $tags,
-			'authors'        => $coauthors,
+			'authors'        => $authors,
 			'num_replies'    => self::get_num_replies(),
 			'parent'         => $parent,
 			'parent_link'    => $parent_link,

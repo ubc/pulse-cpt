@@ -3,6 +3,9 @@
 	margin: 0 5px;
     font-size: 13.5px;
 	position: relative;
+}
+
+.pulse-list .pulse {
     height: 90px;
 }
 
@@ -16,7 +19,7 @@
     -moz-box-sizing: border-box;
 }
 
-.pulse-content {
+.pulse-list .pulse-content {
     word-wrap: break-word;
     padding-bottom: 3px;
     height: 50px;
@@ -28,7 +31,7 @@
     margin-bottom: 0;
 }
 
-.widget .pulse-content .evaluate-metrics-wrapper {
+.pulse-list  .pulse-content .evaluate-metrics-wrapper {
     display: none;
 }
 
@@ -117,41 +120,27 @@ body:not(.author) .pulse-wrap {
 
 
 /* Expanded */
-.pulse:not(.expand):not(:hover) .visible-expanded,
-.pulse:not(.expand):not(:hover) .hidden-collapsed,
-.pulse:not(.expand):not(:hover) .visible-hover,
-.pulse:not(:hover).expand .hidden-expanded,
-.pulse:not(:hover).expand .visible-collapsed,
-.pulse:not(:hover).expand .visible-hover,
-.pulse:not(.expand):hover .visible-expanded,
-.pulse:not(.expand):hover .visible-collapsed,
-.pulse:not(.expand):hover .hidden-hover {
+.pulse-list .pulse:not(.expand):not(:hover) .visible-expanded,
+.pulse-list .pulse:not(.expand):not(:hover) .hidden-collapsed,
+.pulse-list .pulse:not(.expand):not(:hover) .visible-hover,
+.pulse-list .pulse:not(:hover).expand .hidden-expanded,
+.pulse-list .pulse:not(:hover).expand .visible-collapsed,
+.pulse-list .pulse:not(:hover).expand .visible-hover,
+.pulse-list .pulse:not(.expand):hover .visible-expanded,
+.pulse-list .pulse:not(.expand):hover .visible-collapsed,
+.pulse-list .pulse:not(.expand):hover .hidden-hover {
     display: none;
 }
 
-/*
-.pulse.expand .visible-expanded,
-.pulse.expand .hidden-collapsed,
-.pulse.expand .hidden-hover,
-.pulse:hover .hidden-expanded,
-.pulse:hover .hidden-collapsed,
-.pulse:hover .visible-hover,
-.pulse:not(:hover) .hidden-expanded,
-.pulse:not(:hover) .visible-collapsed,
-.pulse:not(:hover) .hidden-hover {
-    display: inline-block;
-}
-*/
-
-.pulse:hover > .pulse-inner,
-.pulse.expand > .pulse-inner {
+.pulse-list .pulse:hover > .pulse-inner,
+.pulse-list .pulse.expand > .pulse-inner {
     box-shadow: 0 4px 2px -2px rgba(0,0,0,0.4);
     position: absolute;
     top: 0;
 }
 
-.pulse:hover .pulse-content,
-.pulse.expand .pulse-content {
+.pulse-list .pulse:hover .pulse-content,
+.pulse-list .pulse.expand .pulse-content {
     height: auto;
 }
 
