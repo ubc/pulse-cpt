@@ -87,8 +87,6 @@ class Pulse_CPT_Form {
 			$coauthors = false;
 		endif;
 		
-		error_log( print_r( $coauthors, TRUE ) );
-		
 		return $coauthors;
 	}
 	
