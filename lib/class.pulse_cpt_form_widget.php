@@ -502,7 +502,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				<?php
 					while ( $pulse_query->have_posts() ):
 						$pulse_query->the_post();
-						Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance ), false, $content_type == 'author' );
+						Pulse_CPT::the_pulse( Pulse_CPT::the_pulse_array( $instance ), false, false );
 					endwhile;
 					
 					// Reset Post Data
@@ -662,7 +662,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
   	public static function footer( $instance ) {
   		$it = Pulse_CPT::the_pulse_array_js( $instance );
   		?>
-  		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it, TRUE ); ?></script>
+  		<script id="pulse-cpt-single" type="text/x-dot-template"><?php Pulse_CPT::the_pulse( $it, false, true ); ?></script>
   		<?php 
   	}
 	

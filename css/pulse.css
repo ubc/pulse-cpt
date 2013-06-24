@@ -1,3 +1,7 @@
+.pulse-cpt-title {
+    display: none;
+}
+
 /* Pulse */
 .pulse {
 	margin: 0 5px;
@@ -31,15 +35,15 @@
     margin-bottom: 0;
 }
 
-.pulse-list  .pulse-content .evaluate-metrics-wrapper {
+.pulse-list .pulse-content .evaluate-metrics-wrapper {
     display: none;
 }
 
-.pulse-margin {
+.pulse-list .pulse-margin {
 	margin-left: 36px;
 }
 
-.pulse-nomargin {
+.pulse-list .pulse-nomargin {
 	margin-left: -36px;
 }
 
