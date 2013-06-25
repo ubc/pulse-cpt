@@ -37,7 +37,7 @@ The drag the "Pulse Form" widget from the Available Widgets section to one of th
 Make sure you customize your widget, and voila your pulse list will now appear in that content area.
 The widget configuration will point out necessary plugins for each feature.
 
-You can read some more thorough documentation of this plugin (although intended for UBC staff), at http://wiki.ubc.ca/Documentation:Wordpress/Plugins/Pulse_CPT
+You can read more thorough documentation of this plugin (although intended for UBC staff), at http://wiki.ubc.ca/Documentation:Wordpress/Plugins/Pulse_CPT
 
 
 == Screenshots ==

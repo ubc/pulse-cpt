@@ -289,8 +289,8 @@ class Pulse_CPT {
 						<?php echo $it['content']; ?>
 					</div>
 				<?php endif; ?>
-				<div class="pulse-wrap pulse-margin hidden-collapsed">
-					<div class="pulse-meta">
+				<div class="pulse-wrap hidden-collapsed">
+					<div class="pulse-meta pulse-margin">
 						<?php if ( ! $single ): ?>
 							<div class="pulse-avatar pulse-nomargin">
 								<?php if ( $template ): ?>
@@ -342,7 +342,7 @@ class Pulse_CPT {
 						<?php endif; ?>
 					</div>
 					
-					<div class="pulse-content">
+					<div class="pulse-content pulse-margin">
 						<?php if ( ! $single ): ?>
 							<?php if ( $template ): ?>
 								{{? it.authors.length > 1 }}
@@ -411,7 +411,7 @@ class Pulse_CPT {
 					</div>
 					
 					<?php if ( ! $single ): ?>
-						<div class="pulse-actions pulse-nomargin">
+						<div class="pulse-actions">
 							<ul>
 								<li class="hidden-collapsed">
 									<a href="#expand-url" class="expand-action">Expand</a>
@@ -458,7 +458,7 @@ class Pulse_CPT {
 							<?php endif; ?>
 						</div>
 						
-						<div class="pulse-expand-content pulse-nomargin visible-expanded">
+						<div class="pulse-expand-content visible-expanded">
 							<div class="pulse-pivot"></div>
 							<div class="pulse-replies"></div>
 						</div> <!-- end of pulse-expand-content -->
