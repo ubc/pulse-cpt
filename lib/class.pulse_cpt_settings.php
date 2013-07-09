@@ -21,8 +21,6 @@ class Pulse_CPT_Settings {
 		self::$options['CTLT_EVALUATE'] = is_plugin_active('evaluate/evaluate.php');
 		self::$options['COAUTHOR_PLUGIN'] = defined('COAUTHORS_PLUS_VERSION');
 		
-		
-		
 		self::$bitly_username = get_option( 'pulse_bitly_username' );
 		self::$bitly_key = get_option( 'pulse_bitly_key' );
 		
@@ -30,12 +28,12 @@ class Pulse_CPT_Settings {
 		add_action( 'init', array( __CLASS__, 'start' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 	}
+	
 	public static function start() {
 		if ( self::$options['CTLT_STREAM'] && class_exists('CTLT_Stream') ):
 			CTLT_Stream::$add_script = true;
 		endif;
 	}
-	
 	
 	public static function load() {
 		//register settings

@@ -291,6 +291,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 								Please go to the <a href="wp-admin/widgets.php">Widgets menu</a>, and remove the excess pulse form widgets.
 							</small>
 						</div>
+						</div>
 					<?php
 					echo $args['after_widget'];
 				endif;
@@ -308,6 +309,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 								<br />
 								<a href=" <?php echo get_edit_post_link( $post->ID ); ?> ">Edit this page</a>, if you wish to enable Pulse CPT.
 							</small>
+						</div>
 						</div>
 					<?php
 					echo $args['after_widget'];
