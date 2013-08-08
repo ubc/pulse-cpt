@@ -9,7 +9,7 @@
 	position: relative;
 }
 
-.pulse-list .pulse {
+.pulse-list.compact .pulse {
     height: 90px;
 }
 
@@ -26,6 +26,9 @@
 .pulse-list .pulse-content {
     word-wrap: break-word;
     padding-bottom: 3px;
+}
+
+.pulse-list.compact .pulse-content {
     height: 50px;
     min-height: 50px;
     overflow: hidden;
@@ -125,26 +128,26 @@ body:not(.author) .pulse-wrap {
 
 /* Expanded */
 .pulse-list .pulse:not(.expand):not(:hover) .visible-expanded,
-.pulse-list .pulse:not(.expand):not(:hover) .hidden-collapsed,
-.pulse-list .pulse:not(.expand):not(:hover) .visible-hover,
-.pulse-list .pulse:not(:hover).expand .hidden-expanded,
-.pulse-list .pulse:not(:hover).expand .visible-collapsed,
-.pulse-list .pulse:not(:hover).expand .visible-hover,
-.pulse-list .pulse:not(.expand):hover .visible-expanded,
-.pulse-list .pulse:not(.expand):hover .visible-collapsed,
-.pulse-list .pulse:not(.expand):hover .hidden-hover {
+.pulse-list.compact .pulse:not(.expand):not(:hover) .hidden-collapsed,
+.pulse-list.compact .pulse:not(.expand):not(:hover) .visible-hover,
+.pulse-list.compact .pulse:not(:hover).expand .hidden-expanded,
+.pulse-list.compact .pulse:not(:hover).expand .visible-collapsed,
+.pulse-list.compact .pulse:not(:hover).expand .visible-hover,
+.pulse-list.compact .pulse:not(.expand):hover .visible-expanded,
+.pulse-list.compact .pulse:not(.expand):hover .visible-collapsed,
+.pulse-list.compact .pulse:not(.expand):hover .hidden-hover {
     display: none;
 }
 
-.pulse-list .pulse:hover > .pulse-inner,
-.pulse-list .pulse.expand > .pulse-inner {
+.pulse-list.compact .pulse:hover > .pulse-inner,
+.pulse-list.compact .pulse.expand > .pulse-inner {
     box-shadow: 0 4px 2px -2px rgba(0,0,0,0.4);
     position: absolute;
     top: 0;
 }
 
-.pulse-list .pulse:hover .pulse-content,
-.pulse-list .pulse.expand .pulse-content {
+.pulse-list.compact .pulse:hover .pulse-content,
+.pulse-list.compact .pulse.expand .pulse-content {
     height: auto;
 }
 

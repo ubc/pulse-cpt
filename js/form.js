@@ -15,7 +15,9 @@ var Pulse_CPT_Form = {
 		jQuery('.pulse-form').submit( Pulse_CPT_Form.submitForm );
 		
 		if ( typeof Pulse_CPT_Form_local != 'undefined' ) {
-			jQuery.each( Pulse_CPT_Form_local, function( index, value ) { Pulse_CPT_Form.init( index, value, jQuery('.pulse-form') ) } ); 
+			jQuery.each( Pulse_CPT_Form_local, function( index, value ) {
+				Pulse_CPT_Form.init( index, value, jQuery('.pulse-form') );
+			} ); 
 		}
 		
 		Pulse_CPT_Form.single_pulse_template = doT.template( document.getElementById('pulse-cpt-single').text );

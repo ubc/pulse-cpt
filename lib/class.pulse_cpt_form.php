@@ -9,7 +9,6 @@ class Pulse_CPT_Form {
 		add_action( 'wp_ajax_pulse_cpt_insert',     array( __CLASS__, 'insert' ) );
 		
 		add_action( 'publish_pulse-cpt',            array( __CLASS__, 'send_to_stream' ), 20 );
-		
 		add_filter( 'wp_insert_post_data',          array( __CLASS__, 'edit_post_data' ), 10, 2 );
 	}
 	

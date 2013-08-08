@@ -38,6 +38,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		return array_merge( $old_instance, array(
 			'title'                  => strip_tags( $new_instance['title'] ),
 			'display_title'          => (bool) $new_instance['display_title'],
+			'compact_view'           => (bool) $new_instance['compact_view'],
 			'placeholder'            => strip_tags( $new_instance['placeholder'] ),
 			'enable_character_count' => (bool) $new_instance['enable_character_count'],
 			'num_char'               => (int) $new_instance['num_char'],
@@ -62,6 +63,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, array(
 		    'title'                  => '',
 		    'display_title'          => false,
+			'compact_view'            => true,
 		    'placeholder'            => 'What is on your mind?',
 		    'enable_character_count' => false,
 		    'num_char'               => 140,
@@ -85,8 +87,16 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					Title: <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($instance['title']); ?>" />
 				</label>
 				<label for="<?php echo $this->get_field_id('display_title'); ?>">
-					<input  id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>" type="checkbox" <?php echo checked($instance['display_title']); ?> /> Display Title
+					<input id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>" type="checkbox" <?php echo checked($instance['display_title']); ?> /> Display Title
 				</label>
+			</p>
+			<!-- Compact View -->
+			<p>
+				<label for="<?php echo $this->get_field_id('compact_view'); ?>">
+					<input id="<?php echo $this->get_field_id('compact_view'); ?>" name="<?php echo $this->get_field_name('compact_view'); ?>" type="checkbox" <?php echo checked($instance['compact_view']); ?> /> Use Compact View
+				</label>
+				<br />
+				<small>Display the pulse list in the feed style.</small>
 			</p>
 			<!-- Placeholder -->
 			<p>
@@ -97,7 +107,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			<!-- Character Count -->
 			<p>
 				<label for="<?php echo $this->get_field_id('enable_character_count'); ?>">
-					<input  id="<?php echo $this->get_field_id('enable_character_count'); ?>" name="<?php echo $this->get_field_name('enable_character_count'); ?>" type="checkbox"<?php echo checked($instance['enable_character_count']); ?> /> Limit Character Count
+					<input id="<?php echo $this->get_field_id('enable_character_count'); ?>" name="<?php echo $this->get_field_name('enable_character_count'); ?>" type="checkbox"<?php echo checked($instance['enable_character_count']); ?> /> Limit Character Count
 				</label>
 				<br />
 				<input  id="<?php echo $this->get_field_id('num_char'); ?>" name="<?php echo $this->get_field_name('num_char'); ?>" type="text" value="<?php echo esc_attr($instance['num_char']); ?>" />
@@ -108,7 +118,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			<!-- Enable Tagging -->
 			<p>
 				<label for="<?php echo $this->get_field_id('enable_tagging'); ?>">
-					<input  id="<?php echo $this->get_field_id('enable_tagging'); ?>" name="<?php echo $this->get_field_name('enable_tagging'); ?>" type="checkbox" <?php echo checked($instance['tabs']['tagging']); ?> /> Enable Tagging
+					<input id="<?php echo $this->get_field_id('enable_tagging'); ?>" name="<?php echo $this->get_field_name('enable_tagging'); ?>" type="checkbox" <?php echo checked($instance['tabs']['tagging']); ?> /> Enable Tagging
 				</label>
 				<br />
 				<small>Pulse authors can add tags to the pulse</small>
@@ -234,7 +244,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 	 * @return void
 	 */
 	function widget( $args, $instance ) {
-		global $post, $current_user;
+		global $post, $current_user, $wp_query;
 		
 		$pulse_query = new WP_Query( self::query_arguments() );
 		
@@ -307,7 +317,26 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 							<small>
 								This message is only displayed to administrators.
 								<br />
-								<a href=" <?php echo get_edit_post_link( $post->ID ); ?> ">Edit this page</a>, if you wish to enable Pulse CPT.
+								<a href="<?php echo get_edit_post_link( $post->ID ); ?> ">Edit this page</a>, if you wish to enable Pulse CPT.
+							</small>
+						</div>
+						</div>
+					<?php
+					echo $args['after_widget'];
+				endif;
+				
+				return;
+			elseif ( is_search() ):
+				if ( current_user_can( 'administrator' ) ):
+					?>
+						<div class="pulse-widget-warning">
+							<div class="error">
+								Pulse CPT does not currently support search pages.
+							</div>
+							<small>
+								This message is only displayed to administrators.
+								<br />
+								The pulse list currently has undefined behaviour on search pages, and has thus been disabled.
 							</small>
 						</div>
 						</div>
@@ -360,97 +389,13 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					'tabs'                   => $instance['tabs'],
 				);
 				
-				$has_tabs_bar = ! empty( $instance['tabs'] ) || $instance['enable_character_count'];
-				$tabs_class = ( $has_tabs_bar ? "tabs" : "no-tabs" );
+				self::pulse_form( $instance, $content_identifier, $id );
+			else:
 				?>
-				<div class="postbox-placeholder">Reply to Current</div>
-				<div class="postbox <?php echo $tabs_class; ?>">
-					<form action="" method="post" name="new-post" class="pulse-form">
-						<div class="pulse-form-input">
-							<textarea rows="4" tabindex="1" class="autogrow" name="posttext" placeholder="<?php echo $instance['placeholder']; ?>"></textarea>
-						</div>
-						
-						<?php if ( $instance['enable_url_shortener'] && ! empty( Pulse_CPT_Settings::$bitly_username ) && ! empty( Pulse_CPT_Settings::$bitly_key ) ): ?>
-							<div class="pulse-shorten-url">
-								<a href="#shorten-url">shorten url</a>
-							</div>
-						<?php endif; ?>
-						
-						<?php if ( ! empty( $instance['tabs'] ) ): ?>
-							<div class="pulse-tags-shell tagbox-display-shell"></div>
-							<div class="pulse-author-shell tagbox-display-shell"></div>
-							<div class="pulse-file-shell tagbox-display-shell"></div>
-						<?php endif; ?>
-						
-						<?php if ( $has_tabs_bar ): ?>
-							<div class="pulse-tabs">
-								<?php if ( $instance['tabs']['tagging'] ): ?>
-									<div id="tabs-1">
-										<input type="hidden" placeholder="Seperate tags by commas" class="pulse-textarea-tags pulse-meta-textarea" name="tags" />
-									</div>
-								<?php endif; ?>
-								
-								<?php if ( $instance['tabs']['co_authoring'] && Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): ?>
-									<div id="tabs-2">
-										<input type="hidden" placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author" />
-									</div>
-								<?php endif; ?>
-								
-								<?php if ( $instance['tabs']['file_uploads'] ): ?>
-									<div id="tabs-3">
-										file upload
-									</div>
-								<?php endif; ?>
-								
-								<ul role="tablist" class="pulse-tablist">
-									<?php if ( $instance['tabs']['tagging'] ): ?>
-										<li><a href="#tabs-1" class="pulse-tabs-tags">tags</a></li>
-									<?php endif; ?>
-									
-									<?php if ( $instance['tabs']['co_authoring'] && Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): ?>
-										<li><a href="#tabs-2" class="pulse-tabs-author">authors</a></li>
-									<?php endif; ?>
-									
-									<?php if ( $instance['tabs']['file_uploads'] ): ?>
-										<li><a href="#tabs-3" class="pulse-tabs-file">file</a></li>
-									<?php endif; ?>
-								</ul>
-							</div>
-						<?php endif; ?>
-						
-						<div class="pulse-form-submit-wrap">
-							<?php if ( $instance['enable_character_count'] ): ?>
-								<span class="pulse-form-counter"><?php echo $instance['num_char']; ?></span>
-							<?php endif; ?>
-							<span class="pulse-form-progress hide">
-								<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
-							</span>	
-							<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit btn button" />
-						</div>
-						<input type="hidden" value="<?php echo $instance['enable_comments']; ?>" name="enable_comments" />
-						<input type="hidden" value="pulse_cpt_insert" name="action" />
-						<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); ?>
-						
-						<?php $location = Pulse_CPT_Form_Widget::get_location(); ?>
-						<?php if ( $location ): ?> 
-							<input type="hidden" value="<?php echo $location['type']; ?>" name="location[type]" />
-							<input type="hidden" value="<?php echo $location['ID']; ?>" name="location[ID]" />
-						<?php endif; ?>
-						
-						<?php 
-							if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
-								wp_nonce_field( 'evaluate_pulse-meta', 'evaluate_nonce' );
-							endif;
-						?>
-						<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
-						<input type="hidden" value="<?php echo $content_identifier; ?>" name="content_type" class="content-type"></input>
-					</form>
-				</div>
-			<?php else: ?>
 				<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
-			<?php endif; ?>
-			
-			<?php global $wp_query; ?>
+				<?php
+			endif;
+			?>
 			<input type="hidden" value="<?php echo $wp_query->query_vars['author_name']; ?>" name="filters[author_id]" class="author-id"></input>
 			<input type="hidden" value="<?php echo $wp_query->query_vars['cat']; ?>" name="filters[cat_id]" class="cat-id"></input>
 			<input type="hidden" value="<?php echo $wp_query->query_vars['tag_id']; ?>" name="filters[tag_id]" class="tag-id"></input>
@@ -500,7 +445,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					</select>
 				</span>
 			</div>
-			<div class="pulse-list">
+			<div class="pulse-list <?php echo ( $instance['compact_view'] ? "compact" : "" ); ?>">
 				<?php
 					while ( $pulse_query->have_posts() ):
 						$pulse_query->the_post();
@@ -518,6 +463,96 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		<?php
 		echo $args['after_widget'];
 		self::footer( $instance );
+	}
+	
+	public static function pulse_form( $instance, $content_identifier, $id ) {
+		$has_tabs_bar = ! empty( $instance['tabs'] ) || $instance['enable_character_count'];
+		$tabs_class = ( $has_tabs_bar ? "tabs" : "no-tabs" );
+		?>
+		<div class="postbox-placeholder">Reply to Current</div>
+		<div class="postbox <?php echo $tabs_class; ?>">
+			<form action="" method="post" name="new-post" class="pulse-form">
+				<div class="pulse-form-input">
+					<textarea rows="4" tabindex="1" class="autogrow" name="posttext" placeholder="<?php echo $instance['placeholder']; ?>"></textarea>
+				</div>
+				
+				<?php if ( $instance['enable_url_shortener'] && ! empty( Pulse_CPT_Settings::$bitly_username ) && ! empty( Pulse_CPT_Settings::$bitly_key ) ): ?>
+					<div class="pulse-shorten-url">
+						<a href="#shorten-url">shorten url</a>
+					</div>
+				<?php endif; ?>
+				
+				<?php if ( ! empty( $instance['tabs'] ) ): ?>
+					<div class="pulse-tags-shell tagbox-display-shell"></div>
+					<div class="pulse-author-shell tagbox-display-shell"></div>
+					<div class="pulse-file-shell tagbox-display-shell"></div>
+				<?php endif; ?>
+				
+				<?php if ( $has_tabs_bar ): ?>
+					<div class="pulse-tabs">
+						<?php if ( $instance['tabs']['tagging'] ): ?>
+							<div id="tabs-1">
+								<input type="hidden" placeholder="Seperate tags by commas" class="pulse-textarea-tags pulse-meta-textarea" name="tags" />
+							</div>
+						<?php endif; ?>
+						
+						<?php if ( $instance['tabs']['co_authoring'] && Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): ?>
+							<div id="tabs-2">
+								<input type="hidden" placeholder="People you are posting with" class="pulse-textarea-author pulse-meta-textarea" name="author" />
+							</div>
+						<?php endif; ?>
+						
+						<?php if ( $instance['tabs']['file_uploads'] ): ?>
+							<div id="tabs-3">
+								file upload
+							</div>
+						<?php endif; ?>
+						
+						<ul role="tablist" class="pulse-tablist">
+							<?php if ( $instance['tabs']['tagging'] ): ?>
+								<li><a href="#tabs-1" class="pulse-tabs-tags">tags</a></li>
+							<?php endif; ?>
+							
+							<?php if ( $instance['tabs']['co_authoring'] && Pulse_CPT_Settings::$options['COAUTHOR_PLUGIN'] ): ?>
+								<li><a href="#tabs-2" class="pulse-tabs-author">authors</a></li>
+							<?php endif; ?>
+							
+							<?php if ( $instance['tabs']['file_uploads'] ): ?>
+								<li><a href="#tabs-3" class="pulse-tabs-file">file</a></li>
+							<?php endif; ?>
+						</ul>
+					</div>
+				<?php endif; ?>
+				
+				<div class="pulse-form-submit-wrap">
+					<?php if ( $instance['enable_character_count'] ): ?>
+						<span class="pulse-form-counter"><?php echo $instance['num_char']; ?></span>
+					<?php endif; ?>
+					<span class="pulse-form-progress hide">
+						<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
+					</span>
+					<input type="submit" value="Post it" tabindex="3" class="pulse-form-submit btn button" />
+				</div>
+				<input type="hidden" value="<?php echo $instance['enable_comments']; ?>" name="enable_comments" />
+				<input type="hidden" value="pulse_cpt_insert" name="action" />
+				<?php wp_nonce_field( 'wpnonce_pulse_form', '_wpnonce_pulse_form' ); ?>
+				
+				<?php $location = Pulse_CPT_Form_Widget::get_location(); ?>
+				<?php if ( $location ): ?> 
+					<input type="hidden" value="<?php echo $location['type']; ?>" name="location[type]" />
+					<input type="hidden" value="<?php echo $location['ID']; ?>" name="location[ID]" />
+				<?php endif; ?>
+				
+				<?php 
+					if ( Pulse_CPT_Settings::$options['CTLT_EVALUATE'] ):
+						wp_nonce_field( 'evaluate_pulse-meta', 'evaluate_nonce' );
+					endif;
+				?>
+				<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
+				<input type="hidden" value="<?php echo $content_identifier; ?>" name="content_type" class="content-type"></input>
+			</form>
+		</div>
+		<?php
 	}
 	
 	/* Function to handle regular and nopriv ajax requests */
@@ -706,6 +741,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		elseif( is_404() ):
 			return false; // Don't display anything
 		endif;
+		
+		$arg['is_search'] = false;
 		
 		return $arg;
 	}

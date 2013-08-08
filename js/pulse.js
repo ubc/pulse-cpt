@@ -1,3 +1,4 @@
+
 var Pulse_CPT = {
     popover_args: null,
     
@@ -314,4 +315,4 @@ var Pulse_CPT = {
     }
 }
 
-jQuery('document').ready(Pulse_CPT.onReady);
+jQuery(document).ready(Pulse_CPT.onReady);
