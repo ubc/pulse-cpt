@@ -683,7 +683,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		?>
 		<div class="pulse-pagination">
 			<span class="pulse-pagination-btn">
-				<div id="pulse-pagination-more">Load More</span>
+				<div id="pulse-pagination-more">Load More</div>
 			</span>
 		</div>
 		<?php
