@@ -224,7 +224,7 @@ class Pulse_CPT {
 			wp_localize_script( 'pulse-cpt-form', 'Pulse_CPT_Form_local',  Pulse_CPT_Form_Widget::$widgets );
 		endif;
 		
-		wp_print_scripts( 'pulse-cpt-form' );
+		wp_enqueue_script( 'pulse-cpt-form' );
     }
 	
 	public static function get_content_type_for_node() {
@@ -253,7 +253,7 @@ class Pulse_CPT {
      * @return void
      */
     public static function print_pulse_script() {
-    	wp_print_scripts( 'pulse-cpt' );
+    	wp_enqueue_script( 'pulse-cpt' );
     	wp_enqueue_script( 'bootstrap-popover' );
     	wp_enqueue_style( 'bootstrap-popover' );
     }
@@ -413,15 +413,15 @@ class Pulse_CPT {
 					<?php if ( ! $single ): ?>
 						<div class="pulse-actions">
 							<ul>
-								<li class="hidden-collapsed">
+								<li class="hidden-collapsed expand-button">
 									<a href="#expand-url" class="expand-action">Expand</a>
 								</li>
 								<?php if ( is_user_logged_in() ): // Display reply only if user is logged in ?>
-									<li class="hidden-collapsed">
+									<li class="hidden-collapsed reply-button">
 										<a href="#reply-url" class="reply-action">Reply</a>
 									</li>
 								<?php endif; ?>
-								<li>
+								<li class="reply-count">
 									<span class="pulse-reply-counter spch-bub-inside">
 										<span class="point"></span>  
 										<em><span class="reply-count"><?php echo $it['num_replies']; ?></span></em>
@@ -594,7 +594,7 @@ class Pulse_CPT {
 			$reply_to = "";
 		endif;
 		
-		return array_merge( $rating_data, array(
+		return apply_filters( 'the_pulse_data', array_merge( $rating_data, array(
 			'ID'        => get_the_ID(),
 			'date'      => Pulse_CPT::get_the_date(),
 			'content'   => "<p>".make_clickable( get_the_content() )."</p>",
@@ -618,7 +618,7 @@ class Pulse_CPT {
 				'counter_up'   => 0,
 				'counter_down' => 0,
 			),
-		) );
+		) ) );
 	}
 	
 	/**

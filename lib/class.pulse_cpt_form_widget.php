@@ -39,6 +39,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			'title'                  => strip_tags( $new_instance['title'] ),
 			'display_title'          => (bool) $new_instance['display_title'],
 			'compact_view'           => (bool) $new_instance['compact_view'],
+			'disable_reply'          => (bool) $new_instance['disable_reply'],
 			'placeholder'            => strip_tags( $new_instance['placeholder'] ),
 			'enable_character_count' => (bool) $new_instance['enable_character_count'],
 			'num_char'               => (int) $new_instance['num_char'],
@@ -63,7 +64,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, array(
 		    'title'                  => '',
 		    'display_title'          => false,
-			'compact_view'            => true,
+			'compact_view'           => true,
+			'disable_reply'          => false,
 		    'placeholder'            => 'What is on your mind?',
 		    'enable_character_count' => false,
 		    'num_char'               => 140,
@@ -84,19 +86,27 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 			<!-- Title -->
 			<p>
 				<label for="<?php echo $this->get_field_id('title'); ?>">
-					Title: <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($instance['title']); ?>" />
+					Title: <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
 				</label>
 				<label for="<?php echo $this->get_field_id('display_title'); ?>">
-					<input id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>" type="checkbox" <?php echo checked($instance['display_title']); ?> /> Display Title
+					<input id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>" type="checkbox" <?php echo checked( $instance['display_title'] ); ?> /> Display Title
 				</label>
 			</p>
 			<!-- Compact View -->
 			<p>
 				<label for="<?php echo $this->get_field_id('compact_view'); ?>">
-					<input id="<?php echo $this->get_field_id('compact_view'); ?>" name="<?php echo $this->get_field_name('compact_view'); ?>" type="checkbox" <?php echo checked($instance['compact_view']); ?> /> Use Compact View
+					<input id="<?php echo $this->get_field_id('compact_view'); ?>" name="<?php echo $this->get_field_name('compact_view'); ?>" type="checkbox" <?php echo checked( $instance['compact_view'] ); ?> /> Use Compact View
 				</label>
 				<br />
 				<small>Display the pulse list in the feed style.</small>
+			</p>
+			<!-- Threaded Discussion -->
+			<p>
+				<label for="<?php echo $this->get_field_id('disable_reply'); ?>">
+					<input id="<?php echo $this->get_field_id('disable_reply'); ?>" name="<?php echo $this->get_field_name('disable_reply'); ?>" type="checkbox" <?php echo checked( $instance['disable_reply'] ); ?> /> Disable Threaded Discussion
+				</label>
+				<br />
+				<small>If checked, users will be unable to directly reply to other pulses. This is also known as a flat model.</small>
 			</p>
 			<!-- Placeholder -->
 			<p>
@@ -445,7 +455,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					</select>
 				</span>
 			</div>
-			<div class="pulse-list <?php echo ( $instance['compact_view'] ? "compact" : "" ); ?>">
+			<div class="pulse-list<?php echo ( $instance['compact_view'] ? " compact" : "" ).( $instance['disable_reply'] ? " disable-reply" : "" ); ?>">
 				<?php
 					while ( $pulse_query->have_posts() ):
 						$pulse_query->the_post();
@@ -465,7 +475,11 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		self::footer( $instance );
 	}
 	
-	public static function pulse_form( $instance, $content_identifier, $id ) {
+	public static function pulse_form( $instance, $content_identifier = null, $id = 0 ) {
+		if ( $content_identifier === null ) {
+			$content_identifier = Pulse_CPT::get_content_type_for_node();
+		}
+		
 		$has_tabs_bar = ! empty( $instance['tabs'] ) || $instance['enable_character_count'];
 		$tabs_class = ( $has_tabs_bar ? "tabs" : "no-tabs" );
 		?>

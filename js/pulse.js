@@ -113,35 +113,37 @@ var Pulse_CPT = {
                         Pulse_CPT.addPulse(new_pulse);
                     }
                     
-                    var split = Pulse_CPT_Form_global.content_type.split("/");
-                    var type = split[0];
-                    var value = split[1];
-                    switch ( type ) {
-                        case 'tag':
-                            if ( new_pulse_data.tags != false ) {
-                                jQuery.each( new_pulse_data.tags, function( index, tag ) {
-                                    if ( tag.name == value ) {
-                                        Pulse_CPT.addPulse(new_pulse);
-                                        return false; // Break out of the loop.
-                                    } else {
-                                        return true;
-                                    }
-                                } );
-                            }
-                            break;
-                        case 'author':
-                            if ( new_pulse_data.author.user_login == value ) {
-                                Pulse_CPT.addPulse(new_pulse);
-                            }
-                            break;
-                        default:
-                            break;
-                    }
-                    
-                    var content_rating_metric = new_pulse_data.content_rating;
-                    if ( content_rating_metric != undefined ) {
-                        var content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
-                        jQuery('.pulse-'+new_pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
+                    if ( Pulse_CPT_Form_global.content_type != undefined ) {
+                        var split = Pulse_CPT_Form_global.content_type.split("/");
+                        var type = split[0];
+                        var value = split[1];
+                        switch ( type ) {
+                            case 'tag':
+                                if ( new_pulse_data.tags != false ) {
+                                    jQuery.each( new_pulse_data.tags, function( index, tag ) {
+                                        if ( tag.name == value ) {
+                                            Pulse_CPT.addPulse(new_pulse);
+                                            return false; // Break out of the loop.
+                                        } else {
+                                            return true;
+                                        }
+                                    } );
+                                }
+                                break;
+                            case 'author':
+                                if ( new_pulse_data.author.user_login == value ) {
+                                    Pulse_CPT.addPulse(new_pulse);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                        
+                        var content_rating_metric = new_pulse_data.content_rating;
+                        if ( content_rating_metric != undefined ) {
+                            var content_rating = Evaluate.template[content_rating_metric.type](content_rating_metric);
+                            jQuery('.pulse-'+new_pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
+                        }
                     }
                 }
             } );
@@ -198,6 +200,11 @@ var Pulse_CPT = {
     },
     
     reply: function() {
+        if ( jQuery(this).closest( '.pulse-list' ).hasClass( 'disable-reply' ) ) {
+            Pulse_CPT_Form.reply( null );
+            return;
+        }
+        
         var parent_pulse = jQuery(this).closest('.pulse');
         if ( ! parent_pulse.hasClass('expand') ) { //expand first if not expanded
             Pulse_CPT.expand.apply(this);

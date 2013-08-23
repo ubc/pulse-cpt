@@ -34,6 +34,12 @@
     overflow: hidden;
 }
 
+.pulse-list.disable-reply .expand-button,
+.pulse-list.disable-reply .reply-count,
+.pulse-list.disable-reply .reply-to {
+    display: none;
+}
+
 .pulse-wrap p {
     margin-bottom: 0;
 }
