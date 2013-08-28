@@ -219,6 +219,19 @@ body:not(.author) .pulse-wrap {
 }
 
 
+/* Minimal View */
+.pulse-list.minimal .pulse-avatar,
+.pulse-list.minimal .pulse-authors,
+.pulse-list.minimal .pulse-actions,
+.pulse-list.minimal .pulse-expand-content {
+    display: none;
+}
+
+.pulse-list.minimal .pulse-margin {
+    margin: 0;
+}
+
+
 /* Pulse Actions */
 .pulse-actions {
 	display: none;

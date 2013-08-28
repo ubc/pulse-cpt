@@ -35,10 +35,14 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		if ( (bool) $new_instance['enable_co_authoring'] ) $tabs['co_authoring'] = true;
 		if ( false                                       ) $tabs['file_upload'] = true; // todo: implement file uploading ui
 		
+		if ( ! in_array( $new_instance['view'], array( 'normal', 'compact', 'minimal' ) ) ):
+			$new_instance['view'] = 'normal';
+		endif;
+		
 		return array_merge( $old_instance, array(
 			'title'                  => strip_tags( $new_instance['title'] ),
 			'display_title'          => (bool) $new_instance['display_title'],
-			'compact_view'           => (bool) $new_instance['compact_view'],
+			'view'                   => $new_instance['view'],
 			'disable_reply'          => (bool) $new_instance['disable_reply'],
 			'placeholder'            => strip_tags( $new_instance['placeholder'] ),
 			'enable_character_count' => (bool) $new_instance['enable_character_count'],
@@ -64,7 +68,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, array(
 		    'title'                  => '',
 		    'display_title'          => false,
-			'compact_view'           => true,
+			'view'                   => 'normal',
 			'disable_reply'          => false,
 		    'placeholder'            => 'What is on your mind?',
 		    'enable_character_count' => false,
@@ -92,13 +96,16 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					<input id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>" type="checkbox" <?php echo checked( $instance['display_title'] ); ?> /> Display Title
 				</label>
 			</p>
-			<!-- Compact View -->
+			<!-- View -->
 			<p>
-				<label for="<?php echo $this->get_field_id('compact_view'); ?>">
-					<input id="<?php echo $this->get_field_id('compact_view'); ?>" name="<?php echo $this->get_field_name('compact_view'); ?>" type="checkbox" <?php echo checked( $instance['compact_view'] ); ?> /> Use Compact View
+				<label for="<?php echo $this->get_field_id('view'); ?>">
+					View
+					<select id="<?php echo $this->get_field_id('view'); ?>" name="<?php echo $this->get_field_name('view'); ?>">
+						<option value="normal" <?php echo selected( $instance['view'] == 'normal' ); ?>>Normal</option>
+						<option value="compact" <?php echo selected( $instance['view'] == 'compact' ); ?>>Compact</option>
+						<option value="minimal" <?php echo selected( $instance['view'] == 'minimal' ); ?>>Minimal</option>
+					</select>
 				</label>
-				<br />
-				<small>Display the pulse list in the feed style.</small>
 			</p>
 			<!-- Threaded Discussion -->
 			<p>
@@ -455,7 +462,7 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 					</select>
 				</span>
 			</div>
-			<div class="pulse-list<?php echo ( $instance['compact_view'] ? " compact" : "" ).( $instance['disable_reply'] ? " disable-reply" : "" ); ?>">
+			<div class="pulse-list <?php echo $instance['view'].( $instance['disable_reply'] ? " disable-reply" : "" ); ?>">
 				<?php
 					while ( $pulse_query->have_posts() ):
 						$pulse_query->the_post();
