@@ -6,6 +6,7 @@ class Pulse_CPT_Settings {
 	static $options = array();
 	static $bitly_username;
 	static $bitly_key;
+	static $breadcrumb = array();
 	
 	public static function admin_menu() {
 		$page = add_submenu_page( 'edit.php?post_type=pulse-cpt', 'Settings', 'Settings', 'manage_options', 'pulse-cpt_settings', array( __CLASS__, 'admin_page' ) );
@@ -24,9 +25,16 @@ class Pulse_CPT_Settings {
 		self::$bitly_username = get_option( 'pulse_bitly_username' );
 		self::$bitly_key = get_option( 'pulse_bitly_key' );
 		
+		self::$breadcrumb['pulse_breadcrumb'] = get_option( 'pulse_breadcrumb' );
+		self::$breadcrumb['pulse_breadcrumb_length'] = get_option( 'pulse_breadcrumb_length');
+		
 		add_action( 'admin_init', array( __CLASS__, 'load' ) );
 		add_action( 'init', array( __CLASS__, 'start' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+		
+		//add js
+		wp_register_script('pulse_options', PULSE_CPT_DIR_URL.'/js/pulse_options.js');
+		wp_enqueue_script('pulse_options');
 	}
 	
 	public static function start() {
@@ -41,11 +49,15 @@ class Pulse_CPT_Settings {
 		register_setting( 'pulse_options', 'pulse_bitly_username' );
 		register_setting( 'pulse_options', 'pulse_bitly_key' );
 		register_setting( 'pulse_options', 'pulse_default_metric' );
+		register_setting( 'pulse_options', 'pulse_breadcrumb' );
+		register_setting( 'pulse_options', 'pulse_breadcrumb_length' );
 		
 		// Main settings
-		add_settings_section( 'pulse_settings_main', 'Pulse CPT Settings', array( __CLASS__, 'setting_section_main' ), 'pulse-cpt_settings' );
-		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 'pulse-cpt_settings', 'pulse_settings_main' );
-		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      'pulse-cpt_settings', 'pulse_settings_main' );
+		add_settings_section( 'pulse_settings_main', 'Pulse CPT Settings', array( __CLASS__, 'setting_section_main' ), 	'pulse-cpt_settings' );
+		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 	'pulse-cpt_settings', 'pulse_settings_main' );
+		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      	'pulse-cpt_settings', 'pulse_settings_main' );
+		add_settings_field( 'pulse_breadcrumb',		'Show breadcrumb on single pulse', array( __CLASS__, 'setting_breadcrumb' ), 'pulse-cpt_settings', 'pulse_settings_main' );
+		add_settings_field( 'pulse_breadcrumb_length', 'Length of each crumb in breadcrumb', array( __CLASS__, 'setting_breadcrumb_length' ), 'pulse-cpt_settings', 'pulse_settings_main' );
 		
 		if ( self::$options['CTLT_EVALUATE'] == TRUE ):
 			add_settings_field( 'pulse_default_metric', 'Default Pulse Metric', array( __CLASS__, 'setting_default_metric' ), 'pulse-cpt_settings', 'pulse_settings_main' );
@@ -170,6 +182,21 @@ class Pulse_CPT_Settings {
 		<?php else: ?>
 			<div style="color: red">Not Found</div>
 		<?php endif;
+	}
+
+	public static function setting_breadcrumb() {
+		?>
+			<input id="pulse_breadcrumb" type="checkbox" name="pulse_breadcrumb" value="1" <?php checked( !empty(self::$breadcrumb['pulse_breadcrumb']) ); ?> />
+		<?php 
+	}
+
+	public static function setting_breadcrumb_length() {
+		?><select id="pulse_breadcrumb_length" name="pulse_breadcrumb_length"><?php
+		foreach (range(6, 30, 2) as $choice ) {
+			$checked = ($choice == self::$breadcrumb['pulse_breadcrumb_length']) ? ' selected' : '';
+ 			?><option value="<?php echo $choice; ?>" <?php echo $checked; ?>><?php echo $choice; ?></option><?php 
+		} 
+		?></select><?php 
 	}
 	
 	public static function admin_page() {

@@ -4,6 +4,9 @@
  */
 class Pulse_CPT {
 	static $add_form_script;
+	static $length = 6;
+	static $post_type = 'pulse-cpt';
+	static $use_breadcrumb = false;
 	
 	/**
 	 * init function.
@@ -18,10 +21,14 @@ class Pulse_CPT {
 		add_action( 'wp_footer',              array( __CLASS__, 'print_pulse_script' ) );
 		add_action( 'template_redirect',      array( __CLASS__, 'template_redirect' ) );
 		add_filter( 'carry_content_template', array( __CLASS__, 'load_pulse_template' ) );
-		
+		add_filter( 'the_content', 			  array( __CLASS__, 'load_pulse_content' ), 10, 1 );
 		// Add new columns
 		add_filter( 'manage_pulse-cpt_posts_columns',       array( __CLASS__, 'add_new_column' ) );
 		add_action( 'manage_pulse-cpt_posts_custom_column', array( __CLASS__, 'manage_columns' ), 10, 2 );
+		
+		//set breadcrumb stuff
+		self::$length = get_option('pulse_breadcrumb_length') ? get_option('pulse_breadcrumb_length') : 6;
+		self::$use_breadcrumb = get_option('pulse_breadcrumb');
 	}
 	
 	public static function load() {
@@ -95,7 +102,7 @@ class Pulse_CPT {
 			'supports'           => array( 'editor', 'author', 'comments' ),
 		);
 		
-  		register_post_type( 'pulse-cpt', $args );
+  		register_post_type( Pulse_CPT::$post_type, $args );
     }
     
     /**
@@ -709,7 +716,7 @@ class Pulse_CPT {
 	public static function load_pulse_template( $template ) {
 		global $post;
 		
-		if ( $post->post_type == 'pulse-cpt' ):
+		if ( $post->post_type == Pulse_CPT::$post_type ):
 			return 'pulse';
 		else:
 			return $template;
@@ -721,6 +728,53 @@ class Pulse_CPT {
 		global $post;
 		return count( get_children( $post->ID ) );
 	}
+	
+	/**
+	 * Filter function to deal with adding breadcrumbs or parent pulses...
+	 * 
+	 * @param string $content 
+	 * @return string
+	 */
+	public static function load_pulse_content($content) {
+		global $post;
+		if ( $post->post_type == Pulse_CPT::$post_type && is_single($post) && self::$use_breadcrumb ) {
+			$breadcrumb = Pulse_CPT::get_pulse_breadcrumb($post);
+			return $content.$breadcrumb;
+		} else {
+			return $content;
+		}
+	}
+
+	/**
+	 * function to generate pulse breadcrumbs so that we can more easily understand 
+	 * 
+	 * @param unknown $post
+	 * @return string
+	 */
+	private static function get_pulse_breadcrumb($post) {
+		$breadcrumb = '';
+		if ($post->post_type != Pulse_CPT::$post_type) {
+			return $breadcrumb;
+		}
+		$breadcrumb = '<a href="'.get_permalink($post->ID).'">'.(strlen($post->post_title) > Pulse_CPT::$length ? substr($post->post_title, 0, Pulse_CPT::$length).'...' : $post->post_title).'</a>';
+		$parent = $post;
+		while (true) {
+			//get post_parent
+			$parent = get_post($parent->post_parent);
+			if ($parent->post_type != Pulse_CPT::$post_type) {
+				//ok, reached the end,
+				$breadcrumb = ' > '.$breadcrumb;
+				$breadcrumb = ('<a href="'.get_permalink($parent->ID).'">'.(strlen($parent->post_title) > Pulse_CPT::$length ? substr($parent->post_title, 0, Pulse_CPT::$length).'...' : $parent->post_title ).'</a>') . $breadcrumb;
+				break;
+			} else {
+				//not at the top!
+				$breadcrumb = ' > '.$breadcrumb;
+				$breadcrumb = ('<a href="'.get_permalink($parent->ID).'">'.(strlen($parent->post_title) > Pulse_CPT::$length ? substr($parent->post_title, 0, Pulse_CPT::$length).'...' : $parent->post_title ).'</a>') . $breadcrumb;
+			}
+		}
+		return $breadcrumb;
+	}
+
 }
 
 /**
