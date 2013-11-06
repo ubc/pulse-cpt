@@ -758,10 +758,20 @@ class Pulse_CPT {
 		}
 		$breadcrumb = '<a href="'.get_permalink($post->ID).'">'.(strlen($post->post_title) > Pulse_CPT::$length ? substr($post->post_title, 0, Pulse_CPT::$length).'...' : $post->post_title).'</a>';
 		$parent = $post;
+		
 		while (true) {
 			//get post_parent
 			$parent = get_post($parent->post_parent);
-			if ($parent->post_type != Pulse_CPT::$post_type) {
+			if (is_null($parent)) {
+				break;
+			}
+
+			if ($parent->post_parent == 0) {
+				//front page is parent!
+				$breadcrumb = ' > '.$breadcrumb;
+				$breadcrumb = ('<a href="'.home_url().'">home</a>') . $breadcrumb;
+				break;
+			} else if ($parent->post_type != Pulse_CPT::$post_type) {
 				//ok, reached the end,
 				$breadcrumb = ' > '.$breadcrumb;
 				$breadcrumb = ('<a href="'.get_permalink($parent->ID).'">'.(strlen($parent->post_title) > Pulse_CPT::$length ? substr($parent->post_title, 0, Pulse_CPT::$length).'...' : $parent->post_title ).'</a>') . $breadcrumb;
