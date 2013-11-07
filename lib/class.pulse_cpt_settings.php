@@ -26,15 +26,10 @@ class Pulse_CPT_Settings {
 		self::$bitly_key = get_option( 'pulse_bitly_key' );
 		
 		self::$breadcrumb['pulse_breadcrumb'] = get_option( 'pulse_breadcrumb' );
-		self::$breadcrumb['pulse_breadcrumb_length'] = get_option( 'pulse_breadcrumb_length');
 		
 		add_action( 'admin_init', array( __CLASS__, 'load' ) );
 		add_action( 'init', array( __CLASS__, 'start' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
-		
-		//add js
-		wp_register_script('pulse_options', PULSE_CPT_DIR_URL.'/js/pulse_options.js');
-		wp_enqueue_script('pulse_options');
 	}
 	
 	public static function start() {
@@ -56,8 +51,7 @@ class Pulse_CPT_Settings {
 		add_settings_section( 'pulse_settings_main', 'Pulse CPT Settings', array( __CLASS__, 'setting_section_main' ), 	'pulse-cpt_settings' );
 		add_settings_field( 'pulse_bitly_username', 'Bit.ly Username', array( __CLASS__, 'setting_bitly_username' ), 	'pulse-cpt_settings', 'pulse_settings_main' );
 		add_settings_field( 'pulse_bitly_key',      'Bit.ly API Key',  array( __CLASS__, 'setting_bitly_key' ),      	'pulse-cpt_settings', 'pulse_settings_main' );
-		add_settings_field( 'pulse_breadcrumb',		'Show breadcrumb on single pulse', array( __CLASS__, 'setting_breadcrumb' ), 'pulse-cpt_settings', 'pulse_settings_main' );
-		add_settings_field( 'pulse_breadcrumb_length', 'Length of each crumb in breadcrumb', array( __CLASS__, 'setting_breadcrumb_length' ), 'pulse-cpt_settings', 'pulse_settings_main' );
+		add_settings_field( 'pulse_breadcrumb',		'Show "In response to" for single pulse view', array( __CLASS__, 'setting_breadcrumb' ), 'pulse-cpt_settings', 'pulse_settings_main' );
 		
 		if ( self::$options['CTLT_EVALUATE'] == TRUE ):
 			add_settings_field( 'pulse_default_metric', 'Default Pulse Metric', array( __CLASS__, 'setting_default_metric' ), 'pulse-cpt_settings', 'pulse_settings_main' );
@@ -76,6 +70,9 @@ class Pulse_CPT_Settings {
 		
 		add_settings_field( 'evaluate_found', 'Evaluate plugin', array( __CLASS__, 'setting_evaluate_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
 		add_settings_field( 'coauthor_found', 'Co-Author+ plugin', array( __CLASS__, 'setting_coauthor_plugin' ), 'pulse-cpt_settings', 'pulse_settings_plugins' );
+		
+		//add in js
+		wp_enqueue_script('pulse_options');
 	}
 	
 	public static function setting_section_main() {
@@ -185,20 +182,9 @@ class Pulse_CPT_Settings {
 	}
 
 	public static function setting_breadcrumb() {
-		?>
-			<input id="pulse_breadcrumb" type="checkbox" name="pulse_breadcrumb" value="1" <?php checked( !empty(self::$breadcrumb['pulse_breadcrumb']) ); ?> />
-		<?php 
+			?><input id="pulse_breadcrumb" type="checkbox" name="pulse_breadcrumb" value="1" <?php checked( !empty(self::$breadcrumb['pulse_breadcrumb']) ); ?> /><?php 
 	}
 
-	public static function setting_breadcrumb_length() {
-		?><select id="pulse_breadcrumb_length" name="pulse_breadcrumb_length"><?php
-		foreach (range(6, 30, 2) as $choice ) {
-			$checked = ($choice == self::$breadcrumb['pulse_breadcrumb_length']) ? ' selected' : '';
- 			?><option value="<?php echo $choice; ?>" <?php echo $checked; ?>><?php echo $choice; ?></option><?php 
-		} 
-		?></select><?php 
-	}
-	
 	public static function admin_page() {
 		?>
 		<form id="pulse_options" method="post" action="options.php">

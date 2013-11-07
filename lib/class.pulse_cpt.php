@@ -4,7 +4,6 @@
  */
 class Pulse_CPT {
 	static $add_form_script;
-	static $length = 6;
 	static $post_type = 'pulse-cpt';
 	static $use_breadcrumb = false;
 	
@@ -27,7 +26,6 @@ class Pulse_CPT {
 		add_action( 'manage_pulse-cpt_posts_custom_column', array( __CLASS__, 'manage_columns' ), 10, 2 );
 		
 		//set breadcrumb stuff
-		self::$length = get_option('pulse_breadcrumb_length') ? get_option('pulse_breadcrumb_length') : 6;
 		self::$use_breadcrumb = get_option('pulse_breadcrumb');
 	}
 	
@@ -283,7 +281,7 @@ class Pulse_CPT {
 		endif;
 		
 		?>
-		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>">
+		<div class="pulse pulse-<?php echo $it['ID']; ?>" data-pulse-id="<?php echo $it['ID']; ?>" id="<?php echo 'pulse_'.$it['ID']; ?>">
 			<div class="pulse-inner">
 				<?php if ( ! $single ): ?>
 					<div class="pulse-mini visible-collapsed">
@@ -753,34 +751,26 @@ class Pulse_CPT {
 	 */
 	private static function get_pulse_breadcrumb($post) {
 		$breadcrumb = '';
-		if ($post->post_type != Pulse_CPT::$post_type) {
-			return $breadcrumb;
-		}
-		$breadcrumb = '<a href="'.get_permalink($post->ID).'">'.(strlen($post->post_title) > Pulse_CPT::$length ? substr($post->post_title, 0, Pulse_CPT::$length).'...' : $post->post_title).'</a>';
+		$last_pulse = $post->ID;
 		$parent = $post;
-		
+
 		while (true) {
+			if ($parent->post_type != Pulse_CPT::$post_type) {
+				//ok, reached the end,
+				$breadcrumb = "In response to: ";
+				$breadcrumb .= ('<a href="'.get_permalink($parent->ID).'#pulse_'.$last_pulse.'">'.$parent->post_title.'</a>');
+				break;
+			} else if ($parent->post_type == Pulse_CPT::$post_type) {
+				$last_pulse = $parent->ID;
+			} 
+			
+			if ($parent->post_parent == 0) {
+				//do nothing!
+				break;
+			} 
+			
 			//get post_parent
 			$parent = get_post($parent->post_parent);
-			if (is_null($parent)) {
-				break;
-			}
-
-			if ($parent->post_parent == 0) {
-				//front page is parent!
-				$breadcrumb = ' > '.$breadcrumb;
-				$breadcrumb = ('<a href="'.home_url().'">home</a>') . $breadcrumb;
-				break;
-			} else if ($parent->post_type != Pulse_CPT::$post_type) {
-				//ok, reached the end,
-				$breadcrumb = ' > '.$breadcrumb;
-				$breadcrumb = ('<a href="'.get_permalink($parent->ID).'">'.(strlen($parent->post_title) > Pulse_CPT::$length ? substr($parent->post_title, 0, Pulse_CPT::$length).'...' : $parent->post_title ).'</a>') . $breadcrumb;
-				break;
-			} else {
-				//not at the top!
-				$breadcrumb = ' > '.$breadcrumb;
-				$breadcrumb = ('<a href="'.get_permalink($parent->ID).'">'.(strlen($parent->post_title) > Pulse_CPT::$length ? substr($parent->post_title, 0, Pulse_CPT::$length).'...' : $parent->post_title ).'</a>') . $breadcrumb;
-			}
 		}
 		return $breadcrumb;
 	}

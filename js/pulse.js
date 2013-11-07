@@ -1,21 +1,23 @@
 
 var Pulse_CPT = {
     popover_args: null,
-    
+    deferred: null,
+    get_all: false,
     onReady: function() {
         Pulse_CPT.listen();
-        
+        var pulse_list = jQuery('.pulse-list');
+        Pulse_CPT.deferred = jQuery.Deferred();
         //jQuery(".pulse-co-authors a").tooltip();
         
         // These are delegated to .pulse-list to attach to dynamic elements too
-        jQuery('.pulse-list').on( 'click', '.pulse', Pulse_CPT.expand );
-        jQuery('.pulse-list').on( 'click', '.expand-action', Pulse_CPT.expand );
+        pulse_list.on( 'click', '.pulse', Pulse_CPT.expand );
+        pulse_list.on( 'click', '.expand-action', Pulse_CPT.expand );
         
         // Prevent collapse if any of these within a pulse are clicked
-        jQuery('.pulse-list').on( 'click', '.pulse-replies .pulse, .pulse a, .pulse .postbox', function(e) { e.stopPropagation(); } );
+        pulse_list.on( 'click', '.pulse-replies .pulse, .pulse a, .pulse .postbox', function(e) { e.stopPropagation(); } );
         
         // Reply
-        jQuery('.pulse-list').on( 'click', '.reply-action', function( event ) {
+        pulse_list.on( 'click', '.reply-action', function( event ) {
             // We want to know the caller
             Pulse_CPT.reply.apply(this);
             event.stopPropagation(); //stop so we dont collapse parent pulse
@@ -33,6 +35,18 @@ var Pulse_CPT = {
             Pulse_CPT.filter( jQuery(this).closest('.widget') );
         } );
         
+        //if there is a hash, then expand stuff like replies and load more just once.  hopefully anchor will be in top 2 list.
+        if (window.location.href.indexOf("#pulse_") != -1) {
+        	Pulse_CPT.get_all = true;
+        	var btn = jQuery('.pulse-pagination .pulse-pagination-btn:not(.disabled)');
+        	btn.trigger('click');
+        	jQuery.when(Pulse_CPT.deferred).done(function() {
+        		var pulse_id = jQuery(String(window.location.hash));
+        		if (pulse_id.length) {
+        			jQuery('html,body').animate({scrollTop: pulse_id.offset().top}, 'fast');
+        		}
+        	});
+        }
         // This code is commented out because it is incomplete. The PHP code that supports it is also incomplete.
         // What follows is code to enable the ability of users to attach comments to their ratings.
         /*
@@ -218,9 +232,12 @@ var Pulse_CPT = {
         element = jQuery(element);
         var widget = element.closest('.widget');
         
-        Pulse_CPT.filter( widget, {
-            'offset': widget.find('.pulse-list .pulse').length,
-        }, false );
+        var overrides = {'offset': widget.find('.pulse-list .pulse').length};
+        if (Pulse_CPT.get_all) {
+        	overrides.posts_per_page = -1;
+        	Pulse_CPT.get_all = false;
+        }
+        Pulse_CPT.filter( widget, overrides, false );
     },
     
     filter: function( widget, overrides, clear ) {
@@ -310,7 +327,6 @@ var Pulse_CPT = {
             if ( slide == true ) {
                 new_pulse.hide().slideDown();
             }
-            
             if ( pulse_data.content_rating != undefined ) {
                 var content_rating = Evaluate.template[pulse_data.content_rating.type](pulse_data.content_rating);
                 jQuery('.pulse-'+pulse_data.ID+' .content-rating .evaluate-wrapper').html(content_rating);
@@ -319,6 +335,9 @@ var Pulse_CPT = {
         
         holder.prepend( data['prepend'] );
         holder.append( data['append'] );
+        holder.children().promise().done(function() {
+        	Pulse_CPT.deferred.resolve();
+        });
     }
 }
 

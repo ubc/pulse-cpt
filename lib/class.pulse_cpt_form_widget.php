@@ -641,6 +641,15 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				$query_args['meta_key'] = 'metric-'.$rating_data['metric_id'].'-'.$data['sort'];
 			endif;
 			
+			if ( ! empty( $data['posts_per_page'] ) ) {
+				if ( $data['posts_per_page'] < 0 ) {
+					//make max if < 0
+					$query_args['posts_per_page'] = PHP_INT_MAX;	
+				} else {
+					$query_args['posts_per_page'] = $data['posts_per_page'];
+				}
+			}
+			
 			$posts_per_page = $query_args['posts_per_page'];
 			$query_args['posts_per_page'] = -1; //Show all posts, as we are using our own method for paging.
 			
