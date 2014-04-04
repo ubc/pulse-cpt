@@ -14,6 +14,7 @@
                 fontSize:   $this.css('fontSize'),
                 fontFamily: $this.css('fontFamily'),
                 lineHeight: $this.css('lineHeight'),
+                padding:    $this.css('padding'), 
                 resize:     'none',
             } ).appendTo(document.body);
             

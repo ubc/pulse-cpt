@@ -29,6 +29,7 @@
 	resize: none;
 	background: #FFF;
 	margin: 0 0 5px;
+	overflow: hidden;
 }
 
 .postbox.no-tabs .pulse-form-input {

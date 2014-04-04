@@ -409,16 +409,16 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 				self::pulse_form( $instance, $content_identifier, $id );
 			else:
 				?>
-				<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
+				<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id">
 				<?php
 			endif;
 			?>
-			<input type="hidden" value="<?php echo $wp_query->query_vars['author_name']; ?>" name="filters[author_id]" class="author-id"></input>
-			<input type="hidden" value="<?php echo $wp_query->query_vars['cat']; ?>" name="filters[cat_id]" class="cat-id"></input>
-			<input type="hidden" value="<?php echo $wp_query->query_vars['tag_id']; ?>" name="filters[tag_id]" class="tag-id"></input>
-			<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['year'] : "0" ); ?>" name="filters[date][year]" class="date-year"></input>
-			<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['monthnum'] : "0" ); ?>" name="filters[date][monthnum]" class="date-monthnum"></input>
-			<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['day'] : "0" ); ?>" name="filters[date][day]" class="date-day"></input>
+			<input type="hidden" value="<?php echo $wp_query->query_vars['author_name']; ?>" name="filters[author_id]" class="author-id">
+			<input type="hidden" value="<?php echo $wp_query->query_vars['cat']; ?>" name="filters[cat_id]" class="cat-id">
+			<input type="hidden" value="<?php echo $wp_query->query_vars['tag_id']; ?>" name="filters[tag_id]" class="tag-id">
+			<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['year'] : "0" ); ?>" name="filters[date][year]" class="date-year">
+			<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['monthnum'] : "0" ); ?>" name="filters[date][monthnum]" class="date-monthnum">
+			<input type="hidden" value="<?php echo ( is_archive() ? $wp_query->query_vars['day'] : "0" ); ?>" name="filters[date][day]" class="date-day">
 			<div class="pulse-list-actions">
 				<span class="pulse-form-progress hide">
 					<img title="Loading..." alt="Loading..." src="<?php echo PULSE_CPT_DIR_URL;?>/img/spinner.gif" />
@@ -569,8 +569,8 @@ class Pulse_CPT_Form_Widget extends WP_Widget {
 						wp_nonce_field( 'evaluate_pulse-meta', 'evaluate_nonce' );
 					endif;
 				?>
-				<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id"></input>
-				<input type="hidden" value="<?php echo $content_identifier; ?>" name="content_type" class="content-type"></input>
+				<input type="hidden" value="<?php echo $id; ?>" name="widget_id" class="widget-id" />
+				<input type="hidden" value="<?php echo $content_identifier; ?>" name="content_type" class="content-type" />
 			</form>
 		</div>
 		<?php
